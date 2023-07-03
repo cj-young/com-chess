@@ -1,0 +1,32 @@
+@import "./mixins";
+
+.set-username {
+  @include centered-children("column");
+}
+
+.input-container {
+  padding: 1rem;
+  background-color: var(--clr-bg-200);
+  border-radius: var(--br-primary);
+  display: flex;
+  gap: 1rem;
+
+  button {
+    @include button(var(--fs-400));
+    border: none;
+    background-color: var(--clr-primary);
+    color: var(--clr-text-primary);
+    position: relative;
+
+    .spinner {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      translate: -50% -50%;
+    }
+  }
+}
+
+.input-wrapper {
+  @include input-wrapper();
+}

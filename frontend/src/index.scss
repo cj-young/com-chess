@@ -1,0 +1,89 @@
+/* CSS Reset */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+}
+
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+}
+
+img,
+picture {
+  max-width: 100%;
+  display: block;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:root {
+  --clr-primary: rgb(138, 29, 255);
+  --clr-accent: hsl(89, 100%, 42%);
+
+  --clr-bg-100: rgb(13, 11, 14);
+  --clr-bg-200: rgb(31, 28, 33);
+  --clr-bg-300: rgb(43, 40, 47);
+
+  --clr-neutral-100: rgb(200, 200, 200);
+
+  --clr-text-primary: rgb(240, 240, 240);
+
+  --clr-error: rgb(230, 49, 49);
+
+  --fs-400: 0.875rem;
+  --fs-500: 1rem;
+
+  --ff-primary: Inter, sans-serif;
+
+  --br-primary: 8px;
+}
+
+body {
+  background-color: var(--clr-bg-100);
+  height: 100vh;
+  font-family: var(--ff-primary);
+  font-size: var(--fs-400);
+}
+
+#root {
+  height: 100%;
+}
+
+.app {
+  height: 100%;
+}

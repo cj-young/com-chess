@@ -1,0 +1,55 @@
+@mixin button($fontSize) {
+  font-size: $fontSize;
+  border-radius: var(--br-primary);
+  padding: calc($fontSize * 3 / 4) $fontSize;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin centered-children($direction) {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: $direction;
+}
+
+@mixin input-wrapper() {
+  --inactive-decor-color: var(--clr-neutral-100);
+  --active-decor-color: var(--clr-neutral-100);
+  width: 100%;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    width: 4px;
+    height: 50%;
+    background-color: var(--inactive-decor-color);
+    top: 50%;
+    right: 0;
+    translate: 0 -50%;
+    border-radius: var(--br-primary) 0 0 var(--br-primary);
+    transition: width 250ms ease-in-out;
+  }
+
+  &:focus-within::after {
+    background-color: var(--active-decor-color);
+    width: 12px;
+  }
+
+  input {
+    display: block;
+    width: 100%;
+    padding: 0.75em 1em;
+    background-color: var(--clr-bg-300);
+    border: none;
+    border-radius: var(--br-primary);
+    color: var(--clr-text-primary);
+    outline: none;
+  }
+}

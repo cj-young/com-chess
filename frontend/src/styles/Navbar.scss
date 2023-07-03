@@ -1,0 +1,20 @@
+@import "./mixins";
+
+nav {
+  padding: 1rem 2rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .logo {
+    width: 8rem;
+  }
+
+  .log-out {
+    @include button(var(--fs-400));
+    border: none;
+    color: var(--clr-text-primary);
+    background-color: var(--clr-primary);
+  }
+}

@@ -1,0 +1,12 @@
+.spinner {
+  animation: spinner-loading 1000ms ease infinite;
+}
+
+@keyframes spinner-loading {
+  from {
+    rotate: 0;
+  }
+  to {
+    rotate: 360deg;
+  }
+}
