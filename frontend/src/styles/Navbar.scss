@@ -11,10 +11,24 @@ nav {
     width: 8rem;
   }
 
-  .log-out {
-    @include button(var(--fs-400));
-    border: none;
-    color: var(--clr-text-primary);
-    background-color: var(--clr-primary);
+  .right-elements {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+
+    .username {
+      color: var(--clr-text-primary);
+      font-size: var(--fs-500);
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .log-out {
+      @include button(var(--fs-400));
+      border: none;
+      color: var(--clr-text-primary);
+      background-color: var(--clr-primary);
+    }
   }
 }

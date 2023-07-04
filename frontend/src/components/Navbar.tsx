@@ -4,15 +4,20 @@ import "../styles/Navbar.scss";
 import { useAuthContext } from "../contexts/AuthContext";
 
 export default function Navbar() {
-  const { logOut } = useAuthContext();
+  const { logOut, user } = useAuthContext();
 
   return (
     <nav>
       <Link to="/">
         <img src={logo} alt="Com.chess" className="logo" />
       </Link>
-      <div className="log-out" onClick={logOut}>
-        Log Out
+      <div className="right-elements">
+        <Link to={`/user/${user?.username}`} className="username">
+          {user?.username}
+        </Link>
+        <button className="log-out" onClick={logOut}>
+          Log Out
+        </button>
       </div>
     </nav>
   );

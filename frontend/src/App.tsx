@@ -9,6 +9,7 @@ import SetUsername from "./pages/SetUsername";
 import { useEffect, useState } from "react";
 import Loading from "./pages/Loading";
 import Redirect from "./pages/Redirect";
+import Profile from "./pages/Profile";
 
 export default function App() {
   const [initialLoading, setInitialLoading] = useState(true);
@@ -31,7 +32,10 @@ export default function App() {
         {initialLoading && <Route path="/*" element={<Loading />} />}
         <Route element={<ProtectedRoutes auth={true} />}>
           {user?.username ? (
-            <Route path="/" element={<Home />} />
+            <>
+              <Route path="/" element={<Home />} />
+              <Route path="/user/:username" element={<Profile />} />
+            </>
           ) : (
             <Route path="/*" element={<SetUsername />} />
           )}
