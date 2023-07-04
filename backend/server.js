@@ -52,15 +52,15 @@ app.use(passport.session());
 app.use("/", require("./routes/index"));
 
 app.use((error, req, res, next) => {
-  console.error(error);
+  console.log(error);
   res.status(400).json({ message: error.message });
 });
 
 mongoose
   .connect(process.env.DB_URI)
   .then(() => {
-    app.listen(3000, () => {
-      console.log("server running on port 3000");
+    app.listen(process.env.BACKEND_PORT, () => {
+      console.log(`server running on port ${process.env.BACKEND_PORT}`);
     });
   })
   .catch((err) => console.error(err));

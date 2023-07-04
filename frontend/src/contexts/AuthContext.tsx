@@ -39,15 +39,18 @@ export function AuthContextProvider({ children }: Props) {
     password: string
   ): Promise<void> {
     try {
-      const response = await fetch(`http://localhost:3000/auth/local/login`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ identifier, password })
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/auth/local/login`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ identifier, password })
+        }
+      );
 
       if (!response.ok) {
         let errorMessage;
@@ -88,12 +91,15 @@ export function AuthContextProvider({ children }: Props) {
   // }
 
   async function logOut(): Promise<void> {
-    const response = await fetch(`http://localhost:3000/auth/logout`, {
-      credentials: "include",
-      headers: {
-        Accept: "application/json"
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/logout`,
+      {
+        credentials: "include",
+        headers: {
+          Accept: "application/json"
+        }
       }
-    });
+    );
 
     if (!response.ok) {
       console.log(response);
@@ -140,15 +146,18 @@ export function AuthContextProvider({ children }: Props) {
         "Password must contain a lowercase letter, an uppercase letter, a digit, and a special character"
       );
 
-    const response = await fetch(`http://localhost:3000/auth/local/signup`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username, email, password, confirmPassword })
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/local/signup`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, email, password, confirmPassword })
+      }
+    );
 
     if (!response.ok) {
       let errorMessage;
@@ -171,13 +180,16 @@ export function AuthContextProvider({ children }: Props) {
   }
 
   async function getUser(): Promise<void> {
-    const response = await fetch(`http://localhost:3000/auth/user`, {
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/user`,
+      {
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        }
       }
-    });
+    );
     if (!response.ok) throw new Error("Invalid authentication");
     const data = await response.json();
     setUser({ id: data.id, username: data.username });
@@ -194,15 +206,18 @@ export function AuthContextProvider({ children }: Props) {
         "Username may only contain letters, numbers, and underscores"
       );
 
-    const response = await fetch(`http://localhost:3000/auth/username`, {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username })
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/username`,
+      {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username })
+      }
+    );
 
     if (!response.ok) {
       let errorMessage;
@@ -225,7 +240,10 @@ export function AuthContextProvider({ children }: Props) {
   }
 
   function logInGoogle() {
-    window.open("http://localhost:3000/auth/google/login", "_self");
+    window.open(
+      `${import.meta.env.VITE_BACKEND_URL}/auth/google/login`,
+      "_self"
+    );
   }
   return (
     <AuthContext.Provider
