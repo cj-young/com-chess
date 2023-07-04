@@ -3,7 +3,7 @@ import Spinner from "../components/Spinner";
 import { useAuthContext } from "../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 
-export default function Callback() {
+export default function Redirect() {
   const { getUser } = useAuthContext();
 
   useEffect(() => {

@@ -4,11 +4,11 @@ import Login from "./pages/Login";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import NotFound from "./pages/NotFound";
 import SignUp from "./pages/SignUp";
-import Callback from "./pages/Callback";
 import { useAuthContext } from "./contexts/AuthContext";
 import SetUsername from "./pages/SetUsername";
 import { useEffect, useState } from "react";
 import Loading from "./pages/Loading";
+import Redirect from "./pages/Redirect";
 
 export default function App() {
   const [initialLoading, setInitialLoading] = useState(true);
@@ -38,7 +38,7 @@ export default function App() {
         </Route>
         <Route element={<ProtectedRoutes auth={false} />}>
           <Route path="/login" element={<Login />}></Route>
-          <Route path="/login/callback" element={<Callback />} />
+          <Route path="/login/redirect" element={<Redirect />} />
           <Route path="/signup" element={<SignUp />} />
         </Route>
         <Route path="/*" element={<NotFound />} />
