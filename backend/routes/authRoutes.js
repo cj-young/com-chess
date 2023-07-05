@@ -46,10 +46,12 @@ router.get(
   })
 );
 
-router.get("/logout", isAuthenticated, (req, res) => {
+router.get("/logout", (req, res, next) => {
+  if (!req.isAuthenticated())
+    res.status(200).json({ message: "Logout successful" });
   req.logout((err) => {
     if (err) return next(err);
-    res.json({ message: "Logout successful" });
+    res.status(200).json({ message: "Logout successful" });
   });
 });
 
