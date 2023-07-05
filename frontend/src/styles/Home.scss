@@ -6,8 +6,11 @@
   height: 100%;
 
   &__main {
-    @include centered-children(row);
-    gap: 2rem;
+    @include centered-children(column);
+    @include large-screen {
+      flex-direction: row;
+    }
+    gap: 1rem;
 
     button {
       width: 12rem;
