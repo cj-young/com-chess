@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import Loading from "./pages/Loading";
 import Redirect from "./pages/Redirect";
 import Profile from "./pages/Profile";
+import Play from "./pages/Play";
 
 export default function App() {
   const [initialLoading, setInitialLoading] = useState(true);
@@ -35,6 +36,7 @@ export default function App() {
             <>
               <Route path="/" element={<Home />} />
               <Route path="/user/:username" element={<Profile />} />
+              <Route path="/play" element={<Play />} />
             </>
           ) : (
             <Route path="/*" element={<SetUsername />} />
