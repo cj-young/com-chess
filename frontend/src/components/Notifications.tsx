@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Queue from "../utils/Queue";
 import { AnimatePresence } from "framer-motion";
+import FriendRequestNotification from "./FriendRequestNotification";
 
 export default function Notifications() {
   const notificationQueue = useRef(new Queue<React.ReactNode>());
