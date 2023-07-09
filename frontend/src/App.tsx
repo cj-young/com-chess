@@ -11,6 +11,7 @@ import Loading from "./pages/Loading";
 import Redirect from "./pages/Redirect";
 import Profile from "./pages/Profile";
 import Play from "./pages/Play";
+import Notifications from "./components/Notifications";
 
 export default function App() {
   const [initialLoading, setInitialLoading] = useState(true);
@@ -29,6 +30,7 @@ export default function App() {
 
   return (
     <div className="app">
+      {user?.username && <Notifications />}
       <Routes>
         {initialLoading && <Route path="/*" element={<Loading />} />}
         <Route element={<ProtectedRoutes auth={true} />}>
