@@ -1,9 +1,11 @@
 class QueueNode<T> {
   data: T;
   next: QueueNode<T> | null;
-  constructor(data: any) {
+  id: number;
+  constructor(data: any, id: number) {
     this.data = data;
     this.next = null;
+    this.id = id;
   }
 }
 
@@ -20,7 +22,7 @@ export default class Queue<T> {
   }
 
   enqueue(data: T): void {
-    const node = new QueueNode<T>(data);
+    const node = new QueueNode<T>(data, this.count);
 
     if (!this.first || !this.last) {
       this.first = node;
