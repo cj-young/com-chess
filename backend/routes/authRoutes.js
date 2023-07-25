@@ -14,10 +14,6 @@ router.get("/user", isAuthenticated, (req, res) => {
 
 router.post("/local/signup", signupLocal);
 
-// router.get("/local/login", passport.authenticate("local"), (req, res) => {
-//   res.json({ id: req.user.id, username: req.user.username });
-// });
-
 router.post("/local/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) return next(err);

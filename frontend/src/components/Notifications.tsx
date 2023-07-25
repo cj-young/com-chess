@@ -16,6 +16,14 @@ export default function Notifications() {
   const removeNotification = () => {
     notificationQueue.dequeue();
     updateVisibleNotification();
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/notifications`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    });
   };
 
   useEffect(() => {
