@@ -6,14 +6,11 @@ const session = require("express-session");
 const initializePassport = require("./config/passport");
 const MongoStore = require("connect-mongo");
 const { createServer } = require("http");
-const { server } = require("socket.io");
 
 require("dotenv").config();
 
 const app = express();
 const httpServer = createServer(app);
-
-initializePassport(passport);
 
 const originRegex = /^(http|https):\/\/localhost:4000($|\/.*$)/;
 app.use(
@@ -28,6 +25,8 @@ app.use(
     }
   })
 );
+
+initializePassport(passport);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
