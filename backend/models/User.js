@@ -3,6 +3,16 @@ const bcrypt = require("bcrypt");
 
 const Schema = mongoose.Schema;
 
+const NotificationSchema = new Schema({
+  type: {
+    type: String,
+    required: true
+  },
+  from: {
+    type: String
+  }
+});
+
 const UserSchema = new Schema(
   {
     email: {
@@ -37,6 +47,9 @@ const UserSchema = new Schema(
     },
     currentGame: {
       type: Schema.Types.ObjectId
+    },
+    notifications: {
+      type: [NotificationSchema]
     }
   },
   { timestamps: true }
