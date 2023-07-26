@@ -61,6 +61,22 @@ UserSchema.methods.validatePassword = async function (inputPassword) {
   return isValid;
 };
 
+UserSchema.methods.sendNotification = async function (
+  io,
+  connectedUsers,
+  notification
+) {
+  this.notifications.push(notification);
+  await this.save();
+
+  const socketId = connectedUsers.get(this.id);
+  if (socketId) {
+    io.to(socketId).emit("notification", notification);
+  }
+
+  return notification;
+};
+
 const User = mongoose.model("User", UserSchema);
 
 module.exports = User;
