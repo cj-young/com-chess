@@ -2,6 +2,7 @@
 
 .friends-menu {
   position: absolute;
+  visibility: hidden;
   padding: 1rem;
   border-radius: var(--br-primary);
   background-color: var(--clr-bg-200);

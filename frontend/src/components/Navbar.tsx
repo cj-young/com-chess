@@ -9,7 +9,6 @@ import { useUserContext } from "../contexts/UserContext";
 
 export default function Navbar() {
   const { logOut, user } = useAuthContext();
-  const [friendsExpanded, setFriendsExpanded] = useState(false);
 
   const { friends, updateFriends } = useUserContext();
 
@@ -27,16 +26,8 @@ export default function Navbar() {
           {user?.username}
         </Link>
         <div className="friends">
-          <button
-            className="expand-friends"
-            onClick={() =>
-              setFriendsExpanded((prevFriendsExpanded) => !prevFriendsExpanded)
-            }
-            aria-expanded={friendsExpanded}
-          >
-            <img src={friendsImg} alt="Friends" />
-          </button>
-          {friendsExpanded && <FriendsMenu friends={friends} />}
+          <img src={friendsImg} alt="Friends" />
+          <FriendsMenu friends={friends} />
         </div>
         <button className="log-out" onClick={logOut}>
           Log Out

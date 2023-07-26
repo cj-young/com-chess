@@ -28,15 +28,24 @@ nav {
       background-color: transparent;
       border: none;
       position: relative;
-    }
-
-    .expand-friends {
-      background-color: transparent;
-      border: none;
-      cursor: pointer;
 
       img {
         height: 1.25rem;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        translate: -50% 50%;
+        width: 2rem;
+        height: 2rem;
+        background-color: transparent;
+      }
+
+      &:hover .friends-menu {
+        visibility: visible;
       }
     }
 
