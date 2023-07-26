@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import "../styles/Navbar.scss";
 import { useAuthContext } from "../contexts/AuthContext";
 import friendsImg from "../assets/friends.svg";
-import notificationsImg from "../assets/notifications.svg";
 import FriendsMenu from "./FriendsMenu";
 import { useUserContext } from "../contexts/UserContext";
 
@@ -37,14 +36,8 @@ export default function Navbar() {
           >
             <img src={friendsImg} alt="Friends" />
           </button>
-          {friendsExpanded && (
-            <FriendsMenu friends={friends} updateFriends={updateFriends} />
-          )}
+          {friendsExpanded && <FriendsMenu friends={friends} />}
         </div>
-        <button className="notifications">
-          <img src={notificationsImg} alt="Friends" />
-          <div className="badge">2</div>
-        </button>
         <button className="log-out" onClick={logOut}>
           Log Out
         </button>
