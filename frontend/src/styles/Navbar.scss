@@ -24,7 +24,12 @@ nav {
       text-decoration: none;
     }
 
-    .friends,
+    .friends {
+      background-color: transparent;
+      border: none;
+    }
+
+    .expand-friends,
     .notifications {
       background-color: transparent;
       border: none;
@@ -61,5 +66,9 @@ nav {
       color: var(--clr-text-primary);
       background-color: var(--clr-primary);
     }
+  }
+
+  .friends {
+    position: relative;
   }
 }

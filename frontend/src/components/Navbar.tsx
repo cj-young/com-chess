@@ -1,12 +1,22 @@
+import { useEffect, useState } from "react";
 import logo from "../assets/logo-light.svg";
 import { Link } from "react-router-dom";
 import "../styles/Navbar.scss";
 import { useAuthContext } from "../contexts/AuthContext";
 import friendsImg from "../assets/friends.svg";
 import notificationsImg from "../assets/notifications.svg";
+import FriendsMenu from "./FriendsMenu";
+import { useUserContext } from "../contexts/UserContext";
 
 export default function Navbar() {
   const { logOut, user } = useAuthContext();
+  const [friendsExpanded, setFriendsExpanded] = useState(false);
+
+  const { friends, updateFriends } = useUserContext();
+
+  useEffect(() => {
+    updateFriends();
+  }, []);
 
   return (
     <nav>
@@ -17,9 +27,20 @@ export default function Navbar() {
         <Link to={`/user/${user?.username}`} className="username">
           {user?.username}
         </Link>
-        <button className="friends">
-          <img src={friendsImg} alt="Friends" />
-        </button>
+        <div className="friends">
+          <button
+            className="expand-friends"
+            onClick={() =>
+              setFriendsExpanded((prevFriendsExpanded) => !prevFriendsExpanded)
+            }
+            aria-expanded={friendsExpanded}
+          >
+            <img src={friendsImg} alt="Friends" />
+          </button>
+          {friendsExpanded && (
+            <FriendsMenu friends={friends} updateFriends={updateFriends} />
+          )}
+        </div>
         <button className="notifications">
           <img src={notificationsImg} alt="Friends" />
           <div className="badge">2</div>

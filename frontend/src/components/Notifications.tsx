@@ -4,11 +4,13 @@ import { AnimatePresence } from "framer-motion";
 import FriendRequestNotification from "./FriendRequestNotification";
 import { socket } from "../config/socket";
 import MessageNotification from "./MessageNotification";
+import { useUserContext } from "../contexts/UserContext";
 
 export default function Notifications() {
   const notificationQueue = useRef(new Queue<React.ReactNode>()).current;
   const [visibleNotification, setVisibleNotification] =
     useState<React.ReactNode | null>(null);
+  const { updateFriends } = useUserContext();
 
   const updateVisibleNotification = () => {
     setVisibleNotification(notificationQueue.first?.data ?? null);
@@ -28,12 +30,6 @@ export default function Notifications() {
   };
 
   useEffect(() => {
-    socket.on("friendRequestSuccess", (message) => {
-      console.error(message);
-    });
-    socket.on("friendRequestFailure", (message) => {
-      console.error(message);
-    });
     socket.on("notification", (notification) => {
       let notificationComponent;
       switch (notification.type) {
@@ -57,6 +53,7 @@ export default function Notifications() {
               </span>
             </MessageNotification>
           );
+          updateFriends();
           break;
         case "friendDidDecline":
           notificationComponent = (
@@ -88,8 +85,6 @@ export default function Notifications() {
       }
     });
     return () => {
-      socket.off("friendRequestSuccess");
-      socket.off("friendRequestFailure");
       socket.off("notification");
     };
   }, []);
