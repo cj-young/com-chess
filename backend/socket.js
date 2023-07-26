@@ -41,6 +41,13 @@ module.exports = (server, sessionMiddleware, passport) => {
           throw new Error("User does not exist");
         }
 
+        if (
+          receiver.friends.includes(user.id) ||
+          user.friends.includes(receiver.id)
+        ) {
+          throw new Error("You are already friends with this person");
+        }
+
         receiver.sendNotification(io, connectedUsers, {
           type: "friendRequest",
           from: user.username
