@@ -64,6 +64,13 @@ module.exports = (server, sessionMiddleware, passport) => {
         const requester = await User.findOne({ username: username });
         if (!requester) throw new Error("User not found");
 
+        if (
+          requester.friends.includes(user.id) ||
+          user.friends.includes(requester.id)
+        ) {
+          throw new Error("You are already friends with this person");
+        }
+
         user.friends.push(requester.id);
         await user.save();
         requester.friends.push(user.id);
