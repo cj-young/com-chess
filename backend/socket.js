@@ -30,32 +30,48 @@ module.exports = (server, sessionMiddleware, passport) => {
     const user = socket.request.user;
     if (!user) return;
 
-    connectedUsers.set(user.username, socket.id);
+    connectedUsers.set(user.id, socket.id);
 
     socket.on("friendRequest", async (username) => {
       try {
         if (username === user.username)
           throw new Error("You cannot be friends with yourself");
-        const receiver = await User.findOneAndUpdate(
-          { username: username },
-          {
-            $push: {
-              notifications: { type: "friendRequest", from: user.username }
-            }
-          },
-          { new: true }
-        );
+        const receiver = await User.findOne({ username: username });
         if (!receiver) {
           throw new Error("User does not exist");
         }
 
-        const receiverId = connectedUsers.get(username);
-        if (receiverId) {
-          io.to(receiverId).emit("friendRequest", user.username);
-          socket.emit("friendRequestSuccess", username);
-        }
+        receiver.sendNotification(io, connectedUsers, {
+          type: "friendRequest",
+          from: user.username
+        });
+
+        socket.emit("friendRequestSuccess", username);
       } catch (error) {
         socket.emit("friendRequestFailure", error.message);
+      }
+    });
+
+    socket.on("friendAccept", async (username) => {
+      try {
+        const requester = await User.findOne({ username: username });
+        if (!requester) throw new Error("User not found");
+
+        user.friends.push(requester.id);
+        await user.save();
+        requester.friends.push(user.id);
+        await requester.save();
+
+        user.sendNotification(io, connectedUsers, {
+          type: "friendAccept",
+          from: requester.username
+        });
+        requester.sendNotification(io, connectedUsers, {
+          type: "friendAccept",
+          from: user.username
+        });
+      } catch (error) {
+        socket.emit("friendDecisionFailure", error.message);
       }
     });
 

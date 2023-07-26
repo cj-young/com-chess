@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import "../styles/FriendRequestNotification.scss";
+import { socket } from "../config/socket";
 
 type Props = {
-  remove: () => void;
+  remove: () => Promise<void>;
   username: string;
 };
 
@@ -27,6 +28,11 @@ const dropIn = {
 };
 
 export default function FriendRequestNotification({ remove, username }: Props) {
+  function handleAccept() {
+    socket.emit("friendAccept", username);
+    remove();
+  }
+
   return (
     <motion.div
       className="friend-request-notification"
@@ -39,7 +45,7 @@ export default function FriendRequestNotification({ remove, username }: Props) {
         <b>{username}</b> sent you a friend request
       </span>
       <div className="buttons">
-        <button className="accept" onClick={remove}>
+        <button className="accept" onClick={handleAccept}>
           Accept
         </button>
         <button className="decline" onClick={remove}>

@@ -3,6 +3,7 @@ import Queue from "../utils/Queue";
 import { AnimatePresence } from "framer-motion";
 import FriendRequestNotification from "./FriendRequestNotification";
 import { socket } from "../config/socket";
+import MessageNotification from "./MessageNotification";
 
 export default function Notifications() {
   const notificationQueue = useRef(new Queue<React.ReactNode>()).current;
@@ -13,10 +14,10 @@ export default function Notifications() {
     setVisibleNotification(notificationQueue.first?.data ?? null);
   };
 
-  const removeNotification = () => {
+  const removeNotification = async () => {
     notificationQueue.dequeue();
     updateVisibleNotification();
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/notifications`, {
+    await fetch(`${import.meta.env.VITE_BACKEND_URL}/notifications`, {
       method: "DELETE",
       credentials: "include",
       headers: {
@@ -33,20 +34,39 @@ export default function Notifications() {
     socket.on("friendRequestFailure", (message) => {
       console.error(message);
     });
-    socket.on("friendRequest", (username) => {
-      notificationQueue.enqueue(
-        <FriendRequestNotification
-          username={username}
-          remove={removeNotification}
-          key={notificationQueue.first ? notificationQueue.first.id : -1}
-        />
-      );
-      updateVisibleNotification();
+    socket.on("notification", (notification) => {
+      let notificationComponent;
+      switch (notification.type) {
+        case "friendRequest":
+          notificationComponent = (
+            <FriendRequestNotification
+              username={notification.from}
+              remove={removeNotification}
+              key={notificationQueue.last ? notificationQueue.last.id : -1}
+            />
+          );
+          break;
+        case "friendAccept":
+          notificationComponent = (
+            <MessageNotification
+              remove={removeNotification}
+              key={notificationQueue.last ? notificationQueue.last.id : -1}
+            >
+              <span>
+                <b>{notification.from}</b> is now your friend
+              </span>
+            </MessageNotification>
+          );
+      }
+      if (notificationComponent) {
+        notificationQueue.enqueue(notificationComponent);
+        updateVisibleNotification();
+      }
     });
     return () => {
       socket.off("friendRequestSuccess");
       socket.off("friendRequestFailure");
-      socket.off("friendRequest");
+      socket.off("notification");
     };
   }, []);
 

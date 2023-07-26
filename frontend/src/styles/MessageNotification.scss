@@ -1,0 +1,15 @@
+.message-notification {
+  padding: calc(var(--fs-400) * 3 / 4) var(--fs-400);
+  color: var(--clr-text-primary);
+  background-color: var(--clr-bg-300);
+  position: fixed;
+  z-index: 1000;
+  top: 1rem;
+  left: 50%;
+  translate: -50% 0;
+  border-radius: var(--br-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(calc(100% - 2rem), fit-content);
+}
