@@ -4,10 +4,9 @@ import "../styles/FriendsMenu.scss";
 
 type Props = {
   friends: string[];
-  updateFriends: () => Promise<void>;
 };
 
-export default function FriendsMenu({ friends, updateFriends }: Props) {
+export default function FriendsMenu({ friends }: Props) {
   const [receiver, setReceiver] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
