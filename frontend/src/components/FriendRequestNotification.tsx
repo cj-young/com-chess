@@ -33,6 +33,11 @@ export default function FriendRequestNotification({ remove, username }: Props) {
     remove();
   }
 
+  function handleDecline() {
+    socket.emit("friendDecline", username);
+    remove();
+  }
+
   return (
     <motion.div
       className="friend-request-notification"
@@ -48,7 +53,7 @@ export default function FriendRequestNotification({ remove, username }: Props) {
         <button className="accept" onClick={handleAccept}>
           Accept
         </button>
-        <button className="decline" onClick={remove}>
+        <button className="decline" onClick={handleDecline}>
           Decline
         </button>
       </div>

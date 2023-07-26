@@ -57,6 +57,30 @@ export default function Notifications() {
               </span>
             </MessageNotification>
           );
+          break;
+        case "friendDidDecline":
+          notificationComponent = (
+            <MessageNotification
+              remove={removeNotification}
+              key={notificationQueue.last ? notificationQueue.last.id : -1}
+            >
+              <span>
+                You declined <b>{notification.from}</b>'s friend request
+              </span>
+            </MessageNotification>
+          );
+          break;
+        case "friendWasDeclined":
+          notificationComponent = (
+            <MessageNotification
+              remove={removeNotification}
+              key={notificationQueue.last ? notificationQueue.last.id : -1}
+            >
+              <span>
+                <b>{notification.from}</b> declined your friend request
+              </span>
+            </MessageNotification>
+          );
       }
       if (notificationComponent) {
         notificationQueue.enqueue(notificationComponent);

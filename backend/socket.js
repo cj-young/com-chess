@@ -75,6 +75,24 @@ module.exports = (server, sessionMiddleware, passport) => {
       }
     });
 
+    socket.on("friendDecline", async (username) => {
+      try {
+        const requester = await User.findOne({ username: username });
+        if (!requester) throw new Error("User not found");
+
+        user.sendNotification(io, connectedUsers, {
+          type: "friendDidDecline",
+          from: requester.username
+        });
+        requester.sendNotification(io, connectedUsers, {
+          type: "friendWasDeclined",
+          from: user.username
+        });
+      } catch (error) {
+        socket.emit("friendDecisionFailure", error.message);
+      }
+    });
+
     io.on("disconnect", () => {
       connectedUsers.delete(user.username);
     });
