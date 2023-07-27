@@ -2,18 +2,19 @@ import Navbar from "../components/Navbar";
 import playBot from "../assets/play-bot-button-01.svg";
 import playFriend from "../assets/play-friend-button-01.svg";
 import "../styles/Play.scss";
+import { Link } from "react-router-dom";
 
 export default function Play() {
   return (
     <div className="play-home">
       <Navbar />
       <div className="play-home__main">
-        <button className="play-friend">
+        <Link to="/play/live" className="play-friend">
           <img src={playFriend} alt="Play friend" />
-        </button>
-        <button className="play-bot">
+        </Link>
+        <Link to="/play/bot" className="play-bot">
           <img src={playBot} alt="Play bot" />
-        </button>
+        </Link>
       </div>
     </div>
   );
