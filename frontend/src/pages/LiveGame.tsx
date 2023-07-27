@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 
-export default function Game() {
+export default function LiveGame() {
   return (
     <div className="game">
       <Navbar />
