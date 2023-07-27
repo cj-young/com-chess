@@ -12,6 +12,7 @@ import Redirect from "./pages/Redirect";
 import Profile from "./pages/Profile";
 import Play from "./pages/Play";
 import Notifications from "./components/Notifications";
+import LiveGame from "./pages/LiveGame";
 
 export default function App() {
   const [initialLoading, setInitialLoading] = useState(true);
@@ -39,6 +40,7 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/user/:username" element={<Profile />} />
               <Route path="/play" element={<Play />} />
+              <Route path="/play/live" element={<LiveGame />} />
             </>
           ) : (
             <Route path="/*" element={<SetUsername />} />
