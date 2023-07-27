@@ -1,0 +1,69 @@
+@import "./mixins";
+
+.game {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__container {
+    width: 100%;
+    height: 100%;
+
+    @include game-screen {
+      display: grid;
+      grid-template-areas:
+        "moves board topclock"
+        "moves board bottomclock"
+        "moves board chat";
+      grid-template-columns: 1fr min(100%, 30rem, 75vh) 1fr;
+      grid-template-rows: 1fr 1fr 2fr;
+    }
+  }
+}
+
+.live-moves {
+  background-color: red;
+  grid-area: moves;
+  height: 20rem;
+
+  @include game-screen {
+    height: unset;
+  }
+}
+
+.board-container {
+  background-color: purple;
+  grid-area: board;
+
+  @include game-screen {
+    width: unset;
+    height: unset;
+  }
+}
+
+.clock {
+  height: 3rem;
+
+  @include game-screen {
+    height: unset;
+  }
+}
+
+.clock.top {
+  grid-area: topclock;
+  background-color: blue;
+}
+
+.clock.bottom {
+  grid-area: bottomclock;
+  background-color: steelblue;
+}
+
+.chat {
+  grid-area: chat;
+  background-color: maroon;
+  height: 10rem;
+  @include game-screen {
+    height: unset;
+  }
+}
