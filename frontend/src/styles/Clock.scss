@@ -1,0 +1,61 @@
+@import "./mixins";
+
+.clock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: min(100%, 30rem, 60vh);
+  padding: 1rem;
+  margin-top: 1rem;
+  margin-inline: auto;
+  background-color: var(--clr-bg-200);
+  color: var(--clr-text-primary);
+  font-weight: bold;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--br-primary);
+
+  @include game-screen {
+    width: 100%;
+  }
+
+  &.top {
+    @include game-screen {
+      border-radius: var(--br-primary);
+    }
+  }
+
+  &.bottom {
+    @include game-screen {
+      border-radius: var(--br-primary) var(--br-primary);
+    }
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 6px;
+    background-color: var(--clr-bg-300);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 25%;
+    top: 0;
+    height: 6px;
+    background-color: var(--clr-neutral-600);
+  }
+
+  &__time {
+    font-size: 2rem;
+  }
+
+  &__pieces {
+    height: 1rem;
+  }
+}

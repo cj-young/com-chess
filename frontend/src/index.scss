@@ -59,11 +59,16 @@ select {
   --clr-bg-200: rgb(31, 28, 33);
   --clr-bg-300: rgb(43, 40, 47);
 
-  --clr-neutral-100: rgb(200, 200, 200);
+  --clr-neutral-100: rgb(240, 240, 240);
+  --clr-neutral-400: rgb(116, 109, 123);
+  --clr-neutral-600: rgb(73, 68, 78);
 
   --clr-text-primary: rgb(240, 240, 240);
 
   --clr-error: rgb(230, 49, 49);
+
+  --clr-tile-dark: hsl(269, 75%, 59%);
+  --clr-tile-light: rgb(240, 240, 240);
 
   --fs-400: 0.875rem;
   --fs-500: 1rem;

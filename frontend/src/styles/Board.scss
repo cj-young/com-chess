@@ -29,12 +29,12 @@
 .square {
   width: calc(100% / 8);
   aspect-ratio: 1;
-  background-color: #fff;
+  background-color: var(--clr-tile-light);
 }
 
 .row:nth-child(2n + 1) .square:nth-child(2n),
 .row:nth-child(2n) .square:nth-child(2n + 1) {
-  background: #555;
+  background: var(--clr-tile-dark);
 }
 
 .controls {
@@ -51,5 +51,23 @@
     width: 2rem;
     height: 2rem;
     border: none;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    img {
+      height: 80%;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .right-buttons {
+    display: flex;
+    gap: 0.5rem;
   }
 }
