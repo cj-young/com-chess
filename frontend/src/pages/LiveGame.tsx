@@ -39,7 +39,6 @@ export default function LiveGame() {
         <div className="chat-container">
           <Chat />
         </div>
-        <div className="bottom-blank"></div>
       </div>
     </div>
   );
