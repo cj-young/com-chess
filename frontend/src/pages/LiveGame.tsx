@@ -16,7 +16,7 @@ type TGameState =
   | "waitingReceiver";
 
 export default function LiveGame() {
-  const [gameState, setGameState] = useState<TGameState>("loading");
+  const [gameState, setGameState] = useState<TGameState>("waitingSender");
 
   return (
     <div className="game">
@@ -119,6 +119,16 @@ export default function LiveGame() {
                 </div>
               </div>
               <button>Create Game</button>
+            </div>
+          </div>
+        )}
+        {(gameState === "waitingReceiver" || gameState === "waitingSender") && (
+          <div className="waiting-container">
+            <div className="waiting">
+              <h2>
+                Waiting for <b>Username</b>...
+              </h2>
+              <button>Cancel</button>
             </div>
           </div>
         )}
