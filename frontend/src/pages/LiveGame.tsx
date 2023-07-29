@@ -52,7 +52,7 @@ export default function LiveGame() {
             </div>
           </>
         )}
-        {"creating" && (
+        {gameState === "creating" && (
           <div className="create-game-container">
             <div className="create-game">
               <h2>Create a game</h2>
