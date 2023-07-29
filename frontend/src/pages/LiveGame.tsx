@@ -22,7 +22,6 @@ export default function LiveGame() {
     <div className="game">
       <Navbar />
       <div className="game__container">
-        <div className="top-blank"></div>
         <div className="clock-container top">
           <Clock player="top" time={363} />
         </div>
