@@ -8,8 +8,15 @@ import "../styles/LiveGame.scss";
 import flagIcon from "../assets/flag-solid.svg";
 import handshakeIcon from "../assets/handshake-simple-solid.svg";
 
+type TGameState =
+  | "loading"
+  | "creating"
+  | "playing"
+  | "waitingSender"
+  | "waitingReceiver";
+
 export default function LiveGame() {
-  const [currentGame, setCurrentGame] = useState("");
+  const [gameState, setGameState] = useState<TGameState>("loading");
 
   return (
     <div className="game">
