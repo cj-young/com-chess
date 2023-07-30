@@ -50,4 +50,10 @@ export default class Queue<T> {
     this.size--;
     return node;
   }
+
+  clear(): void {
+    this.first = null;
+    this.last = null;
+    this.size = 0;
+  }
 }
