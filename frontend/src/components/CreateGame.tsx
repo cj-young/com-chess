@@ -79,8 +79,8 @@ export default function CreateGame() {
       </div>
       <h3>Opponent</h3>
       <div className="choose-opponent">
-        {friends.map((friend) => (
-          <div className="opponent-choice">
+        {friends.map((friend, i) => (
+          <div className="opponent-choice" key={i}>
             <input
               type="radio"
               name="opponent"
