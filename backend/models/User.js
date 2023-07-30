@@ -16,6 +16,42 @@ const NotificationSchema = new Schema(
   { timestamps: true }
 );
 
+const IncomingGameRequestSchema = new Schema(
+  {
+    from: {
+      type: Schema.Types.ObjectId,
+      requred: true
+    },
+    minutes: {
+      type: Number,
+      required: true
+    },
+    increment: {
+      type: Number,
+      required: true
+    }
+  },
+  { timestamps: true }
+);
+
+const OutgoingGameRequestSchema = new Schema(
+  {
+    to: {
+      type: Schema.Types.ObjectId,
+      requred: true
+    },
+    minutes: {
+      type: Number,
+      required: true
+    },
+    increment: {
+      type: Number,
+      required: true
+    }
+  },
+  { timestamps: true }
+);
+
 const UserSchema = new Schema(
   {
     email: {
@@ -53,6 +89,12 @@ const UserSchema = new Schema(
     },
     notifications: {
       type: [NotificationSchema]
+    },
+    incomingGameRequests: {
+      type: [IncomingGameRequestSchema]
+    },
+    outgoingGameRequest: {
+      type: OutgoingGameRequestSchema
     }
   },
   { timestamps: true }
