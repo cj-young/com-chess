@@ -25,6 +25,7 @@ module.exports = (server, sessionMiddleware, passport) => {
   });
 
   const connectedUsers = new Map();
+  const liveUsers = new Set();
 
   io.on("connection", (socket) => {
     const user = socket.request.user;
@@ -105,6 +106,14 @@ module.exports = (server, sessionMiddleware, passport) => {
       } catch (error) {
         socket.emit("friendDecisionFailure", error.message);
       }
+    });
+
+    socket.on("joinLive", () => {
+      liveUsers.add(user.id);
+    });
+
+    socket.on("leaveLive", () => {
+      liveUsers.delete(user.id);
     });
 
     io.on("disconnect", () => {
