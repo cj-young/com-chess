@@ -1,10 +1,13 @@
 import { useState, ChangeEvent, FocusEvent, useMemo } from "react";
 import "../styles/CreateGame.scss";
+import { useUserContext } from "../contexts/UserContext";
 
 export default function CreateGame() {
   const [minutes, setMinutes] = useState("10");
   const [increment, setIncrement] = useState("0");
   const [opponent, setOpponent] = useState("");
+
+  const { friends } = useUserContext();
 
   const canCreate = useMemo<boolean>(() => {
     return opponent.length > 0 && minutes.length > 0 && increment.length > 0;
@@ -76,50 +79,19 @@ export default function CreateGame() {
       </div>
       <h3>Opponent</h3>
       <div className="choose-opponent">
-        <div className="opponent-choice">
-          <input
-            type="radio"
-            name="opponent"
-            value="Username1"
-            id="Username1"
-            checked={opponent === "Username1"}
-            onChange={handleOpponentChange("Username1")}
-          />
-          <label htmlFor="Username1">Username1</label>
-        </div>
-        <div className="opponent-choice">
-          <input
-            type="radio"
-            name="opponent"
-            value="Username2"
-            id="Username2"
-            checked={opponent === "Username2"}
-            onChange={handleOpponentChange("Username2")}
-          />
-          <label htmlFor="Username2">Username2</label>
-        </div>
-        <div className="opponent-choice">
-          <input
-            type="radio"
-            name="opponent"
-            value="Username3"
-            id="Username3"
-            checked={opponent === "Username3"}
-            onChange={handleOpponentChange("Username3")}
-          />
-          <label htmlFor="Username3">Username3</label>
-        </div>
-        <div className="opponent-choice">
-          <input
-            type="radio"
-            name="opponent"
-            value="Username4"
-            id="Username4"
-            checked={opponent === "Username4"}
-            onChange={handleOpponentChange("Username4")}
-          />
-          <label htmlFor="Username4">Username4</label>
-        </div>
+        {friends.map((friend) => (
+          <div className="opponent-choice">
+            <input
+              type="radio"
+              name="opponent"
+              value={friend}
+              id={friend}
+              checked={opponent === friend}
+              onChange={handleOpponentChange(friend)}
+            />
+            <label htmlFor={friend}>{friend}</label>
+          </div>
+        ))}
       </div>
       <button
         onClick={handleCreateGame}
