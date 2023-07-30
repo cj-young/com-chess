@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Board from "../components/Board";
 import Chat from "../components/Chat";
 import Clock from "../components/Clock";
@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import "../styles/LiveGame.scss";
 import flagIcon from "../assets/flag-solid.svg";
 import handshakeIcon from "../assets/handshake-simple-solid.svg";
+import { socket } from "../config/socket";
 
 type TGameState =
   | "loading"
@@ -17,6 +18,14 @@ type TGameState =
 
 export default function LiveGame() {
   const [gameState, setGameState] = useState<TGameState>("waitingSender");
+
+  useEffect(() => {
+    socket.emit("joinLive");
+
+    return () => {
+      socket.emit("leaveLive");
+    };
+  }, []);
 
   return (
     <div className="game">
