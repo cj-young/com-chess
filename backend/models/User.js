@@ -3,15 +3,18 @@ const bcrypt = require("bcrypt");
 
 const Schema = mongoose.Schema;
 
-const NotificationSchema = new Schema({
-  type: {
-    type: String,
-    required: true
+const NotificationSchema = new Schema(
+  {
+    type: {
+      type: String,
+      required: true
+    },
+    from: {
+      type: String
+    }
   },
-  from: {
-    type: String
-  }
-});
+  { timestamps: true }
+);
 
 const UserSchema = new Schema(
   {
