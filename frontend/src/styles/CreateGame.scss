@@ -88,5 +88,10 @@
     background-color: var(--clr-primary);
     color: var(--clr-text-primary);
     margin-inline: auto;
+
+    &.inactive {
+      cursor: default;
+      background-color: var(--clr-bg-300);
+    }
   }
 }
