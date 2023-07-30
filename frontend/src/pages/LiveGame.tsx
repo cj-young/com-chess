@@ -8,6 +8,7 @@ import "../styles/LiveGame.scss";
 import flagIcon from "../assets/flag-solid.svg";
 import handshakeIcon from "../assets/handshake-simple-solid.svg";
 import { socket } from "../config/socket";
+import CreateGame from "../components/CreateGame";
 
 type TGameState =
   | "loading"
@@ -17,7 +18,7 @@ type TGameState =
   | "waitingReceiver";
 
 export default function LiveGame() {
-  const [gameState, setGameState] = useState<TGameState>("waitingSender");
+  const [gameState, setGameState] = useState<TGameState>("creating");
 
   useEffect(() => {
     socket.emit("joinLive");
@@ -61,74 +62,10 @@ export default function LiveGame() {
             </div>
           </>
         )}
+
         {gameState === "creating" && (
           <div className="create-game-container">
-            <div className="create-game">
-              <h2>Create a game</h2>
-              <h3>Time Controls</h3>
-              <div className="time-controls">
-                <div className="time-controls__input">
-                  <input
-                    type="text"
-                    className="time-controls__minutes"
-                    name="minutes"
-                    inputMode="numeric"
-                    placeholder="00"
-                  />
-                  <label htmlFor="minutes">Minutes</label>
-                </div>
-                <div className="time-controls__input">
-                  <input
-                    type="text"
-                    className="time-controls__increment"
-                    name="increment"
-                    inputMode="numeric"
-                    placeholder="00"
-                  />
-                  <label htmlFor="increment">Increment</label>
-                </div>
-              </div>
-              <h3>Opponent</h3>
-              <div className="choose-opponent">
-                <div className="opponent-choice">
-                  <input
-                    type="radio"
-                    name="opponent"
-                    value="Username1"
-                    id="Username1"
-                  />
-                  <label htmlFor="Username1">Username1</label>
-                </div>
-                <div className="opponent-choice">
-                  <input
-                    type="radio"
-                    name="opponent"
-                    value="Username2"
-                    id="Username2"
-                  />
-                  <label htmlFor="Username2">Username2</label>
-                </div>
-                <div className="opponent-choice">
-                  <input
-                    type="radio"
-                    name="opponent"
-                    value="Username3"
-                    id="Username3"
-                  />
-                  <label htmlFor="Username3">Username3</label>
-                </div>
-                <div className="opponent-choice">
-                  <input
-                    type="radio"
-                    name="opponent"
-                    value="Username4"
-                    id="Username4"
-                  />
-                  <label htmlFor="Username4">Username4</label>
-                </div>
-              </div>
-              <button>Create Game</button>
-            </div>
+            <CreateGame />{" "}
           </div>
         )}
         {(gameState === "waitingReceiver" || gameState === "waitingSender") && (
