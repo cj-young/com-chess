@@ -30,8 +30,8 @@ const getNotifications = async (req, res, next) => {
 
     while (pN < dbNotifications.length && pG < dbGameRequests.length) {
       if (
-        dbNotifications[pN].getMilliseconds() <
-        dbGameRequests[pG].getMilliseconds()
+        dbNotifications[pN].createdAt.getMilliseconds() <
+        dbGameRequests[pG].createdAt.getMilliseconds()
       ) {
         notifications.push(dbNotifications[pN]);
         pN++;
