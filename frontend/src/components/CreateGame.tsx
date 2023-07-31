@@ -1,6 +1,7 @@
 import { useState, ChangeEvent, FocusEvent, useMemo } from "react";
 import "../styles/CreateGame.scss";
 import { useUserContext } from "../contexts/UserContext";
+import { socket } from "../config/socket";
 
 export default function CreateGame() {
   const [minutes, setMinutes] = useState("10");
@@ -43,6 +44,7 @@ export default function CreateGame() {
 
   function handleCreateGame() {
     if (!canCreate) return;
+    socket.emit("gameRequest", { username: opponent, minutes, increment });
   }
 
   return (

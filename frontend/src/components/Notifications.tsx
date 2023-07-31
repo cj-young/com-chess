@@ -5,6 +5,7 @@ import FriendRequestNotification from "./FriendRequestNotification";
 import { socket } from "../config/socket";
 import MessageNotification from "./MessageNotification";
 import { useUserContext } from "../contexts/UserContext";
+import GameRequestNotification from "./GameRequestNotification";
 
 type Notification =
   | {
@@ -15,7 +16,7 @@ type Notification =
         | "friendDidDecline";
       from: string;
     }
-  | { type: "gameRequest"; minutes: number; increment: number };
+  | { type: "gameRequest"; from: string; minutes: number; increment: number };
 
 export default function Notifications() {
   const notificationQueue = useRef(new Queue<React.ReactNode>()).current;
@@ -88,6 +89,18 @@ export default function Notifications() {
             </span>
           </MessageNotification>
         );
+        break;
+      case "gameRequest":
+        notificationComponent = (
+          <GameRequestNotification
+            remove={removeNotification}
+            username={notification.from}
+            key={notificationQueue.last ? notificationQueue.last.id : -1}
+            minutes={notification.minutes}
+            increment={notification.increment}
+          />
+        );
+        console.log(notification);
     }
 
     return notificationComponent;
@@ -130,6 +143,7 @@ export default function Notifications() {
 
     return () => {
       socket.off("notification");
+      socket.off("gameInvite");
     };
   }, []);
 

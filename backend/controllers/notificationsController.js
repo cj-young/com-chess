@@ -38,7 +38,9 @@ const getNotifications = async (req, res, next) => {
       } else {
         notifications.push({
           type: "gameRequest",
-          ...dbGameRequests[pG]
+          from: dbGameRequests[pG].from,
+          minutes: dbGameRequests[pG].minutes,
+          increment: dbGameRequests[pG].increment
         });
         pG++;
       }
@@ -48,7 +50,9 @@ const getNotifications = async (req, res, next) => {
       for (let i = pG; i < dbGameRequests.length; i++) {
         notifications.push({
           type: "gameRequest",
-          ...dbGameRequests[i]
+          from: dbGameRequests[pG].from,
+          minutes: dbGameRequests[pG].minutes,
+          increment: dbGameRequests[pG].increment
         });
       }
     } else {

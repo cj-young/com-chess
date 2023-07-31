@@ -116,6 +116,36 @@ module.exports = (server, sessionMiddleware, passport) => {
       liveUsers.delete(user.id);
     });
 
+    socket.on("gameRequest", async ({ username, minutes, increment }) => {
+      try {
+        const receiver = await User.findOne({ username: username });
+        if (!receiver) throw new Error("User not found");
+
+        const incomingInvite = {
+          from: user.username,
+          minutes,
+          increment
+        };
+        const outgoingInvite = {
+          to: receiver.username,
+          minutes,
+          increment
+        };
+
+        receiver.incomingGameRequests.push(incomingInvite);
+        user.outgoingGameRequest = outgoingInvite;
+
+        await Promise.all([receiver.save(), user.save()]);
+        const socketId = connectedUsers.get(receiver.id);
+        io.to(socketId).emit("notification", {
+          type: "gameRequest",
+          ...incomingInvite
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
     io.on("disconnect", () => {
       connectedUsers.delete(user.username);
     });
