@@ -10,12 +10,7 @@ import handshakeIcon from "../assets/handshake-simple-solid.svg";
 import { socket } from "../config/socket";
 import CreateGame from "../components/CreateGame";
 
-type TGameState =
-  | "loading"
-  | "creating"
-  | "playing"
-  | "waitingSender"
-  | "waitingReceiver";
+type TGameState = "loading" | "creating" | "playing" | "waiting";
 
 export default function LiveGame() {
   const [gameState, setGameState] = useState<TGameState>("creating");
@@ -68,7 +63,7 @@ export default function LiveGame() {
             <CreateGame />{" "}
           </div>
         )}
-        {(gameState === "waitingReceiver" || gameState === "waitingSender") && (
+        {gameState === "waiting" && (
           <div className="waiting-container">
             <div className="waiting">
               <h2>
