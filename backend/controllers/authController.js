@@ -47,8 +47,6 @@ const signupLocal = async (req, res, next) => {
     const user = await User.create({
       email,
       username,
-      friends: [],
-      pastGames: [],
       password: hashedPassword
     });
 

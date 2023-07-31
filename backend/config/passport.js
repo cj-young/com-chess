@@ -49,9 +49,7 @@ module.exports = (passport) => {
             const user = await User.create({
               email: email,
               username: null,
-              googleId: profile.id,
-              friends: [],
-              pastGames: []
+              googleId: profile.id
             });
             return done(null, user);
           }

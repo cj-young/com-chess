@@ -72,29 +72,31 @@ const UserSchema = new Schema(
       type: String,
       unique: true
     },
-    gitHubId: {
-      type: String,
-      unique: true
-    },
     friends: {
       type: [Schema.Types.ObjectId],
-      required: true
+      required: true,
+      default: []
     },
     pastGames: {
       type: [Schema.Types.ObjectId],
-      required: true
+      required: true,
+      default: []
     },
     currentGame: {
-      type: Schema.Types.ObjectId
+      type: Schema.Types.ObjectId,
+      default: null
     },
     notifications: {
-      type: [NotificationSchema]
+      type: [NotificationSchema],
+      default: []
     },
     incomingGameRequests: {
-      type: [IncomingGameRequestSchema]
+      type: [IncomingGameRequestSchema],
+      default: []
     },
     outgoingGameRequest: {
-      type: OutgoingGameRequestSchema
+      type: OutgoingGameRequestSchema,
+      default: null
     }
   },
   { timestamps: true }
