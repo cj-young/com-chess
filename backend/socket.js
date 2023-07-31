@@ -1,5 +1,6 @@
 const { Server } = require("socket.io");
 const User = require("./models/User");
+const LiveGame = require("./models/LiveGame");
 
 module.exports = (server, sessionMiddleware, passport) => {
   const io = new Server(server, {
@@ -108,8 +109,30 @@ module.exports = (server, sessionMiddleware, passport) => {
       }
     });
 
-    socket.on("joinLive", () => {
+    socket.on("joinLive", async () => {
       liveUsers.add(user.id);
+
+      if (user.currentGame) {
+        const game = await LiveGame.findById(user.currentGame);
+        const opponentUsername =
+          game.blackPlayer === user.username
+            ? game.whitePlayer
+            : game.blackPlayer;
+
+        const opponent = await User.findOne({ username: opponentUsername });
+
+        if (liveUsers.has(opponent.id) && !game.started) {
+          socket.emit("liveWaiting", opponent.username);
+        } else {
+          game.started = true;
+          await game.save();
+          socket.emit("startGame", game.toObject());
+        }
+      } else if (user.outgoingGameRequest) {
+        socket.emit("liveWaiting", user.outgoingGameRequest.to);
+      } else {
+        socket.emit("liveCreating", true);
+      }
     });
 
     socket.on("leaveLive", () => {
@@ -141,6 +164,7 @@ module.exports = (server, sessionMiddleware, passport) => {
           type: "gameRequest",
           ...incomingInvite
         });
+        socket.emit("liveWaiting", receiver.username);
       } catch (error) {
         console.error(error);
       }

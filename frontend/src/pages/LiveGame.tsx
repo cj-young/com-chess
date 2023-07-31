@@ -13,10 +13,20 @@ import CreateGame from "../components/CreateGame";
 type TGameState = "loading" | "creating" | "playing" | "waiting";
 
 export default function LiveGame() {
-  const [gameState, setGameState] = useState<TGameState>("creating");
+  const [gameState, setGameState] = useState<TGameState>("loading");
+  const [waitingUsername, setWaitingUsername] = useState("");
 
   useEffect(() => {
     socket.emit("joinLive");
+
+    socket.on("liveWaiting", (username) => {
+      setGameState("waiting");
+      setWaitingUsername(username);
+    });
+
+    socket.on("liveCreating", () => {
+      setGameState("creating");
+    });
 
     return () => {
       socket.emit("leaveLive");
@@ -67,7 +77,7 @@ export default function LiveGame() {
           <div className="waiting-container">
             <div className="waiting">
               <h2>
-                Waiting for <b>Username</b>...
+                Waiting for <b>{waitingUsername}</b>...
               </h2>
               <button>Cancel</button>
             </div>
