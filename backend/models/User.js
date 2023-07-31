@@ -19,7 +19,7 @@ const NotificationSchema = new Schema(
 const IncomingGameRequestSchema = new Schema(
   {
     from: {
-      type: Schema.Types.ObjectId,
+      type: String,
       requred: true
     },
     minutes: {
@@ -37,7 +37,7 @@ const IncomingGameRequestSchema = new Schema(
 const OutgoingGameRequestSchema = new Schema(
   {
     to: {
-      type: Schema.Types.ObjectId,
+      type: String,
       requred: true
     },
     minutes: {
