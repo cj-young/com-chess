@@ -38,6 +38,10 @@ const LiveGameSchema = new Schema({
   },
   increment: {
     type: Number
+  },
+  started: {
+    type: Boolean,
+    default: false
   }
 });
 
