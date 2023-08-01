@@ -283,6 +283,29 @@ module.exports = (server, sessionMiddleware, passport) => {
       }
     });
 
+    socket.on("gameCancel", async () => {
+      try {
+        const user = await User.findById(userId);
+        if (!user.outgoingGameRequest) return;
+
+        const opponent = await User.findOne({
+          username: user.outgoingGameRequest.to
+        });
+        if (!opponent) {
+          User.findByIdAndUpdate(userId, {
+            $set: { outgoingGameRequest: null }
+          });
+          throw new Error("Opponent not found");
+        }
+
+        removeGameRequest(opponent, user.username);
+
+        socket.emit("liveCreating", true);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
     io.on("disconnect", () => {
       connectedUsers.delete(userId);
     });

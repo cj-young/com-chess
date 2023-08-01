@@ -9,12 +9,17 @@ import flagIcon from "../assets/flag-solid.svg";
 import handshakeIcon from "../assets/handshake-simple-solid.svg";
 import { socket } from "../config/socket";
 import CreateGame from "../components/CreateGame";
+import Loading from "./Loading";
 
 type TGameState = "loading" | "creating" | "playing" | "waiting";
 
 export default function LiveGame() {
   const [gameState, setGameState] = useState<TGameState>("loading");
   const [waitingUsername, setWaitingUsername] = useState("");
+
+  function cancelGame() {
+    socket.emit("gameCancel");
+  }
 
   useEffect(() => {
     socket.emit("joinLive");
@@ -45,7 +50,9 @@ export default function LiveGame() {
     };
   }, []);
 
-  return (
+  return gameState === "loading" ? (
+    <Loading />
+  ) : (
     <div className="game">
       <Navbar />
       <div className="game__container">
@@ -91,7 +98,7 @@ export default function LiveGame() {
               <h2>
                 Waiting for <b>{waitingUsername}</b>...
               </h2>
-              <button>Cancel</button>
+              <button onClick={cancelGame}>Cancel</button>
             </div>
           </div>
         )}
