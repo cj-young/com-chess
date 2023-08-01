@@ -36,11 +36,13 @@ export default function GameRequestNotification({
   increment
 }: Props) {
   function handleAccept() {
-    console.log("accepted");
+    socket.emit("gameAccept", username);
+    remove();
   }
 
   function handleDecline() {
-    console.log("declined");
+    socket.emit("gameDecline", username);
+    remove();
   }
 
   return (

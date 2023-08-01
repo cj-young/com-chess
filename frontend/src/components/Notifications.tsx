@@ -13,7 +13,8 @@ type Notification =
         | "friendRequest"
         | "friendAccept"
         | "friendWasDeclined"
-        | "friendDidDecline";
+        | "friendDidDecline"
+        | "gameDeclined";
       from: string;
     }
   | { type: "gameRequest"; from: string; minutes: number; increment: number };
@@ -100,7 +101,16 @@ export default function Notifications() {
             increment={notification.increment}
           />
         );
-        console.log(notification);
+        break;
+      case "gameDeclined":
+        notificationComponent = (
+          <MessageNotification
+            remove={removeNotification}
+            key={notificationQueue.last ? notificationQueue.last.id : -1}
+          >
+            <b>{notification.from}</b> declined your game invite
+          </MessageNotification>
+        );
     }
 
     return notificationComponent;

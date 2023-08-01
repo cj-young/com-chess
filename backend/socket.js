@@ -29,13 +29,14 @@ module.exports = (server, sessionMiddleware, passport) => {
   const liveUsers = new Set();
 
   io.on("connection", (socket) => {
-    const user = socket.request.user;
-    if (!user) return;
+    const userId = socket.request.user?.id;
+    if (!userId) return;
 
-    connectedUsers.set(user.id, socket.id);
+    connectedUsers.set(userId, socket.id);
 
     socket.on("friendRequest", async (username) => {
       try {
+        const user = await User.findById(userId);
         if (username === user.username)
           throw new Error("You cannot be friends with yourself");
         const receiver = await User.findOne({ username: username });
@@ -63,6 +64,7 @@ module.exports = (server, sessionMiddleware, passport) => {
 
     socket.on("friendAccept", async (username) => {
       try {
+        const user = await User.findById(userId);
         const requester = await User.findOne({ username: username });
         if (!requester) throw new Error("User not found");
 
@@ -93,6 +95,7 @@ module.exports = (server, sessionMiddleware, passport) => {
 
     socket.on("friendDecline", async (username) => {
       try {
+        const user = await User.findById(userId);
         const requester = await User.findOne({ username: username });
         if (!requester) throw new Error("User not found");
 
@@ -110,37 +113,51 @@ module.exports = (server, sessionMiddleware, passport) => {
     });
 
     socket.on("joinLive", async () => {
-      liveUsers.add(user.id);
+      try {
+        const user = await User.findById(userId);
+        liveUsers.add(userId);
 
-      if (user.currentGame) {
-        const game = await LiveGame.findById(user.currentGame);
-        const opponentUsername =
-          game.blackPlayer === user.username
-            ? game.whitePlayer
-            : game.blackPlayer;
+        if (user.currentGame) {
+          const game = await LiveGame.findById(user.currentGame);
+          if (!game) throw new Error("Game not found");
+          const opponentUsername =
+            game.blackPlayer === user.username
+              ? game.whitePlayer
+              : game.blackPlayer;
 
-        const opponent = await User.findOne({ username: opponentUsername });
+          const opponent = await User.findOne({ username: opponentUsername });
 
-        if (liveUsers.has(opponent.id) && !game.started) {
-          socket.emit("liveWaiting", opponent.username);
+          if (!liveUsers.has(opponent.id) && !game.started) {
+            socket.emit("liveWaiting", opponent.username);
+          } else {
+            const updatedGame = await LiveGame.findByIdAndUpdate(game.id, {
+              $set: { started: true }
+            });
+            socket.emit("startGame", updatedGame.toObject());
+            if (connectedUsers.has(opponent.id)) {
+              io.to(connectedUsers.get(opponent.id)).emit(
+                "startGame",
+                updatedGame.toObject()
+              );
+            }
+          }
+        } else if (user.outgoingGameRequest) {
+          socket.emit("liveWaiting", user.outgoingGameRequest.to);
         } else {
-          game.started = true;
-          await game.save();
-          socket.emit("startGame", game.toObject());
+          socket.emit("liveCreating", true);
         }
-      } else if (user.outgoingGameRequest) {
-        socket.emit("liveWaiting", user.outgoingGameRequest.to);
-      } else {
-        socket.emit("liveCreating", true);
+      } catch (error) {
+        console.error(error);
       }
     });
 
     socket.on("leaveLive", () => {
-      liveUsers.delete(user.id);
+      liveUsers.delete(userId);
     });
 
     socket.on("gameRequest", async ({ username, minutes, increment }) => {
       try {
+        const user = await User.findById(userId);
         const receiver = await User.findOne({ username: username });
         if (!receiver) throw new Error("User not found");
 
@@ -170,8 +187,104 @@ module.exports = (server, sessionMiddleware, passport) => {
       }
     });
 
+    async function removeGameRequest(receiver, username) {
+      const newRequests = receiver.incomingGameRequests.filter(
+        (gameRequest) => gameRequest.from !== username
+      );
+      await Promise.all([
+        User.findByIdAndUpdate(
+          receiver.id,
+          { $set: { incomingGameRequests: newRequests } },
+          { new: true }
+        ),
+        User.findOneAndUpdate(
+          { username: username },
+          { $set: { outgoingGameRequest: null } },
+          { new: true }
+        )
+      ]);
+    }
+
+    socket.on("gameAccept", async (username) => {
+      try {
+        const user = await User.findById(userId);
+        const opponent = await User.findOne({ username: username });
+        if (!opponent) {
+          removeGameRequest(user, username);
+          throw new Error("User not found");
+        }
+        if (opponent.currentGame) {
+          removeGameRequest(user, username);
+          throw new Error("User is already in a game");
+        }
+
+        if (
+          !opponent.outgoingGameRequest ||
+          opponent.outgoingGameRequest.to !== user.username
+        ) {
+          removeGameRequest(user, username);
+          throw new Error("Invalid game invite");
+        }
+
+        const gameRequest = opponent.outgoingGameRequest;
+        const whitePlayer = [user.username, username][
+          Math.floor(Math.random() * 2)
+        ];
+        const blackPlayer =
+          whitePlayer === user.username ? username : user.username;
+
+        const game = await LiveGame.create({
+          blackPlayer,
+          whitePlayer,
+          blackTime: gameRequest.minutes,
+          whiteTime: gameRequest.minutes,
+          minutes: gameRequest.minutes,
+          increment: gameRequest.increment
+        });
+
+        await Promise.all([
+          User.findByIdAndUpdate(
+            opponent.id,
+            { $set: { currentGame: game.id } },
+            { new: true }
+          ),
+          User.findByIdAndUpdate(
+            user.id,
+            { $set: { currentGame: game.id } },
+            { new: true }
+          )
+        ]);
+        removeGameRequest(user, username);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
+    socket.on("gameDecline", async (username) => {
+      try {
+        const user = await User.findById(userId);
+        const opponent = await User.findOne({ username: username });
+        if (!opponent) {
+          throw new Error("User not found");
+        }
+        removeGameRequest(user, username);
+        opponent.sendNotification(io, connectedUsers, {
+          type: "gameDeclined",
+          from: user.username
+        });
+        if (connectedUsers.has(opponent.id)) {
+          io.to(connectedUsers.get(opponent.id)).emit(
+            "gameDeclined",
+            opponent.username
+          );
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
     io.on("disconnect", () => {
-      connectedUsers.delete(user.username);
+      connectedUsers.delete(userId);
     });
   });
 };

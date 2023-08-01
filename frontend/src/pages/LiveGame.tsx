@@ -28,8 +28,20 @@ export default function LiveGame() {
       setGameState("creating");
     });
 
+    socket.on("startGame", (game) => {
+      console.log(game);
+      setGameState("playing");
+    });
+
+    socket.on("gameDeclined", () => {
+      setGameState("creating");
+    });
+
     return () => {
       socket.emit("leaveLive");
+      socket.off("liveWaiting");
+      socket.off("liveCreating");
+      socket.off("startGame");
     };
   }, []);
 
