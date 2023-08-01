@@ -1,8 +1,10 @@
+import { useEffect } from "react";
 import "../styles/ErrorPopup.scss";
 import { motion } from "framer-motion";
 
 type Props = {
   message: string;
+  remove?: () => void;
 };
 
 const dropIn = {
@@ -25,7 +27,15 @@ const dropIn = {
   }
 };
 
-export default function ErrorPopup({ message }: Props) {
+export default function ErrorPopup({ message, remove }: Props) {
+  if (remove) {
+    useEffect(() => {
+      const timeout = setTimeout(remove, 3000);
+
+      return () => clearTimeout(timeout);
+    });
+  }
+
   return (
     <motion.div
       className={"error-message"}
