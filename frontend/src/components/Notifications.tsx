@@ -6,6 +6,7 @@ import { socket } from "../config/socket";
 import MessageNotification from "./MessageNotification";
 import { useUserContext } from "../contexts/UserContext";
 import GameRequestNotification from "./GameRequestNotification";
+import ErrorPopup from "./ErrorPopup";
 
 type Notification =
   | {
@@ -17,7 +18,8 @@ type Notification =
         | "gameDeclined";
       from: string;
     }
-  | { type: "gameRequest"; from: string; minutes: number; increment: number };
+  | { type: "gameRequest"; from: string; minutes: number; increment: number }
+  | { type: "error"; error: string };
 
 export default function Notifications() {
   const notificationQueue = useRef(new Queue<React.ReactNode>()).current;
@@ -111,6 +113,15 @@ export default function Notifications() {
             <b>{notification.from}</b> declined your game invite
           </MessageNotification>
         );
+        break;
+      case "error":
+        notificationComponent = (
+          <ErrorPopup
+            message={notification.error}
+            remove={removeNotification}
+            key={notificationQueue.last ? notificationQueue.last.id : -1}
+          />
+        );
     }
 
     return notificationComponent;
@@ -125,6 +136,13 @@ export default function Notifications() {
             notificationQueue.enqueue(notificationComponent);
             updateVisibleNotification();
           }
+        });
+
+        socket.on("error", (error) => {
+          console.log(error);
+          const errorNotification = buildNotification({ type: "error", error });
+          notificationQueue.enqueue(errorNotification);
+          updateVisibleNotification();
         });
 
         const response = await fetch(
@@ -153,7 +171,7 @@ export default function Notifications() {
 
     return () => {
       socket.off("notification");
-      socket.off("gameInvite");
+      socket.off("error");
     };
   }, []);
 

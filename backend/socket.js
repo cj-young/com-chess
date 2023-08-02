@@ -148,6 +148,7 @@ module.exports = (server, sessionMiddleware, passport) => {
         }
       } catch (error) {
         console.error(error);
+        socket.emit("error", error.message);
       }
     });
 
@@ -184,6 +185,7 @@ module.exports = (server, sessionMiddleware, passport) => {
         socket.emit("liveWaiting", receiver.username);
       } catch (error) {
         console.error(error);
+        socket.emit("error", error.message);
       }
     });
 
@@ -223,7 +225,7 @@ module.exports = (server, sessionMiddleware, passport) => {
           opponent.outgoingGameRequest.to !== user.username
         ) {
           removeGameRequest(user, username);
-          throw new Error("Invalid game invite");
+          throw new Error("Game invite was canceled or has expired");
         }
 
         const gameRequest = opponent.outgoingGameRequest;
@@ -257,6 +259,7 @@ module.exports = (server, sessionMiddleware, passport) => {
         removeGameRequest(user, username);
       } catch (error) {
         console.error(error);
+        socket.emit("error", error.message);
       }
     });
 
@@ -280,6 +283,7 @@ module.exports = (server, sessionMiddleware, passport) => {
         }
       } catch (error) {
         console.error(error);
+        socket.emit("error", error.message);
       }
     });
 
@@ -303,6 +307,7 @@ module.exports = (server, sessionMiddleware, passport) => {
         socket.emit("liveCreating", true);
       } catch (error) {
         console.error(error);
+        socket.emit("error", error.message);
       }
     });
 
