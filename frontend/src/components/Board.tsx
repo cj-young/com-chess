@@ -30,9 +30,10 @@ export default function Board({ pieces }: Props) {
             })}
         </div>
         <div className="pieces">
-          {pieces.map((piece, i) => (
-            <PieceComponent piece={piece} key={i} />
-          ))}
+          {pieces.map(
+            (piece, i) =>
+              piece.active && <PieceComponent piece={piece} key={i} />
+          )}
         </div>
       </div>
       <div className="controls">
