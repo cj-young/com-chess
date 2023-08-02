@@ -1,4 +1,5 @@
 import Piece from "./Piece";
+import { numRank, numFile } from "./squareConverters";
 
 type Promotable = "knight" | "bishop" | "rook" | "queen";
 
@@ -7,14 +8,6 @@ type Move = {
   to: string;
   promoteTo?: Promotable;
 };
-
-function getRank(square: string) {
-  return 7 - (+square[1] - 1);
-}
-
-function getFile(square: string) {
-  return square.charCodeAt(0) - 97;
-}
 
 export default function applyMoves(pieces: Piece[], moves: Move[]) {
   const board: (null | Piece)[][] = Array.from({ length: 8 }, () =>
@@ -28,10 +21,10 @@ export default function applyMoves(pieces: Piece[], moves: Move[]) {
 
   for (let move of moves) {
     let enPassantWasSet = false;
-    const fromRow = getRank(move.from);
-    const fromCol = getFile(move.from);
-    const toRow = getRank(move.to);
-    const toCol = getFile(move.to);
+    const fromRow = numRank(move.from);
+    const fromCol = numFile(move.from);
+    const toRow = numRank(move.to);
+    const toCol = numFile(move.to);
 
     const piece = board[fromRow][fromCol];
     board[fromRow][fromCol] = null;
@@ -51,9 +44,9 @@ export default function applyMoves(pieces: Piece[], moves: Move[]) {
       }
 
       if (move.to === enPassantSquare) {
-        const capturedPiece = board[fromRow][getFile(enPassantSquare)];
+        const capturedPiece = board[fromRow][numFile(enPassantSquare)];
         if (capturedPiece) capturedPiece.active = false;
-        board[fromRow][getFile(enPassantSquare)] = null;
+        board[fromRow][numFile(enPassantSquare)] = null;
       }
 
       if (move.to[1] === "1" || move.to[1] === "8") {
@@ -81,15 +74,15 @@ export default function applyMoves(pieces: Piece[], moves: Move[]) {
         const [rookFromFile, rookToFile] =
           move.to[0] === "c" ? ["a", "d"] : ["h", "f"];
         const rook =
-          board[getRank(`${rookFromFile}${move.from[1]}`)][
-            getFile(`${rookFromFile}${move.from[1]}`)
+          board[numRank(`${rookFromFile}${move.from[1]}`)][
+            numFile(`${rookFromFile}${move.from[1]}`)
           ];
         if (rook?.type === "rook") {
-          board[getRank(`${rookFromFile}${move.from[1]}`)][
-            getFile(`${rookFromFile}${move.from[1]}`)
+          board[numRank(`${rookFromFile}${move.from[1]}`)][
+            numFile(`${rookFromFile}${move.from[1]}`)
           ];
           const newPos = `${rookToFile}${move.from[1]}`;
-          const [newRow, newCol] = [getRank(newPos), getFile(newPos)];
+          const [newRow, newCol] = [numRank(newPos), numFile(newPos)];
           const existingPiece = board[newRow][newCol];
           if (existingPiece) {
             existingPiece.active = false;
