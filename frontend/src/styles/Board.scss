@@ -15,6 +15,7 @@
   margin-inline: auto;
   border-radius: var(--br-primary);
   overflow: hidden;
+  position: relative;
 
   @include game-screen {
     width: 100%;
@@ -70,4 +71,16 @@
     display: flex;
     gap: 0.5rem;
   }
+}
+
+.piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% / 8);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Board from "../components/Board";
 import Chat from "../components/Chat";
 import Clock from "../components/Clock";
@@ -16,6 +16,8 @@ type TGameState = "loading" | "creating" | "playing" | "waiting";
 export default function LiveGame() {
   const [gameState, setGameState] = useState<TGameState>("loading");
   const [waitingUsername, setWaitingUsername] = useState("");
+
+  const [moves, setMoves] = useState([]);
 
   function cancelGame() {
     socket.emit("gameCancel");
