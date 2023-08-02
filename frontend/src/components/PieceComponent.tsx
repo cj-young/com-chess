@@ -7,6 +7,7 @@ type Props = {
 
 export default function PieceComponent({ piece }: Props) {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
 
   const rank = piece.numRank;
   const file = piece.numFile;
@@ -30,6 +31,7 @@ export default function PieceComponent({ piece }: Props) {
 
     const startCoords = { x: e.clientX, y: e.clientY };
     setOffset({ x: 0, y: 0 });
+    setIsDragging(true);
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
@@ -43,6 +45,7 @@ export default function PieceComponent({ piece }: Props) {
 
     function handleMouseUp() {
       setOffset({ x: 0, y: 0 });
+      setIsDragging(false);
 
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
@@ -58,7 +61,8 @@ export default function PieceComponent({ piece }: Props) {
       style={{
         top: `calc((100% / 8) * ${rank})`,
         left: `calc((100% / 8) * ${file})`,
-        translate: `${offset.x}px ${offset.y}px`
+        translate: `${offset.x}px ${offset.y}px`,
+        zIndex: isDragging ? "1000" : "unset"
       }}
       onMouseDown={handleMouseDown}
     >
