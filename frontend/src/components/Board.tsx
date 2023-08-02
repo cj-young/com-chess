@@ -6,25 +6,29 @@ import Piece from "../utils/Piece";
 import PieceComponent from "./PieceComponent";
 import generateStartingPosition from "../utils/generateStartingPosition";
 
-export default function Board() {
-  const pieces: Piece[] = generateStartingPosition();
+type Props = {
+  pieces: Piece[];
+};
 
+export default function Board({ pieces }: Props) {
   return (
     <div className="board-container">
       <div className="board">
-        {Array(8)
-          .fill(null)
-          .map((row, i) => {
-            return (
-              <div className="row" key={i}>
-                {Array(8)
-                  .fill(null)
-                  .map((square, j) => (
-                    <div className="square" key={j}></div>
-                  ))}
-              </div>
-            );
-          })}
+        <div className="squares">
+          {Array(8)
+            .fill(null)
+            .map((row, i) => {
+              return (
+                <div className="row" key={i}>
+                  {Array(8)
+                    .fill(null)
+                    .map((square, j) => (
+                      <div className="square" key={j}></div>
+                    ))}
+                </div>
+              );
+            })}
+        </div>
         <div className="pieces">
           {pieces.map((piece, i) => (
             <PieceComponent piece={piece} key={i} />

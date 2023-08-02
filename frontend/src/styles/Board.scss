@@ -14,12 +14,18 @@
   aspect-ratio: 1;
   margin-inline: auto;
   border-radius: var(--br-primary);
-  overflow: hidden;
   position: relative;
 
   @include game-screen {
     width: 100%;
   }
+}
+
+.squares {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--br-primary);
 }
 
 .row {
@@ -75,8 +81,6 @@
 
 .piece {
   position: absolute;
-  top: 0;
-  left: 0;
   width: calc(100% / 8);
   aspect-ratio: 1;
   display: flex;
