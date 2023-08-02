@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Board from "../components/Board";
 import Chat from "../components/Chat";
 import Clock from "../components/Clock";
@@ -10,27 +10,12 @@ import handshakeIcon from "../assets/handshake-simple-solid.svg";
 import { socket } from "../config/socket";
 import CreateGame from "../components/CreateGame";
 import Loading from "./Loading";
-import applyMoves from "../utils/applyMoves";
-import generateStartingPosition from "../utils/generateStartingPosition";
 
 type TGameState = "loading" | "creating" | "playing" | "waiting";
-
-type Promotable = "knight" | "bishop" | "rook" | "queen";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: Promotable;
-};
 
 export default function LiveGame() {
   const [gameState, setGameState] = useState<TGameState>("loading");
   const [waitingUsername, setWaitingUsername] = useState("");
-
-  const [moves, setMoves] = useState<Move[]>([]);
-  const pieces = useMemo(() => {
-    return applyMoves(generateStartingPosition(), moves);
-  }, [moves]);
 
   function cancelGame() {
     socket.emit("gameCancel");
@@ -77,7 +62,7 @@ export default function LiveGame() {
           </div>
         )}
 
-        <Board pieces={pieces} />
+        <Board />
         {gameState === "playing" && (
           <>
             <div className="clock-container bottom">

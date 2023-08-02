@@ -1,19 +1,19 @@
+import { useRef } from "react";
 import "../styles/Board.scss";
 import flipIcon from "../assets/repeat-solid.svg";
 import leftIcon from "../assets/angle-left-solid.svg";
 import rightIcon from "../assets/angle-right-solid.svg";
 import Piece from "../utils/Piece";
 import PieceComponent from "./PieceComponent";
-import generateStartingPosition from "../utils/generateStartingPosition";
+import { useLiveGameContext } from "../contexts/LiveGameContext";
 
-type Props = {
-  pieces: Piece[];
-};
+export default function Board() {
+  const boardRef = useRef<HTMLDivElement | null>(null);
+  const { pieces } = useLiveGameContext();
 
-export default function Board({ pieces }: Props) {
   return (
     <div className="board-container">
-      <div className="board">
+      <div className="board" ref={boardRef}>
         <div className="squares">
           {Array(8)
             .fill(null)
@@ -32,7 +32,9 @@ export default function Board({ pieces }: Props) {
         <div className="pieces">
           {pieces.map(
             (piece, i) =>
-              piece.active && <PieceComponent piece={piece} key={i} />
+              piece.active && (
+                <PieceComponent piece={piece} key={i} boardRef={boardRef} />
+              )
           )}
         </div>
       </div>
