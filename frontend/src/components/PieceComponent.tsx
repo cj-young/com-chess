@@ -26,7 +26,11 @@ export default function PieceComponent({ piece, boardRef }: Props) {
     return [top, left];
   }, [pieceRef.current, mousePosition, isDragging]);
 
-  const { makeMove, orientation } = useLiveGameContext();
+  const { makeMove, orientation, color } = useLiveGameContext();
+
+  const canDrag = useMemo(() => {
+    return piece.color === color;
+  }, [piece, color]);
 
   const rank = piece.numRank;
   const file = piece.numFile;
@@ -47,6 +51,7 @@ export default function PieceComponent({ piece, boardRef }: Props) {
 
   function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
+    if (!canDrag) return;
     setIsDragging(true);
     setMousePosition({ x: e.clientX, y: e.clientY });
 
@@ -93,7 +98,7 @@ export default function PieceComponent({ piece, boardRef }: Props) {
           ? pieceLeft
           : `calc((100% / 8) * ${orientation === "white" ? file : 7 - file})`,
         zIndex: isDragging ? "1000" : "unset",
-        cursor: isDragging ? "grabbing" : "pointer"
+        cursor: isDragging ? "grabbing" : canDrag ? "pointer" : "default"
       }}
       onMouseDown={handleMouseDown}
       ref={pieceRef}
