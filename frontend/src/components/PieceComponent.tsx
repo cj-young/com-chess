@@ -14,7 +14,7 @@ export default function PieceComponent({ piece, boardRef }: Props) {
   const pieceRef = useRef(null);
   const offsetRef = useRef(offset);
 
-  const { makeMove } = useLiveGameContext();
+  const { makeMove, orientation } = useLiveGameContext();
 
   offsetRef.current = offset;
 
@@ -83,7 +83,7 @@ export default function PieceComponent({ piece, boardRef }: Props) {
     <div
       className="piece"
       style={{
-        top: `calc((100% / 8) * ${rank})`,
+        top: `calc((100% / 8) * ${orientation === "white" ? rank : 7 - rank})`,
         left: `calc((100% / 8) * ${file})`,
         translate: `${offset.x}px ${offset.y}px`,
         zIndex: isDragging ? "1000" : "unset"

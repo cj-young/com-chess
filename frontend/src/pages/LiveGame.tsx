@@ -18,8 +18,14 @@ export default function LiveGame() {
   const [gameState, setGameState] = useState<TGameState>("loading");
   const [waitingUsername, setWaitingUsername] = useState("");
 
-  const { setMoves, setColor, setGameInfo, setOrientation } =
-    useLiveGameContext();
+  const {
+    setMoves,
+    setColor,
+    setGameInfo,
+    setOrientation,
+    setBlackTime,
+    setWhiteTime
+  } = useLiveGameContext();
 
   function cancelGame() {
     socket.emit("gameCancel");
@@ -43,6 +49,9 @@ export default function LiveGame() {
       setGameInfo(game.info);
       setGameState("playing");
       setOrientation(game.yourColor);
+      setWhiteTime(game.info.whiteTime);
+      setBlackTime(game.info.blackTime);
+      console.log(game);
     });
 
     socket.on("gameDeclined", () => {
@@ -70,7 +79,7 @@ export default function LiveGame() {
       <div className="game__container">
         {gameState === "playing" && (
           <div className="clock-container top">
-            <Clock player="top" time={363} />
+            <Clock player="top" />
           </div>
         )}
 
@@ -78,7 +87,7 @@ export default function LiveGame() {
         {gameState === "playing" && (
           <>
             <div className="clock-container bottom">
-              <Clock player="bottom" time={532} />
+              <Clock player="bottom" />
             </div>
             <div className="draw-resign-container">
               <div className="draw-resign">
