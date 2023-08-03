@@ -56,12 +56,18 @@ export default function PieceComponent({ piece, boardRef }: Props) {
       if (pieceRef.current && boardRef.current) {
         const squareSize = boardRef.current.offsetWidth / 8;
 
+        let offsetX = offsetRef.current.x;
+        let offsetY = offsetRef.current.y;
+
+        if (orientation === "black") {
+          offsetX *= -1;
+          offsetY *= -1;
+        }
+
         const newRank =
-          rank +
-          Math.floor((offsetRef.current.y + 0.5 * squareSize) / squareSize);
+          rank + Math.floor((offsetY + 0.5 * squareSize) / squareSize);
         const newFile =
-          file +
-          Math.floor((offsetRef.current.x + 0.5 * squareSize) / squareSize);
+          file + Math.floor((offsetX + 0.5 * squareSize) / squareSize);
         if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
           const newSquare = letterSquare(newRank, newFile);
           makeMove({ to: newSquare, from: piece.square });
