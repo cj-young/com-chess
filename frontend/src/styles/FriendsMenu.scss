@@ -8,6 +8,7 @@
   flex-direction: column;
   width: min(100%, 18rem);
   margin-inline: auto;
+  z-index: 1000;
 
   color: var(--clr-text-primary);
   text-align: center;
