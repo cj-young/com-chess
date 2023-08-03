@@ -113,10 +113,15 @@ module.exports = (server, sessionMiddleware, passport) => {
     });
 
     async function sterilizeGame(game) {
-      const [whiteUsername, blackUsername] = await Promise.all([
+      const [whitePlayer, blackPlayer] = await Promise.all([
         User.findById(game.whitePlayer),
         User.findById(game.blackPlayer)
       ]);
+
+      const [whiteUsername, blackUsername] = [
+        whitePlayer.username,
+        blackPlayer.username
+      ];
 
       if (!whiteUsername || !blackUsername)
         throw new Error("One or more users not found");
