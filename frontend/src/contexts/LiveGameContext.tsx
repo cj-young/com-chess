@@ -8,13 +8,6 @@ type Props = {
   children: React.ReactNode;
 };
 
-type TLiveGameContext = {
-  moves: Move[];
-  setMoves: React.Dispatch<React.SetStateAction<Move[]>>;
-  pieces: Piece[];
-  makeMove: (move: Move) => void;
-};
-
 type Promotable = "knight" | "bishop" | "rook" | "queen";
 
 type Move = {
@@ -22,6 +15,27 @@ type Move = {
   to: string;
   promoteTo?: Promotable;
 };
+
+type GameInfo = {
+  blackUsername: string;
+  whiteUsername: string;
+  minutes: number;
+  increment: number;
+  blackTime: number;
+  whiteTime: number;
+};
+
+type TLiveGameContext = {
+  moves: Move[];
+  setMoves: React.Dispatch<React.SetStateAction<Move[]>>;
+  pieces: Piece[];
+  makeMove: (move: Move) => void;
+  gameInfo: GameInfo;
+  setGameInfo: React.Dispatch<React.SetStateAction<GameInfo>>;
+  color: "white" | "black";
+  setColor: React.Dispatch<React.SetStateAction<"white" | "black">>;
+};
+
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
 
 export function LiveGameContextProvider({ children }: Props) {
@@ -29,13 +43,33 @@ export function LiveGameContextProvider({ children }: Props) {
   const pieces = useMemo(() => {
     return applyMoves(generateStartingPosition(), moves);
   }, [moves]);
+  const [gameInfo, setGameInfo] = useState<GameInfo>({
+    blackUsername: "",
+    whiteUsername: "",
+    minutes: 0,
+    increment: 0,
+    blackTime: 0,
+    whiteTime: 0
+  });
+  const [color, setColor] = useState<"white" | "black">("white");
 
   function makeMove(move: Move) {
     setMoves((prevMoves) => [...prevMoves, move]);
     socket.emit("move", move);
   }
   return (
-    <LiveGameContext.Provider value={{ moves, setMoves, pieces, makeMove }}>
+    <LiveGameContext.Provider
+      value={{
+        moves,
+        setMoves,
+        pieces,
+        makeMove,
+        gameInfo,
+        setGameInfo,
+        color,
+        setColor
+      }}
+    >
       {children}
     </LiveGameContext.Provider>
   );

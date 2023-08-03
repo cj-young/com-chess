@@ -18,7 +18,7 @@ export default function LiveGame() {
   const [gameState, setGameState] = useState<TGameState>("loading");
   const [waitingUsername, setWaitingUsername] = useState("");
 
-  const { setMoves } = useLiveGameContext();
+  const { setMoves, setColor, setGameInfo } = useLiveGameContext();
 
   function cancelGame() {
     socket.emit("gameCancel");
@@ -38,7 +38,10 @@ export default function LiveGame() {
 
     socket.on("startGame", (game) => {
       setMoves(game.moves);
+      setColor(game.yourColor);
+      setGameInfo(game.info);
       setGameState("playing");
+      console.log(game);
     });
 
     socket.on("gameDeclined", () => {
@@ -46,7 +49,6 @@ export default function LiveGame() {
     });
 
     socket.on("move", (moves) => {
-      console.log("movehappened");
       setMoves(moves);
     });
 

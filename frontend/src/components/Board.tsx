@@ -3,7 +3,6 @@ import "../styles/Board.scss";
 import flipIcon from "../assets/repeat-solid.svg";
 import leftIcon from "../assets/angle-left-solid.svg";
 import rightIcon from "../assets/angle-right-solid.svg";
-import Piece from "../utils/Piece";
 import PieceComponent from "./PieceComponent";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
 

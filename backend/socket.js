@@ -112,6 +112,27 @@ module.exports = (server, sessionMiddleware, passport) => {
       }
     });
 
+    async function sterilizeGame(game) {
+      const [whiteUsername, blackUsername] = await Promise.all([
+        User.findById(game.whitePlayer),
+        User.findById(game.blackPlayer)
+      ]);
+
+      if (!whiteUsername || !blackUsername)
+        throw new Error("One or more users not found");
+      return {
+        info: {
+          whiteUsername,
+          blackUsername,
+          minutes: game.minutes,
+          increment: game.increment,
+          whiteTime: game.whiteTime,
+          blackTime: game.blackTime
+        },
+        moves: game.moves
+      };
+    }
+
     socket.on("joinLive", async () => {
       try {
         const user = await User.findById(userId);
@@ -133,12 +154,20 @@ module.exports = (server, sessionMiddleware, passport) => {
             const updatedGame = await LiveGame.findByIdAndUpdate(game.id, {
               $set: { started: true }
             });
-            socket.emit("startGame", updatedGame.toObject());
-            if (connectedUsers.has(opponent.id)) {
-              io.to(connectedUsers.get(opponent.id)).emit(
-                "startGame",
-                updatedGame.toObject()
-              );
+            const sterilizedGame = await sterilizeGame(updatedGame);
+            const whiteId = game.whitePlayer.toString();
+            const blackId = game.blackPlayer.toString();
+            if (connectedUsers.has(whiteId)) {
+              io.to(connectedUsers.get(whiteId)).emit("startGame", {
+                ...sterilizedGame,
+                yourColor: "white"
+              });
+            }
+            if (connectedUsers.has(blackId)) {
+              io.to(connectedUsers.get(blackId)).emit("startGame", {
+                ...sterilizedGame,
+                yourColor: "black"
+              });
             }
           }
         } else if (user.outgoingGameRequest) {
