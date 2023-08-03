@@ -255,8 +255,8 @@ module.exports = (server, sessionMiddleware, passport) => {
         ]);
         removeGameRequest(user, username);
 
-        socket.emit("startGame", game);
-        if (connectedUsers.has(opponent.id)) {
+        if (liveUsers.has(opponent.id) && liveUsers.has(user.id)) {
+          socket.emit("startGame", game);
           io.to(connectedUsers.get(opponent.id)).emit("startGame", game);
         }
       } catch (error) {
@@ -292,6 +292,7 @@ module.exports = (server, sessionMiddleware, passport) => {
     socket.on("gameCancel", async () => {
       try {
         const user = await User.findById(userId);
+        if (user.currentGame) LiveGame.findByIdAndDelete(user.currentGame);
         if (!user.outgoingGameRequest) return;
 
         const opponent = await User.findOne({
@@ -299,14 +300,23 @@ module.exports = (server, sessionMiddleware, passport) => {
         });
         if (!opponent) {
           User.findByIdAndUpdate(userId, {
-            $set: { outgoingGameRequest: null }
+            $set: { outgoingGameRequest: null, currentGame: null }
           });
           throw new Error("Opponent not found");
         }
 
         removeGameRequest(opponent, user.username);
+        User.findByIdAndUpdate(userId, {
+          $set: { outgoingGameRequest: null, currentGame: null }
+        });
+        User.findByIdAndUpdate(opponent.id, {
+          $set: { outgoingGameRequest: null, currentGame: null }
+        });
 
         socket.emit("liveCreating", true);
+        if (connectedUsers.has(opponent.id)) {
+          io.to(connectedUsers.get(opponent.id)).emit("liveCreating", true);
+        }
       } catch (error) {
         console.error(error);
         socket.emit("error", error.message);
