@@ -84,7 +84,7 @@ export default function PieceComponent({ piece, boardRef }: Props) {
       className="piece"
       style={{
         top: `calc((100% / 8) * ${orientation === "white" ? rank : 7 - rank})`,
-        left: `calc((100% / 8) * ${file})`,
+        left: `calc((100% / 8) * ${orientation === "white" ? file : 7 - file})`,
         translate: `${offset.x}px ${offset.y}px`,
         zIndex: isDragging ? "1000" : "unset"
       }}
