@@ -37,7 +37,7 @@ export default function LiveGame() {
     });
 
     socket.on("startGame", (game) => {
-      console.log(game);
+      setMoves(game.moves);
       setGameState("playing");
     });
 
