@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useMemo } from "react";
 import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
 import Piece from "../utils/Piece";
+import { socket } from "../config/socket";
 
 type Props = {
   children: React.ReactNode;
@@ -31,6 +32,7 @@ export function LiveGameContextProvider({ children }: Props) {
 
   function makeMove(move: Move) {
     setMoves((prevMoves) => [...prevMoves, move]);
+    socket.emit("move", move);
   }
   return (
     <LiveGameContext.Provider value={{ moves, setMoves, pieces, makeMove }}>

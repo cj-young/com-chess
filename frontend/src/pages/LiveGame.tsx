@@ -10,12 +10,15 @@ import handshakeIcon from "../assets/handshake-simple-solid.svg";
 import { socket } from "../config/socket";
 import CreateGame from "../components/CreateGame";
 import Loading from "./Loading";
+import { useLiveGameContext } from "../contexts/LiveGameContext";
 
 type TGameState = "loading" | "creating" | "playing" | "waiting";
 
 export default function LiveGame() {
   const [gameState, setGameState] = useState<TGameState>("loading");
   const [waitingUsername, setWaitingUsername] = useState("");
+
+  const { setMoves } = useLiveGameContext();
 
   function cancelGame() {
     socket.emit("gameCancel");
@@ -42,11 +45,17 @@ export default function LiveGame() {
       setGameState("creating");
     });
 
+    socket.on("move", (moves) => {
+      console.log("movehappened");
+      setMoves(moves);
+    });
+
     return () => {
       socket.emit("leaveLive");
       socket.off("liveWaiting");
       socket.off("liveCreating");
       socket.off("startGame");
+      socket.off("move");
     };
   }, []);
 

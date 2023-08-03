@@ -311,6 +311,33 @@ module.exports = (server, sessionMiddleware, passport) => {
       }
     });
 
+    socket.on("move", async (move) => {
+      try {
+        const user = await User.findById(userId);
+
+        const game = await LiveGame.findByIdAndUpdate(
+          user.currentGame,
+          { $push: { moves: move } },
+          { new: true }
+        );
+
+        const opponentUsername =
+          game.whitePlayer === user.username
+            ? game.blackPlayer
+            : game.whitePlayer;
+
+        const opponent = await User.findOne({ username: opponentUsername });
+
+        socket.emit("move", game.moves);
+        if (connectedUsers.has(opponent.id)) {
+          io.to(connectedUsers.get(opponent.id)).emit("move", game.moves);
+        }
+      } catch (error) {
+        console.error(error);
+        socket.emit("error", error.message);
+      }
+    });
+
     io.on("disconnect", () => {
       connectedUsers.delete(userId);
     });
