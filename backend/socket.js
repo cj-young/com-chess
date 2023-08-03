@@ -121,7 +121,9 @@ module.exports = (server, sessionMiddleware, passport) => {
           const game = await LiveGame.findById(user.currentGame);
           if (!game) throw new Error("Game not found");
           const opponentId =
-            game.blackPlayer === user.id ? game.whitePlayer : game.blackPlayer;
+            game.blackPlayer.toString() === user.id
+              ? game.whitePlayer.toString()
+              : game.blackPlayer.toString();
 
           const opponent = await User.findById(opponentId);
 
@@ -293,12 +295,20 @@ module.exports = (server, sessionMiddleware, passport) => {
     socket.on("gameCancel", async () => {
       try {
         const user = await User.findById(userId);
-        if (user.currentGame) LiveGame.findByIdAndDelete(user.currentGame);
-        if (!user.outgoingGameRequest) return;
+        let opponent;
+        if (user.currentGame) {
+          const game = await LiveGame.findByIdAndDelete(user.currentGame);
+          const opponentId =
+            game.whitePlayer === user.id ? game.blackPlayer : game.whitePlayer;
+          opponent = await User.findById(opponentId);
+        } else if (user.outgoingGameRequest) {
+          opponent = await User.findOne({
+            username: user.outgoingGameRequest.to
+          });
+        } else {
+          throw new Error("No game to cancel");
+        }
 
-        const opponent = await User.findOne({
-          username: user.outgoingGameRequest.to
-        });
         if (!opponent) {
           User.findByIdAndUpdate(userId, {
             $set: { outgoingGameRequest: null, currentGame: null }
@@ -335,7 +345,9 @@ module.exports = (server, sessionMiddleware, passport) => {
         );
 
         const opponentId =
-          game.whitePlayer === user.id ? game.blackPlayer : game.whitePlayer;
+          game.whitePlayer.toString() === user.id
+            ? game.blackPlayer.toString()
+            : game.whitePlayer.toString();
 
         const opponent = await User.findById(opponentId);
 
