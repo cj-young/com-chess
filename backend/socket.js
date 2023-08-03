@@ -291,10 +291,20 @@ module.exports = (server, sessionMiddleware, passport) => {
         ]);
         removeGameRequest(user, username);
 
-        if (liveUsers.has(opponent.id) && liveUsers.has(user.id)) {
-          socket.emit("startGame", game);
-          io.to(connectedUsers.get(opponent.id)).emit("startGame", game);
-          LiveGame.findByIdAndUpdate(game.id, { $set: { started: true } });
+        const sterilizedGame = await sterilizeGame(game);
+        const whiteId = game.whitePlayer.toString();
+        const blackId = game.blackPlayer.toString();
+        if (connectedUsers.has(whiteId)) {
+          io.to(connectedUsers.get(whiteId)).emit("startGame", {
+            ...sterilizedGame,
+            yourColor: "white"
+          });
+        }
+        if (connectedUsers.has(blackId)) {
+          io.to(connectedUsers.get(blackId)).emit("startGame", {
+            ...sterilizedGame,
+            yourColor: "black"
+          });
         }
       } catch (error) {
         console.error(error);
