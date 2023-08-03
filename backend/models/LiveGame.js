@@ -22,10 +22,10 @@ const LiveGameSchema = new Schema({
     default: []
   },
   blackPlayer: {
-    type: String
+    type: Schema.Types.ObjectId
   },
   whitePlayer: {
-    type: String
+    type: Schema.Types.ObjectId
   },
   blackTime: {
     type: Number

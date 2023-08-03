@@ -120,12 +120,10 @@ module.exports = (server, sessionMiddleware, passport) => {
         if (user.currentGame) {
           const game = await LiveGame.findById(user.currentGame);
           if (!game) throw new Error("Game not found");
-          const opponentUsername =
-            game.blackPlayer === user.username
-              ? game.whitePlayer
-              : game.blackPlayer;
+          const opponentId =
+            game.blackPlayer === user.id ? game.whitePlayer : game.blackPlayer;
 
-          const opponent = await User.findOne({ username: opponentUsername });
+          const opponent = await User.findById(opponentId);
 
           if (!liveUsers.has(opponent.id) && !game.started) {
             socket.emit("liveWaiting", opponent.username);
@@ -229,11 +227,10 @@ module.exports = (server, sessionMiddleware, passport) => {
         }
 
         const gameRequest = opponent.outgoingGameRequest;
-        const whitePlayer = [user.username, username][
+        const whitePlayer = [user.id, opponent.id][
           Math.floor(Math.random() * 2)
         ];
-        const blackPlayer =
-          whitePlayer === user.username ? username : user.username;
+        const blackPlayer = whitePlayer === user.id ? opponent.id : user.id;
 
         const game = await LiveGame.create({
           blackPlayer,
@@ -326,12 +323,10 @@ module.exports = (server, sessionMiddleware, passport) => {
           { new: true }
         );
 
-        const opponentUsername =
-          game.whitePlayer === user.username
-            ? game.blackPlayer
-            : game.whitePlayer;
+        const opponentId =
+          game.whitePlayer === user.id ? game.blackPlayer : game.whitePlayer;
 
-        const opponent = await User.findOne({ username: opponentUsername });
+        const opponent = await User.findById(opponentId);
 
         socket.emit("move", game.moves);
         if (connectedUsers.has(opponent.id)) {
