@@ -258,6 +258,7 @@ module.exports = (server, sessionMiddleware, passport) => {
         if (liveUsers.has(opponent.id) && liveUsers.has(user.id)) {
           socket.emit("startGame", game);
           io.to(connectedUsers.get(opponent.id)).emit("startGame", game);
+          LiveGame.findByIdAndUpdate(game.id, { $set: { started: true } });
         }
       } catch (error) {
         console.error(error);
