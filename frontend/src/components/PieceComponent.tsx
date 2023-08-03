@@ -1,19 +1,28 @@
 import { useEffect, useRef, useState } from "react";
 import Piece from "../utils/Piece";
+import { letterSquare } from "../utils/squareConverters";
+import { useLiveGameContext } from "../contexts/LiveGameContext";
 
 type Props = {
   piece: Piece;
+  boardRef: React.RefObject<HTMLDivElement | null>;
 };
 
-export default function PieceComponent({ piece }: Props) {
+export default function PieceComponent({ piece, boardRef }: Props) {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const pieceRef = useRef(null);
+  const offsetRef = useRef(offset);
+
+  const { makeMove } = useLiveGameContext();
+
+  offsetRef.current = offset;
 
   const rank = piece.numRank;
   const file = piece.numFile;
 
   const handleMouseMoveRef = useRef<((e: MouseEvent) => void) | null>(null);
-  const handleMouseUpRef = useRef<(() => void) | null>(null);
+  const handleMouseUpRef = useRef<((e: MouseEvent) => void) | null>(null);
 
   useEffect(() => {
     return () => {
@@ -43,7 +52,22 @@ export default function PieceComponent({ piece }: Props) {
       setOffset({ x: deltaX, y: deltaY });
     }
 
-    function handleMouseUp() {
+    function handleMouseUp(e: MouseEvent) {
+      if (pieceRef.current && boardRef.current) {
+        const squareSize = boardRef.current.offsetWidth / 8;
+
+        const newRank =
+          rank +
+          Math.floor((offsetRef.current.y + 0.5 * squareSize) / squareSize);
+        const newFile =
+          file +
+          Math.floor((offsetRef.current.x + 0.5 * squareSize) / squareSize);
+        if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
+          const newSquare = letterSquare(newRank, newFile);
+          makeMove({ to: newSquare, from: piece.square });
+        }
+      }
+
       setOffset({ x: 0, y: 0 });
       setIsDragging(false);
 
@@ -65,6 +89,7 @@ export default function PieceComponent({ piece }: Props) {
         zIndex: isDragging ? "1000" : "unset"
       }}
       onMouseDown={handleMouseDown}
+      ref={pieceRef}
     >
       <img src={piece.image} alt={`${piece.color} ${piece.type}`} />
     </div>

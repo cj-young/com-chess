@@ -11,6 +11,7 @@ type TLiveGameContext = {
   moves: Move[];
   setMoves: React.Dispatch<React.SetStateAction<Move[]>>;
   pieces: Piece[];
+  makeMove: (move: Move) => void;
 };
 
 type Promotable = "knight" | "bishop" | "rook" | "queen";
@@ -20,17 +21,19 @@ type Move = {
   to: string;
   promoteTo?: Promotable;
 };
-
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
 
-const [moves, setMoves] = useState<Move[]>([]);
-const pieces = useMemo(() => {
-  return applyMoves(generateStartingPosition(), moves);
-}, [moves]);
-
 export function LiveGameContextProvider({ children }: Props) {
+  const [moves, setMoves] = useState<Move[]>([]);
+  const pieces = useMemo(() => {
+    return applyMoves(generateStartingPosition(), moves);
+  }, [moves]);
+
+  function makeMove(move: Move) {
+    setMoves((prevMoves) => [...prevMoves, move]);
+  }
   return (
-    <LiveGameContext.Provider value={{ moves, setMoves, pieces }}>
+    <LiveGameContext.Provider value={{ moves, setMoves, pieces, makeMove }}>
       {children}
     </LiveGameContext.Provider>
   );
