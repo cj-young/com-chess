@@ -257,6 +257,11 @@ module.exports = (server, sessionMiddleware, passport) => {
           )
         ]);
         removeGameRequest(user, username);
+
+        socket.emit("startGame", game);
+        if (connectedUsers.has(opponent.id)) {
+          io.to(connectedUsers.get(opponent.id)).emit("startGame", game);
+        }
       } catch (error) {
         console.error(error);
         socket.emit("error", error.message);
