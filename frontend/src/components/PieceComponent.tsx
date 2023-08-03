@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Piece from "../utils/Piece";
 import { letterSquare } from "../utils/squareConverters";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
@@ -9,14 +9,24 @@ type Props = {
 };
 
 export default function PieceComponent({ piece, boardRef }: Props) {
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const pieceRef = useRef(null);
-  const offsetRef = useRef(offset);
+  const [mousePosition, setMousePosition] = useState<{
+    x: number;
+    y: number;
+  }>();
+  const pieceRef = useRef<HTMLDivElement>(null);
+  const [pieceTop, pieceLeft] = useMemo(() => {
+    if (!pieceRef.current || !boardRef.current || !mousePosition) return [0, 0];
+    const width = pieceRef.current.offsetWidth;
+    const height = pieceRef.current.offsetHeight;
+    const boardRect = boardRef.current.getBoundingClientRect();
+    const top = mousePosition.y - height / 2 - boardRect.top;
+    const left = mousePosition.x - width / 2 - boardRect.left;
+
+    return [top, left];
+  }, [pieceRef.current, mousePosition, isDragging]);
 
   const { makeMove, orientation } = useLiveGameContext();
-
-  offsetRef.current = offset;
 
   const rank = piece.numRank;
   const file = piece.numFile;
@@ -37,62 +47,53 @@ export default function PieceComponent({ piece, boardRef }: Props) {
 
   function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
-
-    const startCoords = { x: e.clientX, y: e.clientY };
-    setOffset({ x: 0, y: 0 });
     setIsDragging(true);
+    setMousePosition({ x: e.clientX, y: e.clientY });
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
 
     function handleMouseMove(e: MouseEvent) {
-      e.preventDefault();
-      const deltaX = e.clientX - startCoords.x;
-      const deltaY = e.clientY - startCoords.y;
-      setOffset({ x: deltaX, y: deltaY });
+      setMousePosition({ x: e.clientX, y: e.clientY });
     }
 
     function handleMouseUp(e: MouseEvent) {
-      if (pieceRef.current && boardRef.current) {
+      if (boardRef.current && pieceRef.current) {
         const squareSize = boardRef.current.offsetWidth / 8;
+        const boardRect = boardRef.current.getBoundingClientRect();
 
-        let offsetX = offsetRef.current.x;
-        let offsetY = offsetRef.current.y;
+        let newFile = Math.floor((e.clientX - boardRect.left) / squareSize);
+        let newRank = Math.floor((e.clientY - boardRect.top) / squareSize);
 
         if (orientation === "black") {
-          offsetX *= -1;
-          offsetY *= -1;
+          newFile = 7 - newFile;
+          newRank = 7 - newRank;
         }
 
-        const newRank =
-          rank + Math.floor((offsetY + 0.5 * squareSize) / squareSize);
-        const newFile =
-          file + Math.floor((offsetX + 0.5 * squareSize) / squareSize);
         if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
           const newSquare = letterSquare(newRank, newFile);
           makeMove({ to: newSquare, from: piece.square });
         }
       }
 
-      setOffset({ x: 0, y: 0 });
       setIsDragging(false);
-
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     }
-
-    handleMouseMoveRef.current = handleMouseMove;
-    handleMouseUpRef.current = handleMouseUp;
   }
 
   return (
     <div
       className="piece"
       style={{
-        top: `calc((100% / 8) * ${orientation === "white" ? rank : 7 - rank})`,
-        left: `calc((100% / 8) * ${orientation === "white" ? file : 7 - file})`,
-        translate: `${offset.x}px ${offset.y}px`,
-        zIndex: isDragging ? "1000" : "unset"
+        top: isDragging
+          ? pieceTop
+          : `calc((100% / 8) * ${orientation === "white" ? rank : 7 - rank})`,
+        left: isDragging
+          ? pieceLeft
+          : `calc((100% / 8) * ${orientation === "white" ? file : 7 - file})`,
+        zIndex: isDragging ? "1000" : "unset",
+        cursor: isDragging ? "grabbing" : "pointer"
       }}
       onMouseDown={handleMouseDown}
       ref={pieceRef}
