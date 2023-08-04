@@ -40,6 +40,8 @@ type TLiveGameContext = {
   setWhiteTime: React.Dispatch<React.SetStateAction<number>>;
   blackTime: number;
   setBlackTime: React.Dispatch<React.SetStateAction<number>>;
+  selectedPiece: Piece | null;
+  setSelectedPiece: React.Dispatch<React.SetStateAction<Piece | null>>;
 };
 
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
@@ -61,6 +63,7 @@ export function LiveGameContextProvider({ children }: Props) {
   const [orientation, setOrientation] = useState<"white" | "black">("white");
   const [whiteTime, setWhiteTime] = useState(0);
   const [blackTime, setBlackTime] = useState(0);
+  const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
 
   function makeMove(move: Move) {
     setMoves((prevMoves) => [...prevMoves, move]);
@@ -82,7 +85,9 @@ export function LiveGameContextProvider({ children }: Props) {
         whiteTime,
         setWhiteTime,
         blackTime,
-        setBlackTime
+        setBlackTime,
+        selectedPiece,
+        setSelectedPiece
       }}
     >
       {children}

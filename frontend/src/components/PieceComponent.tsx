@@ -26,7 +26,11 @@ export default function PieceComponent({ piece, boardRef }: Props) {
     return [top, left];
   }, [pieceRef.current, mousePosition, isDragging]);
 
-  const { makeMove, orientation, color } = useLiveGameContext();
+  const { makeMove, orientation, color, selectedPiece, setSelectedPiece } =
+    useLiveGameContext();
+
+  const selectedPieceRef = useRef<null | Piece>(null);
+  selectedPieceRef.current = selectedPiece;
 
   const canDrag = useMemo(() => {
     return piece.color === color;
@@ -53,6 +57,8 @@ export default function PieceComponent({ piece, boardRef }: Props) {
     e.preventDefault();
     if (!canDrag) return;
     setIsDragging(true);
+    const upWillDeselect = selectedPieceRef.current?.square === piece.square;
+    setSelectedPiece(piece);
     setMousePosition({ x: e.clientX, y: e.clientY });
 
     document.addEventListener("mousemove", handleMouseMove);
@@ -77,10 +83,14 @@ export default function PieceComponent({ piece, boardRef }: Props) {
 
         if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
           const newSquare = letterSquare(newRank, newFile);
-          makeMove({ to: newSquare, from: piece.square });
+          if (newSquare === piece.square) {
+            if (upWillDeselect) setSelectedPiece(null);
+          } else {
+            makeMove({ to: newSquare, from: piece.square });
+            setSelectedPiece(null);
+          }
         }
       }
-
       setIsDragging(false);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
@@ -97,7 +107,7 @@ export default function PieceComponent({ piece, boardRef }: Props) {
         left: isDragging
           ? pieceLeft
           : `calc((100% / 8) * ${orientation === "white" ? file : 7 - file})`,
-        zIndex: isDragging ? "1000" : "unset",
+        zIndex: isDragging ? "1000" : "2",
         cursor: isDragging ? "grabbing" : canDrag ? "pointer" : "default"
       }}
       onMouseDown={handleMouseDown}

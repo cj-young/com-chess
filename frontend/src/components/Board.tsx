@@ -8,7 +8,7 @@ import { useLiveGameContext } from "../contexts/LiveGameContext";
 
 export default function Board() {
   const boardRef = useRef<HTMLDivElement | null>(null);
-  const { pieces } = useLiveGameContext();
+  const { pieces, selectedPiece, orientation } = useLiveGameContext();
 
   return (
     <div className="board-container">
@@ -36,6 +36,23 @@ export default function Board() {
               )
           )}
         </div>
+        {selectedPiece && (
+          <div
+            className="selected-piece-highlight"
+            style={{
+              top: `calc((100% / 8) * ${
+                orientation === "white"
+                  ? selectedPiece.numRank
+                  : 7 - selectedPiece.numRank
+              })`,
+              left: `calc((100% / 8) * ${
+                orientation === "white"
+                  ? selectedPiece.numFile
+                  : 7 - selectedPiece.numFile
+              })`
+            }}
+          ></div>
+        )}
       </div>
       <div className="controls">
         <button className="flip-board">
