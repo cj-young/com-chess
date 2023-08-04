@@ -69,6 +69,7 @@ export default function PieceComponent({ piece, boardRef }: Props) {
     }
 
     function handleMouseUp(e: MouseEvent) {
+      e.preventDefault();
       if (boardRef.current && pieceRef.current) {
         const squareSize = boardRef.current.offsetWidth / 8;
         const boardRect = boardRef.current.getBoundingClientRect();

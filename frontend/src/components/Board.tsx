@@ -8,11 +8,18 @@ import { useLiveGameContext } from "../contexts/LiveGameContext";
 
 export default function Board() {
   const boardRef = useRef<HTMLDivElement | null>(null);
-  const { pieces, selectedPiece, orientation } = useLiveGameContext();
+  const { pieces, selectedPiece, setSelectedPiece, orientation } =
+    useLiveGameContext();
 
+  function handleClick(e: React.MouseEvent<HTMLDivElement>) {
+    console.log(e.target);
+    if (e.target === boardRef.current) {
+      setSelectedPiece(null);
+    }
+  }
   return (
     <div className="board-container">
-      <div className="board" ref={boardRef}>
+      <div className="board" ref={boardRef} onClick={handleClick}>
         <div className="squares">
           {Array(8)
             .fill(null)
