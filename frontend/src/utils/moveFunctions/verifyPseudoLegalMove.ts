@@ -25,76 +25,54 @@ export default function verifyPseudoLegalMove(
   const fromBitboard = 1n << move.from;
   const toBitboard = 1n << move.to;
 
-  let newPosition: Position;
+  // Clear squares where move occurred on all but whitePieces and blackPieces, where the move is applied
+  let newPosition = {
+    whitePieces:
+      turn === "white"
+        ? (position.whitePieces & ~fromBitboard) | toBitboard
+        : position.whitePieces & ~(fromBitboard | toBitboard),
+    blackPieces:
+      turn === "black"
+        ? (position.blackPieces & ~fromBitboard) | toBitboard
+        : position.blackPieces & ~(fromBitboard | toBitboard),
+    pawns: position.pawns & ~(fromBitboard | toBitboard),
+    knights: position.knights & ~(fromBitboard | toBitboard),
+    bishops: position.bishops & ~(fromBitboard | toBitboard),
+    rooks: position.rooks & ~(fromBitboard | toBitboard),
+    queens: position.queens & ~(fromBitboard | toBitboard),
+    kings: position.kings & ~(fromBitboard | toBitboard)
+  };
+
+  // Add moved piece
   switch (type) {
     case "pawn":
       newPosition = {
-        ...position,
-        pawns: (position.pawns & ~fromBitboard) | toBitboard,
-        whitePieces:
-          turn === "white"
-            ? (position.whitePieces & ~fromBitboard) | toBitboard
-            : position.whitePieces,
-        blackPieces:
-          turn === "black"
-            ? (position.blackPieces & ~fromBitboard) | toBitboard
-            : position.blackPieces
+        ...newPosition,
+        pawns: (position.pawns & ~fromBitboard) | toBitboard
       };
       break;
     case "knight":
       newPosition = {
-        ...position,
-        knights: (position.knights & ~fromBitboard) | toBitboard,
-        whitePieces:
-          turn === "white"
-            ? (position.whitePieces & ~fromBitboard) | toBitboard
-            : position.whitePieces,
-        blackPieces:
-          turn === "black"
-            ? (position.blackPieces & ~fromBitboard) | toBitboard
-            : position.blackPieces
+        ...newPosition,
+        knights: (position.knights & ~fromBitboard) | toBitboard
       };
       break;
     case "bishop":
       newPosition = {
-        ...position,
-        bishops: (position.bishops & ~fromBitboard) | toBitboard,
-        whitePieces:
-          turn === "white"
-            ? (position.whitePieces & ~fromBitboard) | toBitboard
-            : position.whitePieces,
-        blackPieces:
-          turn === "black"
-            ? (position.blackPieces & ~fromBitboard) | toBitboard
-            : position.blackPieces
+        ...newPosition,
+        bishops: (position.bishops & ~fromBitboard) | toBitboard
       };
       break;
     case "rook":
       newPosition = {
-        ...position,
-        rooks: (position.rooks & ~fromBitboard) | toBitboard,
-        whitePieces:
-          turn === "white"
-            ? (position.whitePieces & ~fromBitboard) | toBitboard
-            : position.whitePieces,
-        blackPieces:
-          turn === "black"
-            ? (position.blackPieces & ~fromBitboard) | toBitboard
-            : position.blackPieces
+        ...newPosition,
+        rooks: (position.rooks & ~fromBitboard) | toBitboard
       };
       break;
     case "queen":
       newPosition = {
-        ...position,
-        queens: (position.queens & ~fromBitboard) | toBitboard,
-        whitePieces:
-          turn === "white"
-            ? (position.whitePieces & ~fromBitboard) | toBitboard
-            : position.whitePieces,
-        blackPieces:
-          turn === "black"
-            ? (position.blackPieces & ~fromBitboard) | toBitboard
-            : position.blackPieces
+        ...newPosition,
+        queens: (position.queens & ~fromBitboard) | toBitboard
       };
       break;
     case "king":
@@ -138,16 +116,8 @@ export default function verifyPseudoLegalMove(
           return false;
       }
       newPosition = {
-        ...position,
-        kings: (position.kings & ~fromBitboard) | toBitboard,
-        whitePieces:
-          turn === "white"
-            ? (position.whitePieces & ~fromBitboard) | toBitboard
-            : position.whitePieces,
-        blackPieces:
-          turn === "black"
-            ? (position.blackPieces & ~fromBitboard) | toBitboard
-            : position.blackPieces
+        ...newPosition,
+        kings: (position.kings & ~fromBitboard) | toBitboard
       };
       break;
   }
