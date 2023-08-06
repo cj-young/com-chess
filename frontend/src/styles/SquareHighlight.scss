@@ -6,14 +6,32 @@
   z-index: 1;
 
   &.selected-piece {
-    background-color: var(--clr-error);
-    opacity: 0.2;
-    mix-blend-mode: multiply;
+    background-color: var(--clr-board-highlight);
+    opacity: 0.5;
   }
 
   &.previous-move {
-    background-color: var(--clr-error);
-    opacity: 0.2;
-    mix-blend-mode: multiply;
+    background-color: var(--clr-board-highlight);
+    opacity: 0.5;
+  }
+
+  &.legal-move {
+    background-color: transparent;
+    z-index: 2;
+
+    &::after {
+      content: "";
+      display: block;
+      position: absolute;
+      background-color: var(--clr-bg-100);
+      mix-blend-mode: multiply;
+      opacity: 0.2;
+      width: 35%;
+      aspect-ratio: 1;
+      top: 50%;
+      left: 50%;
+      translate: -50% -50%;
+      border-radius: 1000vmax;
+    }
   }
 }

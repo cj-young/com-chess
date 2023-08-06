@@ -4,7 +4,7 @@ import "../styles/SquareHighlight.scss";
 
 type Props = {
   square: string;
-  type: "previousMove" | "selectedPiece";
+  type: "previousMove" | "selectedPiece" | "legalMove";
 };
 
 export default function SquareHighlight({ square, type }: Props) {
@@ -13,7 +13,11 @@ export default function SquareHighlight({ square, type }: Props) {
   return (
     <div
       className={`square-highlight ${
-        type === "selectedPiece" ? "selected-piece" : "previous-move"
+        type === "selectedPiece"
+          ? "selected-piece"
+          : type === "previousMove"
+          ? "previous-move"
+          : "legal-move"
       }`}
       style={{
         top: `calc((100% / 8) * ${

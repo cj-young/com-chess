@@ -3,6 +3,7 @@ import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
 import Piece from "../utils/Piece";
 import { socket } from "../config/socket";
+import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
 
 type Props = {
   children: React.ReactNode;
@@ -42,6 +43,7 @@ type TLiveGameContext = {
   setBlackTime: React.Dispatch<React.SetStateAction<number>>;
   selectedPiece: Piece | null;
   setSelectedPiece: React.Dispatch<React.SetStateAction<Piece | null>>;
+  legalMoves: string[];
 };
 
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
@@ -65,6 +67,14 @@ export function LiveGameContextProvider({ children }: Props) {
   const [blackTime, setBlackTime] = useState(0);
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
 
+  const legalMoves = useMemo(() => {
+    if (selectedPiece) {
+      return generateLegalMoves(pieces, selectedPiece, moves);
+    } else {
+      return [];
+    }
+  }, [selectedPiece]);
+
   function makeMove(move: Move) {
     setMoves((prevMoves) => [...prevMoves, move]);
     socket.emit("move", move);
@@ -87,7 +97,8 @@ export function LiveGameContextProvider({ children }: Props) {
         blackTime,
         setBlackTime,
         selectedPiece,
-        setSelectedPiece
+        setSelectedPiece,
+        legalMoves
       }}
     >
       {children}

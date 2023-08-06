@@ -9,11 +9,16 @@ import SquareHighlight from "./SquareHighlight";
 
 export default function Board() {
   const boardRef = useRef<HTMLDivElement | null>(null);
-  const { pieces, selectedPiece, setSelectedPiece, orientation, moves } =
-    useLiveGameContext();
+  const {
+    pieces,
+    selectedPiece,
+    setSelectedPiece,
+    orientation,
+    moves,
+    legalMoves
+  } = useLiveGameContext();
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
-    console.log(e.target);
     if (e.target === boardRef.current) {
       setSelectedPiece(null);
     }
@@ -59,6 +64,9 @@ export default function Board() {
             />
           </>
         )}
+        {legalMoves.map((legalMove, i) => (
+          <SquareHighlight square={legalMove} type="legalMove" key={i} />
+        ))}
       </div>
       <div className="controls">
         <button className="flip-board">
