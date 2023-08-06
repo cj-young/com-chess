@@ -38,7 +38,7 @@ export default function generateKnightAttackBitboard(
   }
 
   // Up 1 right 2
-  temp = friendlyPieces;
+  temp = friendlyKnights;
   temp &= ~rank8 & ~fileG & ~fileH;
   if (temp !== 0n) {
     temp <<= 10n;
@@ -46,7 +46,7 @@ export default function generateKnightAttackBitboard(
   }
 
   // Down 1 right 2
-  temp = friendlyPieces;
+  temp = friendlyKnights;
   temp &= ~rank1 & ~fileG & ~fileH;
   if (temp !== 0n) {
     temp >>= 6n;
@@ -54,7 +54,7 @@ export default function generateKnightAttackBitboard(
   }
 
   // Down 2 right 1
-  temp = friendlyPieces;
+  temp = friendlyKnights;
   temp &= ~rank1 & ~rank2 & ~fileH;
   if (temp !== 0n) {
     temp >>= 15n;
@@ -62,7 +62,7 @@ export default function generateKnightAttackBitboard(
   }
 
   // Down 2 left 1
-  temp = friendlyPieces;
+  temp = friendlyKnights;
   temp &= ~rank1 & ~rank2 & ~fileA;
   if (temp !== 0n) {
     temp >>= 17n;
@@ -70,7 +70,7 @@ export default function generateKnightAttackBitboard(
   }
 
   // Down 1 left 2
-  temp = friendlyPieces;
+  temp = friendlyKnights;
   temp &= ~rank1 & ~fileB & ~fileA;
   if (temp !== 0n) {
     temp >>= 10n;
@@ -78,7 +78,7 @@ export default function generateKnightAttackBitboard(
   }
 
   // Up 1 left 2
-  temp = friendlyPieces;
+  temp = friendlyKnights;
   temp &= ~rank8 & ~fileB & ~fileA;
   if (temp !== 0n) {
     temp <<= 6n;
@@ -86,7 +86,7 @@ export default function generateKnightAttackBitboard(
   }
 
   // Up 2 left 1
-  temp = friendlyPieces;
+  temp = friendlyKnights;
   temp &= ~rank8 & ~rank7 & ~fileA;
   if (temp !== 0n) {
     temp <<= 15n;
