@@ -6,6 +6,7 @@ import rightIcon from "../assets/angle-right-solid.svg";
 import PieceComponent from "./PieceComponent";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
 import SquareHighlight from "./SquareHighlight";
+import { letterSquare } from "../utils/squareConverters";
 
 export default function Board() {
   const boardRef = useRef<HTMLDivElement | null>(null);
@@ -15,12 +16,30 @@ export default function Board() {
     setSelectedPiece,
     orientation,
     moves,
-    legalMoves
+    legalMoves,
+    makeMove
   } = useLiveGameContext();
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
-    if (e.target === boardRef.current) {
-      setSelectedPiece(null);
+    e.preventDefault();
+    if (!selectedPiece) return;
+    if (boardRef.current) {
+      const squareSize = boardRef.current.offsetWidth / 8;
+      const boardRect = boardRef.current.getBoundingClientRect();
+      let newFile = Math.floor((e.clientX - boardRect.left) / squareSize);
+      let newRank = Math.floor((e.clientY - boardRect.top) / squareSize);
+      if (orientation === "black") {
+        newFile = 7 - newFile;
+        newRank = 7 - newRank;
+      }
+      if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
+        const newSquare = letterSquare(newRank, newFile);
+        if (newSquare === selectedPiece.square) return;
+        if (legalMoves.includes(newSquare)) {
+          makeMove({ to: newSquare, from: selectedPiece.square });
+        }
+        setSelectedPiece(null);
+      }
     }
   }
   return (

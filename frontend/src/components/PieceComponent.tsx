@@ -26,11 +26,19 @@ export default function PieceComponent({ piece, boardRef }: Props) {
     return [top, left];
   }, [pieceRef.current, mousePosition, isDragging]);
 
-  const { makeMove, orientation, color, selectedPiece, setSelectedPiece } =
-    useLiveGameContext();
+  const {
+    makeMove,
+    orientation,
+    color,
+    selectedPiece,
+    setSelectedPiece,
+    legalMoves
+  } = useLiveGameContext();
 
   const selectedPieceRef = useRef<null | Piece>(null);
   selectedPieceRef.current = selectedPiece;
+  const legalMovesRef = useRef<string[]>([]);
+  legalMovesRef.current = legalMoves;
 
   const canDrag = useMemo(() => {
     return piece.color === color;
@@ -54,6 +62,7 @@ export default function PieceComponent({ piece, boardRef }: Props) {
   }, []);
 
   function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
+    e.stopPropagation();
     e.preventDefault();
     if (!canDrag) return;
     setIsDragging(true);
@@ -65,12 +74,14 @@ export default function PieceComponent({ piece, boardRef }: Props) {
     document.addEventListener("mouseup", handleMouseUp);
 
     function handleMouseMove(e: MouseEvent) {
+      e.preventDefault();
       setMousePosition({ x: e.clientX, y: e.clientY });
     }
 
     function handleMouseUp(e: MouseEvent) {
       e.preventDefault();
-      if (boardRef.current && pieceRef.current) {
+      e.stopPropagation();
+      if (boardRef.current && pieceRef.current && legalMovesRef.current) {
         const squareSize = boardRef.current.offsetWidth / 8;
         const boardRect = boardRef.current.getBoundingClientRect();
 
@@ -87,7 +98,10 @@ export default function PieceComponent({ piece, boardRef }: Props) {
           if (newSquare === piece.square) {
             if (upWillDeselect) setSelectedPiece(null);
           } else {
-            makeMove({ to: newSquare, from: piece.square });
+            console.log(newSquare, legalMoves);
+            if (legalMovesRef.current.includes(newSquare)) {
+              makeMove({ to: newSquare, from: piece.square });
+            }
             setSelectedPiece(null);
           }
         }
