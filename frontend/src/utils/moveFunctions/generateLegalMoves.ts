@@ -101,8 +101,6 @@ export default function generateLegalMoves(
     }
   }
 
-  console.log(canCastle);
-
   const squareIdx = squareToIndex(piece.square);
 
   // Get en passant square if exists
