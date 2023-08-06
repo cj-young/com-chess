@@ -90,13 +90,3 @@
   cursor: pointer;
   z-index: 2;
 }
-
-.selected-piece-highlight {
-  width: calc(100% / 8);
-  aspect-ratio: 1;
-  background-color: var(--clr-accent);
-  opacity: 0.5;
-  position: absolute;
-  pointer-events: none;
-  z-index: 1;
-}

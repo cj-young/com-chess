@@ -1,0 +1,19 @@
+.square-highlight {
+  width: calc(100% / 8);
+  aspect-ratio: 1;
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+
+  &.selected-piece {
+    background-color: var(--clr-error);
+    opacity: 0.2;
+    mix-blend-mode: multiply;
+  }
+
+  &.previous-move {
+    background-color: var(--clr-error);
+    opacity: 0.2;
+    mix-blend-mode: multiply;
+  }
+}

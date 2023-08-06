@@ -5,10 +5,11 @@ import leftIcon from "../assets/angle-left-solid.svg";
 import rightIcon from "../assets/angle-right-solid.svg";
 import PieceComponent from "./PieceComponent";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
+import SquareHighlight from "./SquareHighlight";
 
 export default function Board() {
   const boardRef = useRef<HTMLDivElement | null>(null);
-  const { pieces, selectedPiece, setSelectedPiece, orientation } =
+  const { pieces, selectedPiece, setSelectedPiece, orientation, moves } =
     useLiveGameContext();
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -44,21 +45,19 @@ export default function Board() {
           )}
         </div>
         {selectedPiece && (
-          <div
-            className="selected-piece-highlight"
-            style={{
-              top: `calc((100% / 8) * ${
-                orientation === "white"
-                  ? selectedPiece.numRank
-                  : 7 - selectedPiece.numRank
-              })`,
-              left: `calc((100% / 8) * ${
-                orientation === "white"
-                  ? selectedPiece.numFile
-                  : 7 - selectedPiece.numFile
-              })`
-            }}
-          ></div>
+          <SquareHighlight square={selectedPiece.square} type="selectedPiece" />
+        )}
+        {moves.length > 0 && (
+          <>
+            <SquareHighlight
+              square={moves[moves.length - 1].from}
+              type="previousMove"
+            />
+            <SquareHighlight
+              square={moves[moves.length - 1].to}
+              type="previousMove"
+            />
+          </>
         )}
       </div>
       <div className="controls">
