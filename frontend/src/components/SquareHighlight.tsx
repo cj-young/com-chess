@@ -1,6 +1,7 @@
 import { useLiveGameContext } from "../contexts/LiveGameContext";
 import { numFile, numRank } from "../utils/squareConverters";
 import "../styles/SquareHighlight.scss";
+import { useMemo } from "react";
 
 type Props = {
   square: string;
@@ -8,7 +9,13 @@ type Props = {
 };
 
 export default function SquareHighlight({ square, type }: Props) {
-  const { orientation } = useLiveGameContext();
+  const { orientation, pieces } = useLiveGameContext();
+
+  const isPiece = useMemo(() => {
+    for (let piece of pieces)
+      if (piece.square === square && piece.active) return true;
+    return false;
+  }, [pieces, square]);
 
   return (
     <div
@@ -17,7 +24,7 @@ export default function SquareHighlight({ square, type }: Props) {
           ? "selected-piece"
           : type === "previousMove"
           ? "previous-move"
-          : "legal-move"
+          : `legal-move ${isPiece ? "on-piece-square" : ""}`
       }`}
       style={{
         top: `calc((100% / 8) * ${

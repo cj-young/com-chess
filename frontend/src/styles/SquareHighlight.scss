@@ -18,6 +18,7 @@
   &.legal-move {
     background-color: transparent;
     z-index: 2;
+    overflow: hidden;
 
     &::after {
       content: "";
@@ -32,6 +33,12 @@
       left: 50%;
       translate: -50% -50%;
       border-radius: 1000vmax;
+    }
+
+    &.on-piece-square::after {
+      width: 100%;
+      background-color: transparent;
+      box-shadow: 0 0 0 1000vmax var(--clr-bg-100);
     }
   }
 }
