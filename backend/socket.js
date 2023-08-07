@@ -4,6 +4,8 @@ const LiveGame = require("./models/LiveGame");
 const applyMoves = require("./utils/applyMoves");
 const generateLegalMoves = require("./utils/moveVerification/generateLegalMoves");
 const generateStartingPosition = require("./utils/generateStartingPosition");
+const isInCheck = require("./utils/moveVerification/isInCheck");
+const canMove = require("./utils/moveVerification/canMove");
 
 module.exports = (server, sessionMiddleware, passport) => {
   const io = new Server(server, {
@@ -444,6 +446,26 @@ module.exports = (server, sessionMiddleware, passport) => {
             "move",
             updatedGame.moves
           );
+        }
+
+        const updatedPieces = applyMoves(
+          generateStartingPosition(),
+          updatedGame.moves
+        );
+
+        if (!canMove(updatedPieces, updatedGame.moves)) {
+          console.log("inside");
+          if (isInCheck(updatedPieces, turn === "white" ? "black" : "white")) {
+            socket.emit("gameWon", { type: "checkmate", id: "id" }); // TODO: set up to send id of game once placed in past games collection
+            if (connectedUsers.has(opponent.id)) {
+              io.to(connectedUsers.get(opponent.id)).emit(
+                "gameLost",
+                { type: "checkmate", id: "id" } //TODO: same as above
+              );
+            }
+          } else {
+            socket.emit("gameDrawn", { type: "stalemate", id: "id" }); //TODO: again
+          }
         }
       } catch (error) {
         console.error(error);
