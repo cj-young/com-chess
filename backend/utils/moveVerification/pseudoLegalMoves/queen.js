@@ -9,7 +9,7 @@ module.exports = function generatePseudoLegalQueenMoves(
   const bishopMoves = generatePseudoLegalBishopMoves(position, square, turn);
   const rookMoves = generatePseudoLegalRookMoves(position, square, turn);
 
-  const combinedMoves = new Set() < bigint > [...bishopMoves, ...rookMoves];
+  const combinedMoves = new Set([...bishopMoves, ...rookMoves]);
 
   return [...combinedMoves];
 };
