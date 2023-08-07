@@ -1,6 +1,9 @@
 const { Server } = require("socket.io");
 const User = require("./models/User");
 const LiveGame = require("./models/LiveGame");
+const applyMoves = require("./utils/applyMoves");
+const generateLegalMoves = require("./utils/moveVerification/generateLegalMoves");
+const generateStartingPosition = require("./utils/generateStartingPosition");
 
 module.exports = (server, sessionMiddleware, passport) => {
   const io = new Server(server, {
@@ -381,27 +384,69 @@ module.exports = (server, sessionMiddleware, passport) => {
     socket.on("move", async (move) => {
       try {
         const user = await User.findById(userId);
+        const game = await LiveGame.findById(user.currentGame);
 
-        const game = await LiveGame.findByIdAndUpdate(
-          user.currentGame,
+        const { moves } = game;
+        const [blackPlayer, whitePlayer] = [
+          game.blackPlayer.toString(),
+          game.whitePlayer.toString()
+        ];
+        const turn = game.moves.length % 2 === 0 ? "white" : "black";
+
+        if (
+          (turn === "white" && user.id !== whitePlayer) ||
+          (turn === "black" && user.id !== blackPlayer)
+        ) {
+          socket.emit("move", game.moves);
+          throw new Error("Move attempted by user when it is not their turn");
+        }
+
+        const pieces = applyMoves(generateStartingPosition(), moves);
+        let movedPiece;
+        for (let piece of pieces) {
+          if (piece.square === move.from && piece.active === true)
+            movedPiece = piece;
+        }
+
+        if (!movedPiece) {
+          socket.emit("move", moves);
+          throw new Error("Piece not found");
+        }
+
+        const legalMoves = generateLegalMoves(pieces, movedPiece, moves);
+
+        let moveIsLegal = false;
+        for (let legalMove of legalMoves) {
+          if (legalMove === move.to) moveIsLegal = true;
+        }
+
+        if (!moveIsLegal) {
+          socket.emit("move", game.moves);
+          throw new Error("Illegal move");
+        }
+
+        const updatedGame = await LiveGame.findByIdAndUpdate(
+          game.id,
           { $push: { moves: move } },
           { new: true }
         );
 
         const opponentId =
-          game.whitePlayer.toString() === user.id
-            ? game.blackPlayer.toString()
-            : game.whitePlayer.toString();
+          updatedGame.whitePlayer.toString() === user.id
+            ? updatedGame.blackPlayer.toString()
+            : updatedGame.whitePlayer.toString();
 
         const opponent = await User.findById(opponentId);
 
-        socket.emit("move", game.moves);
+        socket.emit("move", updatedGame.moves);
         if (connectedUsers.has(opponent.id)) {
-          io.to(connectedUsers.get(opponent.id)).emit("move", game.moves);
+          io.to(connectedUsers.get(opponent.id)).emit(
+            "move",
+            updatedGame.moves
+          );
         }
       } catch (error) {
         console.error(error);
-        socket.emit("error", error.message);
       }
     });
 
