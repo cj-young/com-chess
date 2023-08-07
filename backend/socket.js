@@ -6,6 +6,7 @@ const generateLegalMoves = require("./utils/moveVerification/generateLegalMoves"
 const generateStartingPosition = require("./utils/generateStartingPosition");
 const isInCheck = require("./utils/moveVerification/isInCheck");
 const canMove = require("./utils/moveVerification/canMove");
+const PastGame = require("./models/PastGame");
 
 module.exports = (server, sessionMiddleware, passport) => {
   const io = new Server(server, {
@@ -454,18 +455,54 @@ module.exports = (server, sessionMiddleware, passport) => {
         );
 
         if (!canMove(updatedPieces, updatedGame.moves)) {
-          console.log("inside");
           if (isInCheck(updatedPieces, turn === "white" ? "black" : "white")) {
-            socket.emit("gameWon", { type: "checkmate", id: "id" }); // TODO: set up to send id of game once placed in past games collection
+            const pastGame = await PastGame.create({
+              moves: updatedGame.moves,
+              blackPlayer: updatedGame.blackPlayer,
+              whitePlayer: updatedGame.whitePlayer,
+              minutes: updatedGame.minutes,
+              increment: updatedGame.increment,
+              winner:
+                user.id === updatedGame.whitePlayer.toString()
+                  ? "white"
+                  : "black"
+            });
+
+            socket.emit("gameWon", { type: "checkmate", id: pastGame.id });
             if (connectedUsers.has(opponent.id)) {
-              io.to(connectedUsers.get(opponent.id)).emit(
-                "gameLost",
-                { type: "checkmate", id: "id" } //TODO: same as above
-              );
+              io.to(connectedUsers.get(opponent.id)).emit("gameLost", {
+                type: "checkmate",
+                id: pastGame.id
+              });
             }
           } else {
-            socket.emit("gameDrawn", { type: "stalemate", id: "id" }); //TODO: again
+            const pastGame = await PastGame.create({
+              moves: updatedGame.moves,
+              blackPlayer: updatedGame.blackPlayer,
+              whitePlayer: updatedGame.whitePlayer,
+              minutes: updatedGame.minutes,
+              increment: updatedGame.increment,
+              winner: null
+            });
+
+            socket.emit("gameDrawn", { type: "stalemate", id: pastGame.id });
+            if (connectedUsers.has(opponent.id)) {
+              io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
+                type: "stalemate",
+                id: pastGame.id
+              });
+            }
           }
+
+          await Promise.all([
+            LiveGame.findByIdAndDelete(updatedGame.id),
+            User.findByIdAndUpdate(updatedGame.blackPlayer, {
+              $set: { currentGame: null }
+            }),
+            User.findByIdAndUpdate(updatedGame.whitePlayer, {
+              $set: { currentGame: null }
+            })
+          ]);
         }
       } catch (error) {
         console.error(error);

@@ -26,7 +26,11 @@ type GameInfo = {
   whiteTime: number;
 };
 
+type TGameState = "loading" | "creating" | "playing" | "waiting";
+
 type TLiveGameContext = {
+  gameState: TGameState;
+  setGameState: React.Dispatch<React.SetStateAction<TGameState>>;
   moves: Move[];
   setMoves: React.Dispatch<React.SetStateAction<Move[]>>;
   pieces: Piece[];
@@ -50,6 +54,7 @@ type TLiveGameContext = {
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
 
 export function LiveGameContextProvider({ children }: Props) {
+  const [gameState, setGameState] = useState<TGameState>("loading");
   const [moves, setMoves] = useState<Move[]>([]);
   const pieces = useMemo(() => {
     return applyMoves(generateStartingPosition(), moves);
@@ -104,7 +109,9 @@ export function LiveGameContextProvider({ children }: Props) {
         selectedPiece,
         setSelectedPiece,
         legalMoves,
-        turn
+        turn,
+        gameState,
+        setGameState
       }}
     >
       {children}

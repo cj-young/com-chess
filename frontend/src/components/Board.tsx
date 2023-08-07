@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import "../styles/Board.scss";
 import flipIcon from "../assets/repeat-solid.svg";
 import leftIcon from "../assets/angle-left-solid.svg";
@@ -7,9 +7,12 @@ import PieceComponent from "./PieceComponent";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
 import SquareHighlight from "./SquareHighlight";
 import { letterSquare } from "../utils/squareConverters";
+import GameOver from "./GameOver";
+import { socket } from "../config/socket";
 
 export default function Board() {
   const boardRef = useRef<HTMLDivElement | null>(null);
+  const [gameOverModal, setGameOverModal] = useState<React.ReactNode>(null);
   const {
     pieces,
     selectedPiece,
@@ -42,6 +45,48 @@ export default function Board() {
       }
     }
   }
+
+  useEffect(() => {
+    socket.on("gameWon", ({ type, id }) => {
+      setGameOverModal(
+        <GameOver
+          type={type}
+          gameId={id}
+          winStatus="won"
+          close={() => setGameOverModal(null)}
+        />
+      );
+    });
+
+    socket.on("gameLost", ({ type, id }) => {
+      setGameOverModal(
+        <GameOver
+          type={type}
+          gameId={id}
+          winStatus="lost"
+          close={() => setGameOverModal(null)}
+        />
+      );
+    });
+
+    socket.on("gameDrawn", ({ type, id }) => {
+      setGameOverModal(
+        <GameOver
+          type={type}
+          gameId={id}
+          winStatus="drawn"
+          close={() => setGameOverModal(null)}
+        />
+      );
+    });
+
+    return () => {
+      socket.off("gameWon");
+      socket.off("gameLost");
+      socket.off("gameDrawn");
+    };
+  }, []);
+
   return (
     <div className="board-container">
       <div className="board" ref={boardRef} onClick={handleClick}>
@@ -86,6 +131,7 @@ export default function Board() {
         {legalMoves.map((legalMove, i) => (
           <SquareHighlight square={legalMove} type="legalMove" key={i} />
         ))}
+        {gameOverModal}
       </div>
       <div className="controls">
         <button className="flip-board">
