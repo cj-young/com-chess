@@ -11,6 +11,7 @@ const indexToSquare = require("./indexToSquare");
 
 module.exports = function generateLegalMoves(pieces, piece, moves) {
   const turn = moves.length % 2 === 0 ? "white" : "black";
+  if (!piece.active) return [];
 
   if (piece.color !== turn) return [];
 
@@ -147,8 +148,6 @@ module.exports = function generateLegalMoves(pieces, piece, moves) {
     default:
       throw new Error("Piece does not have a type");
   }
-
-  console.log(newSquares);
 
   return newSquares
     .filter((newSquare) =>

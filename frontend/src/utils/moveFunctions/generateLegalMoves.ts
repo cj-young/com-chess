@@ -32,6 +32,7 @@ export default function generateLegalMoves(
   moves: Move[]
 ) {
   const turn = moves.length % 2 === 0 ? "white" : "black";
+  if (!piece.active) return [];
 
   if (piece.color !== turn) return [];
 
