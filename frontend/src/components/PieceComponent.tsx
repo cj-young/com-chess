@@ -32,7 +32,8 @@ export default function PieceComponent({ piece, boardRef }: Props) {
     color,
     selectedPiece,
     setSelectedPiece,
-    legalMoves
+    legalMoves,
+    turn
   } = useLiveGameContext();
 
   const selectedPieceRef = useRef<null | Piece>(null);
@@ -41,7 +42,7 @@ export default function PieceComponent({ piece, boardRef }: Props) {
   legalMovesRef.current = legalMoves;
 
   const canDrag = useMemo(() => {
-    return piece.color === color;
+    return piece.color === color && turn === color;
   }, [piece, color]);
 
   const rank = piece.numRank;

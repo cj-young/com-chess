@@ -44,6 +44,7 @@ type TLiveGameContext = {
   selectedPiece: Piece | null;
   setSelectedPiece: React.Dispatch<React.SetStateAction<Piece | null>>;
   legalMoves: string[];
+  turn: "white" | "black";
 };
 
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
@@ -75,6 +76,10 @@ export function LiveGameContextProvider({ children }: Props) {
     }
   }, [selectedPiece]);
 
+  const turn = useMemo(() => {
+    return moves.length % 2 === 0 ? "white" : "black";
+  }, [moves]);
+
   function makeMove(move: Move) {
     setMoves((prevMoves) => [...prevMoves, move]);
     socket.emit("move", move);
@@ -98,7 +103,8 @@ export function LiveGameContextProvider({ children }: Props) {
         setBlackTime,
         selectedPiece,
         setSelectedPiece,
-        legalMoves
+        legalMoves,
+        turn
       }}
     >
       {children}
