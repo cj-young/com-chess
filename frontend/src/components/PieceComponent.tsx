@@ -33,7 +33,9 @@ export default function PieceComponent({ piece, boardRef }: Props) {
     selectedPiece,
     setSelectedPiece,
     legalMoves,
-    turn
+    turn,
+    moveIndex,
+    moves
   } = useLiveGameContext();
 
   const selectedPieceRef = useRef<null | Piece>(null);
@@ -42,8 +44,10 @@ export default function PieceComponent({ piece, boardRef }: Props) {
   legalMovesRef.current = legalMoves;
 
   const canDrag = useMemo(() => {
-    return piece.color === color && turn === color;
-  }, [piece, color]);
+    return (
+      piece.color === color && turn === color && moveIndex === moves.length - 1
+    );
+  }, [piece, color, moveIndex, moves]);
 
   const rank = piece.numRank;
   const file = piece.numFile;
@@ -76,12 +80,20 @@ export default function PieceComponent({ piece, boardRef }: Props) {
 
     function handleMouseMove(e: MouseEvent) {
       e.preventDefault();
+      if (!canDrag) {
+        setIsDragging(false);
+        return;
+      }
       setMousePosition({ x: e.clientX, y: e.clientY });
     }
 
     function handleMouseUp(e: MouseEvent) {
       e.preventDefault();
       e.stopPropagation();
+      if (!canDrag) {
+        setIsDragging(false);
+        return;
+      }
       if (boardRef.current && pieceRef.current && legalMovesRef.current) {
         const squareSize = boardRef.current.offsetWidth / 8;
         const boardRect = boardRef.current.getBoundingClientRect();

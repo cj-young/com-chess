@@ -21,7 +21,9 @@ export default function Board() {
     setOrientation,
     moves,
     legalMoves,
-    makeMove
+    makeMove,
+    moveIndex,
+    setMoveIndex
   } = useLiveGameContext();
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -44,6 +46,18 @@ export default function Board() {
         }
         setSelectedPiece(null);
       }
+    }
+  }
+
+  function handlePrevMove() {
+    if (moveIndex > 0) {
+      setMoveIndex((prevMoveIndex) => prevMoveIndex - 1);
+    }
+  }
+
+  function handleNextMove() {
+    if (moveIndex < moves.length - 1) {
+      setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
     }
   }
 
@@ -127,16 +141,13 @@ export default function Board() {
         {selectedPiece && (
           <SquareHighlight square={selectedPiece.square} type="selectedPiece" />
         )}
-        {moves.length > 0 && (
+        {moveIndex > 0 && (
           <>
             <SquareHighlight
-              square={moves[moves.length - 1].from}
+              square={moves[moveIndex].from}
               type="previousMove"
             />
-            <SquareHighlight
-              square={moves[moves.length - 1].to}
-              type="previousMove"
-            />
+            <SquareHighlight square={moves[moveIndex].to} type="previousMove" />
           </>
         )}
         {legalMoves.map((legalMove, i) => (
@@ -149,10 +160,10 @@ export default function Board() {
           <img src={flipIcon} alt="Flip board" />
         </button>
         <div className="right-buttons">
-          <button className="prev-move">
+          <button className="prev-move" onClick={handlePrevMove}>
             <img src={leftIcon} alt="View previous move" />
           </button>
-          <button className="next-move">
+          <button className="next-move" onClick={handleNextMove}>
             <img src={rightIcon} alt="View next move" />
           </button>
         </div>

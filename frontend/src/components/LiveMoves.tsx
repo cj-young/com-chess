@@ -30,15 +30,13 @@ export default function LiveMoves() {
       <h2>Moves</h2>
       <div className="moves-wrapper">
         <ul>
-          {algebraicMoves.map((moveGroup) => (
-            <>
-              <li className="live-moves__move-group">
-                <div className="live-moves__move">{moveGroup[0]}</div>
-                {moveGroup.length > 1 && (
-                  <div className="live-moves__move">{moveGroup[1]}</div>
-                )}
-              </li>
-            </>
+          {algebraicMoves.map((moveGroup, i) => (
+            <li className="live-moves__move-group" key={i}>
+              <div className="live-moves__move">{moveGroup[0]}</div>
+              {moveGroup.length > 1 && (
+                <div className="live-moves__move">{moveGroup[1]}</div>
+              )}
+            </li>
           ))}
           <li ref={anchor}></li>
         </ul>

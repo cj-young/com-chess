@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useLayoutEffect
+} from "react";
 import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
 import Piece from "../utils/Piece";
@@ -49,6 +55,8 @@ type TLiveGameContext = {
   setSelectedPiece: React.Dispatch<React.SetStateAction<Piece | null>>;
   legalMoves: string[];
   turn: "white" | "black";
+  moveIndex: number;
+  setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
@@ -56,9 +64,17 @@ const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
 export function LiveGameContextProvider({ children }: Props) {
   const [gameState, setGameState] = useState<TGameState>("loading");
   const [moves, setMoves] = useState<Move[]>([]);
-  const pieces = useMemo(() => {
-    return applyMoves(generateStartingPosition(), moves);
+  const [moveIndex, setMoveIndex] = useState(0);
+  useLayoutEffect(() => {
+    setMoveIndex(moves.length - 1);
   }, [moves]);
+  const pieces = useMemo(() => {
+    return applyMoves(
+      generateStartingPosition(),
+      moves.slice(0, moveIndex + 1)
+    );
+  }, [moves, moveIndex]);
+
   const [gameInfo, setGameInfo] = useState<GameInfo>({
     blackUsername: "",
     whiteUsername: "",
@@ -111,7 +127,9 @@ export function LiveGameContextProvider({ children }: Props) {
         legalMoves,
         turn,
         gameState,
-        setGameState
+        setGameState,
+        moveIndex,
+        setMoveIndex
       }}
     >
       {children}
