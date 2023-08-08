@@ -512,15 +512,15 @@ module.exports = (server, sessionMiddleware, passport) => {
             .split(" ")
             .slice(0, -2)
             .join(" ");
-          console.log("current", currentFEN);
           let count = 0;
 
           for (let i = 0; i < updatedGame.moves.length + 1; i++) {
             const fenPosition = movesToFEN(updatedGame.moves.slice(0, i));
             if (fenPosition.split(" ").slice(0, -2).join(" ") === currentFEN)
               count++;
-            console.log(count, fenPosition.split(" ").slice(0, -2).join(" "));
           }
+
+          console.log(movesToFEN(updatedGame.moves));
 
           if (count >= 3) {
             const pastGame = await PastGame.create({
@@ -536,6 +536,33 @@ module.exports = (server, sessionMiddleware, passport) => {
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
                 type: "repetition",
+                id: pastGame.id
+              });
+            }
+
+            await Promise.all([
+              LiveGame.findByIdAndDelete(updatedGame.id),
+              User.findByIdAndUpdate(updatedGame.blackPlayer, {
+                $set: { currentGame: null }
+              }),
+              User.findByIdAndUpdate(updatedGame.whitePlayer, {
+                $set: { currentGame: null }
+              })
+            ]);
+          } else if (+movesToFEN(updatedGame.moves).split(" ")[4] >= 100) {
+            const pastGame = await PastGame.create({
+              moves: updatedGame.moves,
+              blackPlayer: updatedGame.blackPlayer,
+              whitePlayer: updatedGame.whitePlayer,
+              minutes: updatedGame.minutes,
+              increment: updatedGame.increment,
+              winner: null
+            });
+
+            socket.emit("gameDrawn", { type: "fiftyMove", id: pastGame.id });
+            if (connectedUsers.has(opponent.id)) {
+              io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
+                type: "fiftyMove",
                 id: pastGame.id
               });
             }
