@@ -12,7 +12,13 @@ type Props =
       close: () => void;
     }
   | {
-      type: "draw" | "stalemate" | "repetition" | "fiftyMove";
+      type:
+        | "draw"
+        | "stalemate"
+        | "repetition"
+        | "fiftyMove"
+        | "insufficientMaterial"
+        | "insufficientMaterialTimeout";
       gameId: string;
       winStatus: "drawn";
       close: () => void;
@@ -52,6 +58,12 @@ export default function GameOver({ type, gameId, winStatus, close }: Props) {
     case "fiftyMove":
       mainMessage = "Draw";
       break;
+    case "insufficientMaterial":
+      mainMessage = "Draw";
+      break;
+    case "insufficientMaterialTimeout":
+      mainMessage = "Draw";
+      break;
   }
 
   let subMessage;
@@ -76,6 +88,12 @@ export default function GameOver({ type, gameId, winStatus, close }: Props) {
       break;
     case "fiftyMove":
       subMessage = "Game drawn by 50-move rule";
+      break;
+    case "insufficientMaterial":
+      subMessage = "Game drawn by insufficient material";
+      break;
+    case "insufficientMaterialTimeout":
+      subMessage = "Game drawn by timeout vs insufficient material";
       break;
   }
 

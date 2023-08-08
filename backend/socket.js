@@ -8,6 +8,7 @@ const isInCheck = require("./utils/moveVerification/isInCheck");
 const canMove = require("./utils/moveVerification/canMove");
 const PastGame = require("./models/PastGame");
 const movesToFEN = require("./utils/movesToFEN");
+const isInsufficientMaterial = require("./utils/isInsufficientMaterial");
 
 module.exports = (server, sessionMiddleware, passport) => {
   const io = new Server(server, {
@@ -520,8 +521,6 @@ module.exports = (server, sessionMiddleware, passport) => {
               count++;
           }
 
-          console.log(movesToFEN(updatedGame.moves));
-
           if (count >= 3) {
             const pastGame = await PastGame.create({
               moves: updatedGame.moves,
@@ -563,6 +562,39 @@ module.exports = (server, sessionMiddleware, passport) => {
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
                 type: "fiftyMove",
+                id: pastGame.id
+              });
+            }
+
+            await Promise.all([
+              LiveGame.findByIdAndDelete(updatedGame.id),
+              User.findByIdAndUpdate(updatedGame.blackPlayer, {
+                $set: { currentGame: null }
+              }),
+              User.findByIdAndUpdate(updatedGame.whitePlayer, {
+                $set: { currentGame: null }
+              })
+            ]);
+          } else if (
+            isInsufficientMaterial(updatedGame.moves, "white") &&
+            isInsufficientMaterial(updatedGame.moves, "black")
+          ) {
+            const pastGame = await PastGame.create({
+              moves: updatedGame.moves,
+              blackPlayer: updatedGame.blackPlayer,
+              whitePlayer: updatedGame.whitePlayer,
+              minutes: updatedGame.minutes,
+              increment: updatedGame.increment,
+              winner: null
+            });
+
+            socket.emit("gameDrawn", {
+              type: "insufficientMaterial",
+              id: pastGame.id
+            });
+            if (connectedUsers.has(opponent.id)) {
+              io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
+                type: "insufficientMaterial",
                 id: pastGame.id
               });
             }
