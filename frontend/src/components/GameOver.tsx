@@ -12,7 +12,7 @@ type Props =
       close: () => void;
     }
   | {
-      type: "draw" | "stalemate";
+      type: "draw" | "stalemate" | "repetition" | "fiftyMove";
       gameId: string;
       winStatus: "drawn";
       close: () => void;
@@ -46,6 +46,12 @@ export default function GameOver({ type, gameId, winStatus, close }: Props) {
     case "timeout":
       mainMessage = "Game Over";
       break;
+    case "repetition":
+      mainMessage = "Draw";
+      break;
+    case "fiftyMove":
+      mainMessage = "Draw";
+      break;
   }
 
   let subMessage;
@@ -64,6 +70,12 @@ export default function GameOver({ type, gameId, winStatus, close }: Props) {
       subMessage = `${
         winStatus === "won" ? "You win" : "Opponent wins"
       } by timeout`;
+      break;
+    case "repetition":
+      subMessage = "Game drawn by repetition";
+      break;
+    case "fiftyMove":
+      subMessage = "Game drawn by 50-move rule";
       break;
   }
 

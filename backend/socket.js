@@ -7,6 +7,7 @@ const generateStartingPosition = require("./utils/generateStartingPosition");
 const isInCheck = require("./utils/moveVerification/isInCheck");
 const canMove = require("./utils/moveVerification/canMove");
 const PastGame = require("./models/PastGame");
+const movesToFEN = require("./utils/movesToFEN");
 
 module.exports = (server, sessionMiddleware, passport) => {
   const io = new Server(server, {
@@ -389,6 +390,8 @@ module.exports = (server, sessionMiddleware, passport) => {
         const user = await User.findById(userId);
         const game = await LiveGame.findById(user.currentGame);
 
+        if (!game) throw new Error("No game found");
+
         const { moves } = game;
         const [blackPlayer, whitePlayer] = [
           game.blackPlayer.toString(),
@@ -503,6 +506,50 @@ module.exports = (server, sessionMiddleware, passport) => {
               $set: { currentGame: null }
             })
           ]);
+        } else {
+          // Check for repetition
+          const currentFEN = movesToFEN(updatedGame.moves)
+            .split(" ")
+            .slice(0, -2)
+            .join(" ");
+          console.log("current", currentFEN);
+          let count = 0;
+
+          for (let i = 0; i < updatedGame.moves.length + 1; i++) {
+            const fenPosition = movesToFEN(updatedGame.moves.slice(0, i));
+            if (fenPosition.split(" ").slice(0, -2).join(" ") === currentFEN)
+              count++;
+            console.log(count, fenPosition.split(" ").slice(0, -2).join(" "));
+          }
+
+          if (count >= 3) {
+            const pastGame = await PastGame.create({
+              moves: updatedGame.moves,
+              blackPlayer: updatedGame.blackPlayer,
+              whitePlayer: updatedGame.whitePlayer,
+              minutes: updatedGame.minutes,
+              increment: updatedGame.increment,
+              winner: null
+            });
+
+            socket.emit("gameDrawn", { type: "repetition", id: pastGame.id });
+            if (connectedUsers.has(opponent.id)) {
+              io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
+                type: "repetition",
+                id: pastGame.id
+              });
+            }
+
+            await Promise.all([
+              LiveGame.findByIdAndDelete(updatedGame.id),
+              User.findByIdAndUpdate(updatedGame.blackPlayer, {
+                $set: { currentGame: null }
+              }),
+              User.findByIdAndUpdate(updatedGame.whitePlayer, {
+                $set: { currentGame: null }
+              })
+            ]);
+          }
         }
       } catch (error) {
         console.error(error);

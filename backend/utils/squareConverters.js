@@ -15,7 +15,7 @@ module.exports.letterFile = (file) => {
 };
 
 module.exports.numSquare = (square) => {
-  return [numRank(square), numFile(square)];
+  return [module.exports.numRank(square), module.exports.numFile(square)];
 };
 
 module.exports.letterSquare = (rank, file) => {
