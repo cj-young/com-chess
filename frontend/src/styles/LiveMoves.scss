@@ -5,4 +5,50 @@
   border-radius: var(--br-primary);
   padding: 1rem;
   color: var(--clr-neutral-100);
+  display: flex;
+  flex-direction: column;
+
+  * {
+    flex: 0 0 auto;
+  }
+
+  .moves-wrapper {
+    height: auto;
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column-reverse;
+    overflow-y: auto;
+  }
+
+  ul {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    counter-reset: move-counter;
+    list-style: none;
+    width: 100%;
+    padding-block: 0.5rem;
+    overflow-y: auto;
+  }
+
+  &__move-group {
+    display: grid;
+    grid-template-columns: 3rem 1fr 1fr;
+    width: 100%;
+    gap: 1rem;
+    counter-increment: move-counter;
+    padding: 0.5rem;
+
+    &::before {
+      content: counter(move-counter);
+      text-align: center;
+      font-weight: bold;
+    }
+
+    &:nth-child(2n) {
+      background-color: var(--clr-bg-300);
+    }
+  }
 }

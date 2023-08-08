@@ -99,7 +99,6 @@ export default function PieceComponent({ piece, boardRef }: Props) {
           if (newSquare === piece.square) {
             if (upWillDeselect) setSelectedPiece(null);
           } else {
-            console.log(newSquare, legalMoves);
             if (legalMovesRef.current.includes(newSquare)) {
               makeMove({ to: newSquare, from: piece.square });
             }
