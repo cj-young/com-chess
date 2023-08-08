@@ -72,6 +72,15 @@
     &:hover {
       opacity: 0.8;
     }
+
+    &.disabled {
+      opacity: 0.5;
+      cursor: default;
+
+      &:hover {
+        opacity: 0.5;
+      }
+    }
   }
 
   .right-buttons {

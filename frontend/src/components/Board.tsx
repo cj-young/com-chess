@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import "../styles/Board.scss";
 import flipIcon from "../assets/repeat-solid.svg";
 import leftIcon from "../assets/angle-left-solid.svg";
@@ -26,6 +26,10 @@ export default function Board() {
     setMoveIndex
   } = useLiveGameContext();
 
+  const isUpToDate = useMemo(() => {
+    return moveIndex === moves.length - 1;
+  }, [moves, moveIndex]);
+
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     if (!selectedPiece) return;
@@ -50,7 +54,7 @@ export default function Board() {
   }
 
   function handlePrevMove() {
-    if (moveIndex > 0) {
+    if (moveIndex >= 0) {
       setMoveIndex((prevMoveIndex) => prevMoveIndex - 1);
     }
   }
@@ -160,10 +164,18 @@ export default function Board() {
           <img src={flipIcon} alt="Flip board" />
         </button>
         <div className="right-buttons">
-          <button className="prev-move" onClick={handlePrevMove}>
+          <button
+            className={`prev-move ${moveIndex >= 0 ? "" : "disabled"}`}
+            onClick={handlePrevMove}
+            aria-disabled={moveIndex < 0}
+          >
             <img src={leftIcon} alt="View previous move" />
           </button>
-          <button className="next-move" onClick={handleNextMove}>
+          <button
+            className={`next-move ${isUpToDate ? "disabled" : ""}`}
+            onClick={handleNextMove}
+            aria-disabled={!isUpToDate}
+          >
             <img src={rightIcon} alt="View next move" />
           </button>
         </div>
