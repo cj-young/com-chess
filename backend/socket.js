@@ -615,6 +615,27 @@ module.exports = (server, sessionMiddleware, passport) => {
       }
     });
 
+    socket.on("liveChat", async (message) => {
+      const user = await User.findById(userId);
+      const game = await LiveGame.findById(user.currentGame);
+
+      if (game) {
+        const opponentId =
+          game.blackPlayer.toString() === user.id
+            ? game.whitePlayer
+            : game.blackPlayer;
+
+        const opponent = await User.findById(opponentId);
+
+        if (connectedUsers.has(opponent.id)) {
+          io.to(connectedUsers.get(opponent.id)).emit("liveChat", {
+            from: user.username,
+            message: message
+          });
+        }
+      }
+    });
+
     io.on("disconnect", () => {
       connectedUsers.delete(userId);
     });

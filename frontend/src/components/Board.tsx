@@ -80,6 +80,10 @@ export default function Board() {
       );
     });
 
+    socket.on("startGame", () => {
+      setGameOverModal(null);
+    });
+
     return () => {
       socket.off("gameWon");
       socket.off("gameLost");
