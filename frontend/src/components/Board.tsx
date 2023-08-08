@@ -18,6 +18,7 @@ export default function Board() {
     selectedPiece,
     setSelectedPiece,
     orientation,
+    setOrientation,
     moves,
     legalMoves,
     makeMove
@@ -44,6 +45,12 @@ export default function Board() {
         setSelectedPiece(null);
       }
     }
+  }
+
+  function handleFlipBoard() {
+    setOrientation((prevOrientation) =>
+      prevOrientation === "white" ? "black" : "white"
+    );
   }
 
   useEffect(() => {
@@ -138,7 +145,7 @@ export default function Board() {
         {gameOverModal}
       </div>
       <div className="controls">
-        <button className="flip-board">
+        <button className="flip-board" onClick={handleFlipBoard}>
           <img src={flipIcon} alt="Flip board" />
         </button>
         <div className="right-buttons">
