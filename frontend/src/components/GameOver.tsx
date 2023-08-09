@@ -27,7 +27,7 @@ type Props =
 export default function GameOver({ type, gameId, winStatus, close }: Props) {
   const modalRef = useRef<HTMLDivElement | null>(null);
 
-  const { setGameState, setMoves } = useLiveGameContext();
+  const { setGameState, resetLiveGameContext } = useLiveGameContext();
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
     if (e.target === modalRef.current) {
@@ -115,8 +115,8 @@ export default function GameOver({ type, gameId, winStatus, close }: Props) {
             className="new-game"
             onClick={() => {
               close();
+              resetLiveGameContext();
               setGameState("creating");
-              setMoves([]);
             }}
           >
             New Game

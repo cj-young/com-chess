@@ -59,6 +59,7 @@ type TLiveGameContext = {
   moveIndex: number;
   setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
   moveStartTime: React.MutableRefObject<number>;
+  resetLiveGameContext: () => void;
 };
 
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
@@ -71,6 +72,7 @@ export function LiveGameContextProvider({ children }: Props) {
     setMoveIndex(moves.length - 1);
   }, [moves]);
   const pieces = useMemo(() => {
+    console.log(moves);
     return applyMoves(
       generateStartingPosition(),
       moves.slice(0, moveIndex + 1)
@@ -110,6 +112,27 @@ export function LiveGameContextProvider({ children }: Props) {
     const timeSpent = moveStartTime.current - Date.now();
     socket.emit("move", { move, timeSpent });
   }
+
+  function resetLiveGameContext() {
+    setMoves([]);
+    setGameState("loading");
+    setMoveIndex(0);
+    setColor("white");
+    setGameInfo({
+      blackUsername: "",
+      whiteUsername: "",
+      minutes: 0,
+      increment: 0,
+      blackTime: 0,
+      whiteTime: 0
+    });
+    setOrientation("white");
+    setWhiteTime(0);
+    setBlackTime(0);
+    setSelectedPiece(null);
+    moveStartTime.current = 0;
+  }
+
   return (
     <LiveGameContext.Provider
       value={{
@@ -135,7 +158,8 @@ export function LiveGameContextProvider({ children }: Props) {
         setGameState,
         moveIndex,
         setMoveIndex,
-        moveStartTime
+        moveStartTime,
+        resetLiveGameContext
       }}
     >
       {children}
