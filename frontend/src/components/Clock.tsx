@@ -1,13 +1,15 @@
 import { useMemo } from "react";
 import "../styles/Clock.scss";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
+import Piece, { PieceType, pieceImages } from "../utils/Piece";
 
 type Props = {
   player: "top" | "bottom";
 };
 
 export default function Clock({ player }: Props) {
-  const { orientation, gameInfo, blackTime, whiteTime } = useLiveGameContext();
+  const { orientation, gameInfo, blackTime, whiteTime, pieces } =
+    useLiveGameContext();
 
   const clockColor = useMemo(() => {
     if (player === "bottom") return orientation;
@@ -21,6 +23,64 @@ export default function Clock({ player }: Props) {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }, [blackTime, whiteTime, clockColor]);
 
+  // const capturedPieces = useMemo(() => {
+  //   const capturedCounts = new Map<PieceType, number>();
+  //   const lostCounts = new Map<PieceType, number>();
+
+  //   const friendlyStartIndex = clockColor === "white" ? 16 : 0;
+  //   const enemyStartIndex = clockColor === "white" ? 0 : 16;
+
+  //   for (let i = friendlyStartIndex; i < friendlyStartIndex + 16; i++) {
+  //     if (!pieces[i].active) {
+  //       const currCount = lostCounts.get(pieces[i].type) ?? 0;
+  //       lostCounts.set(pieces[i].type, currCount + 1);
+  //     }
+  //   }
+
+  //   for (let i = enemyStartIndex; i < enemyStartIndex + 16; i++) {
+  //     if (!pieces[i].active) {
+  //       const currCount = capturedCounts.get(pieces[i].type) ?? 0;
+  //       capturedCounts.set(pieces[i].type, currCount + 1);
+  //     }
+  //   }
+
+  //   for (let [key, value] of capturedCounts) {
+  //     const netCount = Math.max(value - (lostCounts.get(key) ?? 0), 0);
+  //     capturedCounts.set(key, netCount);
+  //   }
+
+  //   return capturedCounts;
+  // }, [pieces]);
+
+  const capturedPieces =
+    clockColor === "white"
+      ? new Map<PieceType, number>([
+          ["pawn", 3],
+          ["bishop", 1],
+          ["queen", 1]
+        ])
+      : new Map<PieceType, number>([["knight", 1]]);
+
+  function capturedPieceToDiv(type: PieceType, number = 0, reactKey: any) {
+    const res = [];
+    for (let i = 0; i < number; i++) {
+      res.push(
+        <img
+          className="clock__piece"
+          src={pieceImages
+            .get(type)
+            ?.get(clockColor === "white" ? "black" : "white")}
+        />
+      );
+    }
+
+    return (
+      <div className="clock__piece-group" data-type={type} key={reactKey}>
+        {res}
+      </div>
+    );
+  }
+
   return (
     <div className={`clock ${player}`}>
       <div className="clock__left">
@@ -29,7 +89,11 @@ export default function Clock({ player }: Props) {
             ? gameInfo.blackUsername
             : gameInfo.whiteUsername}
         </div>
-        <div className="clock__pieces"></div>
+        <div className="clock__pieces">
+          {Array.from(capturedPieces).map(([key, value], i) =>
+            capturedPieceToDiv(key, value, i)
+          )}
+        </div>
       </div>
       <div className="clock__time">{timeString}</div>
     </div>

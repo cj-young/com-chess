@@ -55,7 +55,30 @@
     font-size: 2rem;
   }
 
+  &__left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
   &__pieces {
-    height: 1rem;
+    height: 1.5rem;
+    display: flex;
+  }
+
+  &__piece-group {
+    display: flex;
+    align-items: center;
+    & + & {
+      margin-left: -0.25rem;
+    }
+  }
+
+  &__piece {
+    height: 1.5rem;
+
+    & + & {
+      margin-left: -1rem;
+    }
   }
 }
