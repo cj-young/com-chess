@@ -32,10 +32,8 @@ export default function LiveGame() {
     blackTime
   } = useLiveGameContext();
 
-  const turnRef = useRef<string>("white");
   const justMovedRef = useRef<boolean>(false);
 
-  turnRef.current = turn;
   justMovedRef.current = justMoved;
 
   function cancelGame() {
