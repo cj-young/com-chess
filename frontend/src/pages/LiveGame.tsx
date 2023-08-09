@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Board from "../components/Board";
 import Chat from "../components/Chat";
 import Clock from "../components/Clock";
@@ -24,8 +24,19 @@ export default function LiveGame() {
     setWhiteTime,
     gameState,
     setGameState,
-    moveStartTime
+    moveStartTime,
+    setJustMoved,
+    turn,
+    justMoved,
+    whiteTime,
+    blackTime
   } = useLiveGameContext();
+
+  const turnRef = useRef<string>("white");
+  const justMovedRef = useRef<boolean>(false);
+
+  turnRef.current = turn;
+  justMovedRef.current = justMoved;
 
   function cancelGame() {
     socket.emit("gameCancel");
@@ -52,6 +63,14 @@ export default function LiveGame() {
       setWhiteTime(game.info.whiteTime);
       setBlackTime(game.info.blackTime);
       moveStartTime.current = Date.now();
+
+      const turn = game.moves.length % 2 === 0 ? "white" : "black";
+      console.log(game);
+      const timeElapsedSinceMove = Date.now() - game.lastMoveTime;
+      if (turn === "white")
+        setWhiteTime((prevWhiteTime) => prevWhiteTime - timeElapsedSinceMove);
+      if (turn === "black")
+        setBlackTime((prevBlackTime) => prevBlackTime - timeElapsedSinceMove);
     });
 
     socket.on("gameDeclined", () => {
@@ -63,6 +82,7 @@ export default function LiveGame() {
       setWhiteTime(whiteTime);
       setBlackTime(blackTime);
       setMoves(moves);
+      setJustMoved(false);
     });
 
     return () => {
@@ -73,6 +93,22 @@ export default function LiveGame() {
       socket.off("move");
     };
   }, []);
+
+  useEffect(() => {
+    const startTime = turn === "white" ? whiteTime : blackTime;
+
+    const timerInterval = setInterval(() => {
+      if (turn === "white" && !justMovedRef.current) {
+        setWhiteTime(startTime - (Date.now() - moveStartTime.current));
+      } else if (turn === "black" && !justMovedRef.current) {
+        setBlackTime(startTime - (Date.now() - moveStartTime.current));
+      }
+    }, 250);
+
+    return () => {
+      clearInterval(timerInterval);
+    };
+  }, [turn]);
 
   return gameState === "loading" ? (
     <Loading />

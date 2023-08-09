@@ -142,7 +142,8 @@ module.exports = (server, sessionMiddleware, passport) => {
           whiteTime: game.whiteTime,
           blackTime: game.blackTime
         },
-        moves: game.moves
+        moves: game.moves,
+        lastMoveTime: game.lastMoveTime
       };
     }
 

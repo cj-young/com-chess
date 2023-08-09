@@ -60,6 +60,8 @@ type TLiveGameContext = {
   setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
   moveStartTime: React.MutableRefObject<number>;
   resetLiveGameContext: () => void;
+  justMoved: boolean;
+  setJustMoved: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
@@ -92,6 +94,7 @@ export function LiveGameContextProvider({ children }: Props) {
   const [whiteTime, setWhiteTime] = useState(0);
   const [blackTime, setBlackTime] = useState(0);
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
+  const [justMoved, setJustMoved] = useState(false);
 
   const moveStartTime = useRef<number>(0);
 
@@ -109,8 +112,9 @@ export function LiveGameContextProvider({ children }: Props) {
 
   function makeMove(move: Move) {
     setMoves((prevMoves) => [...prevMoves, move]);
-    const timeSpent = moveStartTime.current - Date.now();
+    const timeSpent = Date.now() - moveStartTime.current;
     socket.emit("move", { move, timeSpent });
+    setJustMoved(true);
   }
 
   function resetLiveGameContext() {
@@ -130,6 +134,7 @@ export function LiveGameContextProvider({ children }: Props) {
     setWhiteTime(0);
     setBlackTime(0);
     setSelectedPiece(null);
+    setJustMoved(false);
     moveStartTime.current = 0;
   }
 
@@ -159,7 +164,9 @@ export function LiveGameContextProvider({ children }: Props) {
         moveIndex,
         setMoveIndex,
         moveStartTime,
-        resetLiveGameContext
+        resetLiveGameContext,
+        justMoved,
+        setJustMoved
       }}
     >
       {children}
