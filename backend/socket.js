@@ -386,7 +386,7 @@ module.exports = (server, sessionMiddleware, passport) => {
       }
     });
 
-    socket.on("move", async (move) => {
+    socket.on("move", async ({ move, timeSpent }) => {
       try {
         const user = await User.findById(userId);
         const game = await LiveGame.findById(user.currentGame);
@@ -399,12 +399,38 @@ module.exports = (server, sessionMiddleware, passport) => {
           game.whitePlayer.toString()
         ];
         const turn = game.moves.length % 2 === 0 ? "white" : "black";
+        const BUFFER = 1000; // 1 second buffer to account for possible latency
+        const adjustedTimeSpent = Math.max(
+          timeSpent,
+          Date.now() - game.lastMoveTime - BUFFER
+        );
+
+        let timeUpdatedGame;
+        if (user.id === whitePlayer) {
+          const adjustedTime = game.whiteTime - adjustedTimeSpent;
+          timeUpdatedGame = await LiveGame.findByIdAndUpdate(
+            game.id,
+            { $set: { lastMoveTime: Date.now(), whiteTime: adjustedTime } },
+            { new: true }
+          );
+        } else {
+          const adjustedTime = game.blackTime - adjustedTimeSpent;
+          timeUpdatedGame = await LiveGame.findByIdAndUpdate(
+            game.id,
+            { $set: { lastMoveTime: Date.now(), blackTime: adjustedTime } },
+            { new: true }
+          );
+        }
 
         if (
           (turn === "white" && user.id !== whitePlayer) ||
           (turn === "black" && user.id !== blackPlayer)
         ) {
-          socket.emit("move", game.moves);
+          socket.emit("move", {
+            moves,
+            blackTime: timeUpdatedGame.blackTime,
+            whiteTime: timeUpdatedGame.whiteTime
+          });
           throw new Error("Move attempted by user when it is not their turn");
         }
 
@@ -416,7 +442,11 @@ module.exports = (server, sessionMiddleware, passport) => {
         }
 
         if (!movedPiece) {
-          socket.emit("move", moves);
+          socket.emit("move", {
+            moves,
+            blackTime: timeUpdatedGame.blackTime,
+            whiteTime: timeUpdatedGame.whiteTime
+          });
           throw new Error("Piece not found");
         }
 
@@ -428,7 +458,11 @@ module.exports = (server, sessionMiddleware, passport) => {
         }
 
         if (!moveIsLegal) {
-          socket.emit("move", game.moves);
+          socket.emit("move", {
+            moves,
+            blackTime: timeUpdatedGame.blackTime,
+            whiteTime: timeUpdatedGame.whiteTime
+          });
           throw new Error("Illegal move");
         }
 
@@ -445,12 +479,17 @@ module.exports = (server, sessionMiddleware, passport) => {
 
         const opponent = await User.findById(opponentId);
 
-        socket.emit("move", updatedGame.moves);
+        socket.emit("move", {
+          moves: updatedGame.moves,
+          blackTime: timeUpdatedGame.blackTime,
+          whiteTime: timeUpdatedGame.whiteTime
+        });
         if (connectedUsers.has(opponent.id)) {
-          io.to(connectedUsers.get(opponent.id)).emit(
-            "move",
-            updatedGame.moves
-          );
+          io.to(connectedUsers.get(opponent.id)).emit("move", {
+            moves: updatedGame.moves,
+            blackTime: timeUpdatedGame.blackTime,
+            whiteTime: timeUpdatedGame.whiteTime
+          });
         }
 
         const updatedPieces = applyMoves(

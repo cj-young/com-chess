@@ -23,7 +23,8 @@ export default function LiveGame() {
     setBlackTime,
     setWhiteTime,
     gameState,
-    setGameState
+    setGameState,
+    moveStartTime
   } = useLiveGameContext();
 
   function cancelGame() {
@@ -50,14 +51,15 @@ export default function LiveGame() {
       setOrientation(game.yourColor);
       setWhiteTime(game.info.whiteTime);
       setBlackTime(game.info.blackTime);
-      console.log(game);
+      moveStartTime.current = Date.now();
     });
 
     socket.on("gameDeclined", () => {
       setGameState("creating");
     });
 
-    socket.on("move", (moves) => {
+    socket.on("move", ({ moves, whiteTime, blackTime }) => {
+      moveStartTime.current = Date.now();
       setMoves(moves);
     });
 

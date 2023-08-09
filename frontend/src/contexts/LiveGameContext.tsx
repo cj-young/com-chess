@@ -3,7 +3,8 @@ import {
   useContext,
   useState,
   useMemo,
-  useLayoutEffect
+  useLayoutEffect,
+  useRef
 } from "react";
 import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
@@ -57,6 +58,7 @@ type TLiveGameContext = {
   turn: "white" | "black";
   moveIndex: number;
   setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
+  moveStartTime: React.MutableRefObject<number>;
 };
 
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
@@ -89,6 +91,8 @@ export function LiveGameContextProvider({ children }: Props) {
   const [blackTime, setBlackTime] = useState(0);
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
 
+  const moveStartTime = useRef<number>(0);
+
   const legalMoves = useMemo(() => {
     if (selectedPiece) {
       return generateLegalMoves(pieces, selectedPiece, moves);
@@ -103,7 +107,8 @@ export function LiveGameContextProvider({ children }: Props) {
 
   function makeMove(move: Move) {
     setMoves((prevMoves) => [...prevMoves, move]);
-    socket.emit("move", move);
+    const timeSpent = moveStartTime.current - Date.now();
+    socket.emit("move", { move, timeSpent });
   }
   return (
     <LiveGameContext.Provider
@@ -129,7 +134,8 @@ export function LiveGameContextProvider({ children }: Props) {
         gameState,
         setGameState,
         moveIndex,
-        setMoveIndex
+        setMoveIndex,
+        moveStartTime
       }}
     >
       {children}
