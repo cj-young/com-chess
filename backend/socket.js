@@ -279,8 +279,8 @@ module.exports = (server, sessionMiddleware, passport) => {
         const game = await LiveGame.create({
           blackPlayer,
           whitePlayer,
-          blackTime: gameRequest.minutes * 60,
-          whiteTime: gameRequest.minutes * 60,
+          blackTime: gameRequest.minutes * 60 * 1000,
+          whiteTime: gameRequest.minutes * 60 * 1000,
           minutes: gameRequest.minutes,
           increment: gameRequest.increment
         });
