@@ -42,6 +42,10 @@ const LiveGameSchema = new Schema({
   started: {
     type: Boolean,
     default: false
+  },
+  lastMoveTime: {
+    type: Date,
+    default: Date.now
   }
 });
 
