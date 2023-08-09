@@ -14,6 +14,7 @@ export default function applyMoves(pieces: Piece[], moves: Move[]) {
     Array.from({ length: 8 }, () => null)
   );
   for (let piece of pieces) {
+    if (!piece.active) continue;
     board[piece.numRank][piece.numFile] = piece;
   }
 
@@ -80,7 +81,7 @@ export default function applyMoves(pieces: Piece[], moves: Move[]) {
         if (rook?.type === "rook") {
           board[numRank(`${rookFromFile}${move.from[1]}`)][
             numFile(`${rookFromFile}${move.from[1]}`)
-          ];
+          ] = null;
           const newPos = `${rookToFile}${move.from[1]}`;
           const [newRow, newCol] = [numRank(newPos), numFile(newPos)];
           const existingPiece = board[newRow][newCol];

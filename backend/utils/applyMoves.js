@@ -5,6 +5,7 @@ module.exports = function applyMoves(pieces, moves) {
     Array.from({ length: 8 }, () => null)
   );
   for (let piece of pieces) {
+    if (!piece.active) continue;
     board[piece.numRank][piece.numFile] = piece;
   }
 
