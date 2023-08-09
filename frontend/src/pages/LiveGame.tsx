@@ -60,6 +60,8 @@ export default function LiveGame() {
 
     socket.on("move", ({ moves, whiteTime, blackTime }) => {
       moveStartTime.current = Date.now();
+      setWhiteTime(whiteTime);
+      setBlackTime(blackTime);
       setMoves(moves);
     });
 
