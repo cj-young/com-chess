@@ -6,8 +6,6 @@ import movesToAlgebraic from "../utils/movesToAlgebraic";
 export default function LiveMoves() {
   const { moves } = useLiveGameContext();
 
-  const anchor = useRef<HTMLLIElement | null>(null);
-
   const algebraicMoves = useMemo(() => {
     const res: string[][] = [];
     const ungroupedMoves = movesToAlgebraic(moves);
@@ -20,10 +18,6 @@ export default function LiveMoves() {
     }
     return res;
   }, [moves]);
-
-  useEffect(() => {
-    anchor.current?.scrollIntoView();
-  }, [algebraicMoves]);
 
   return (
     <div className="live-moves">
@@ -38,7 +32,6 @@ export default function LiveMoves() {
               )}
             </li>
           ))}
-          <li ref={anchor}></li>
         </ul>
       </div>
     </div>
