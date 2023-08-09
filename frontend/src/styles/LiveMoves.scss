@@ -47,8 +47,9 @@
       font-weight: bold;
     }
 
-    &:nth-child(2n) {
+    &:nth-child(2n - 1) {
       background-color: var(--clr-bg-300);
+      border-radius: var(--br-primary);
     }
   }
 
