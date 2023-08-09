@@ -11,7 +11,13 @@ import queenBlack from "../assets/chess-pieces/queen-black.svg";
 import kingWhite from "../assets/chess-pieces/king-white.svg";
 import kingBlack from "../assets/chess-pieces/king-black.svg";
 
-type PieceType = "pawn" | "knight" | "bishop" | "rook" | "queen" | "king";
+export type PieceType =
+  | "pawn"
+  | "knight"
+  | "bishop"
+  | "rook"
+  | "queen"
+  | "king";
 type Color = "white" | "black";
 
 function makePieceColorMap(whitePiece: string, blackPiece: string) {
