@@ -21,7 +21,7 @@ function makePieceColorMap(whitePiece: string, blackPiece: string) {
   ]);
 }
 
-const pieceImages = new Map<PieceType, Map<Color, string>>([
+export const pieceImages = new Map<PieceType, Map<Color, string>>([
   ["pawn", makePieceColorMap(pawnWhite, pawnBlack)],
   ["knight", makePieceColorMap(knightWhite, knightBlack)],
   ["bishop", makePieceColorMap(bishopWhite, bishopBlack)],
