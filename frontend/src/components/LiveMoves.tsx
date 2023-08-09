@@ -4,7 +4,7 @@ import "../styles/LiveMoves.scss";
 import movesToAlgebraic from "../utils/movesToAlgebraic";
 
 export default function LiveMoves() {
-  const { moves } = useLiveGameContext();
+  const { moves, moveIndex, setMoveIndex } = useLiveGameContext();
 
   const algebraicMoves = useMemo(() => {
     const res: string[][] = [];
@@ -26,9 +26,23 @@ export default function LiveMoves() {
         <ul>
           {algebraicMoves.map((moveGroup, i) => (
             <li className="live-moves__move-group" key={i}>
-              <div className="live-moves__move">{moveGroup[0]}</div>
+              <div
+                className={`live-moves__move ${
+                  i * 2 === moveIndex ? "highlighted" : ""
+                }`}
+                onClick={() => setMoveIndex(i * 2)}
+              >
+                {moveGroup[0]}
+              </div>
               {moveGroup.length > 1 && (
-                <div className="live-moves__move">{moveGroup[1]}</div>
+                <div
+                  className={`live-moves__move ${
+                    i * 2 + 1 === moveIndex ? "highlighted" : ""
+                  }`}
+                  onClick={() => setMoveIndex(i * 2 + 1)}
+                >
+                  {moveGroup[1]}
+                </div>
               )}
             </li>
           ))}

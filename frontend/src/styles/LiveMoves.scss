@@ -51,4 +51,12 @@
       background-color: var(--clr-bg-300);
     }
   }
+
+  &__move {
+    cursor: pointer;
+  }
+
+  &__move.highlighted {
+    font-weight: bold;
+  }
 }
