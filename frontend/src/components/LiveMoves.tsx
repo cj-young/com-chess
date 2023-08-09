@@ -1,4 +1,4 @@
-import { useMemo, useRef, useEffect } from "react";
+import { useMemo } from "react";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
 import "../styles/LiveMoves.scss";
 import movesToAlgebraic from "../utils/movesToAlgebraic";

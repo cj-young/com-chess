@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import "../styles/Clock.scss";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
-import Piece, { PieceType, pieceImages, pieceValues } from "../utils/Piece";
+import { PieceType, pieceImages, pieceValues } from "../utils/Piece";
 
 type Props = {
   player: "top" | "bottom";
