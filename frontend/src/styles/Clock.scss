@@ -61,6 +61,12 @@
     gap: 0.125rem;
   }
 
+  &__bottom {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
   &__pieces {
     height: 1.5rem;
     display: flex;

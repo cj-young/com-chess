@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import "../styles/Clock.scss";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
-import Piece, { PieceType, pieceImages } from "../utils/Piece";
+import Piece, { PieceType, pieceImages, pieceValues } from "../utils/Piece";
 
 type Props = {
   player: "top" | "bottom";
@@ -23,43 +23,34 @@ export default function Clock({ player }: Props) {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }, [blackTime, whiteTime, clockColor]);
 
-  // const capturedPieces = useMemo(() => {
-  //   const capturedCounts = new Map<PieceType, number>();
-  //   const lostCounts = new Map<PieceType, number>();
+  const capturedPieces = useMemo(() => {
+    const capturedCounts = new Map<PieceType, number>();
+    const lostCounts = new Map<PieceType, number>();
 
-  //   const friendlyStartIndex = clockColor === "white" ? 16 : 0;
-  //   const enemyStartIndex = clockColor === "white" ? 0 : 16;
+    const friendlyStartIndex = clockColor === "white" ? 0 : 16;
+    const enemyStartIndex = clockColor === "white" ? 16 : 0;
 
-  //   for (let i = friendlyStartIndex; i < friendlyStartIndex + 16; i++) {
-  //     if (!pieces[i].active) {
-  //       const currCount = lostCounts.get(pieces[i].type) ?? 0;
-  //       lostCounts.set(pieces[i].type, currCount + 1);
-  //     }
-  //   }
+    for (let i = friendlyStartIndex; i < friendlyStartIndex + 16; i++) {
+      if (!pieces[i].active) {
+        const currCount = lostCounts.get(pieces[i].type) ?? 0;
+        lostCounts.set(pieces[i].type, currCount + 1);
+      }
+    }
 
-  //   for (let i = enemyStartIndex; i < enemyStartIndex + 16; i++) {
-  //     if (!pieces[i].active) {
-  //       const currCount = capturedCounts.get(pieces[i].type) ?? 0;
-  //       capturedCounts.set(pieces[i].type, currCount + 1);
-  //     }
-  //   }
+    for (let i = enemyStartIndex; i < enemyStartIndex + 16; i++) {
+      if (!pieces[i].active) {
+        const currCount = capturedCounts.get(pieces[i].type) ?? 0;
+        capturedCounts.set(pieces[i].type, currCount + 1);
+      }
+    }
 
-  //   for (let [key, value] of capturedCounts) {
-  //     const netCount = Math.max(value - (lostCounts.get(key) ?? 0), 0);
-  //     capturedCounts.set(key, netCount);
-  //   }
+    for (let [key, value] of capturedCounts) {
+      const netCount = Math.max(value - (lostCounts.get(key) ?? 0), 0);
+      capturedCounts.set(key, netCount);
+    }
 
-  //   return capturedCounts;
-  // }, [pieces]);
-
-  const capturedPieces =
-    clockColor === "white"
-      ? new Map<PieceType, number>([
-          ["pawn", 3],
-          ["bishop", 1],
-          ["queen", 1]
-        ])
-      : new Map<PieceType, number>([["knight", 1]]);
+    return capturedCounts;
+  }, [pieces]);
 
   function capturedPieceToDiv(type: PieceType, number = 0, reactKey: any) {
     const res = [];
@@ -81,6 +72,21 @@ export default function Clock({ player }: Props) {
     );
   }
 
+  const advantage = useMemo(() => {
+    let res = 0;
+    for (let piece of pieces) {
+      if (!piece.active) {
+        const value = pieceValues.get(piece.type) ?? 0;
+        if (piece.color === clockColor) {
+          res -= value;
+        } else {
+          res += value;
+        }
+      }
+    }
+    return res;
+  }, [pieces]);
+
   return (
     <div className={`clock ${player}`}>
       <div className="clock__left">
@@ -89,10 +95,14 @@ export default function Clock({ player }: Props) {
             ? gameInfo.blackUsername
             : gameInfo.whiteUsername}
         </div>
-        <div className="clock__pieces">
-          {Array.from(capturedPieces).map(([key, value], i) =>
-            capturedPieceToDiv(key, value, i)
-          )}
+
+        <div className="clock__bottom">
+          <div className="clock__pieces">
+            {Array.from(capturedPieces).map(([key, value], i) =>
+              capturedPieceToDiv(key, value, i)
+            )}
+          </div>
+          {advantage > 0 && <span>+{advantage}</span>}
         </div>
       </div>
       <div className="clock__time">{timeString}</div>

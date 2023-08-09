@@ -36,6 +36,15 @@ export const pieceImages = new Map<PieceType, Map<Color, string>>([
   ["king", makePieceColorMap(kingWhite, kingBlack)]
 ]);
 
+export const pieceValues = new Map<PieceType, number>([
+  ["pawn", 1],
+  ["knight", 3],
+  ["bishop", 3],
+  ["rook", 5],
+  ["queen", 9],
+  ["king", Infinity]
+]);
+
 export default class Piece {
   type: PieceType;
   color: Color;
