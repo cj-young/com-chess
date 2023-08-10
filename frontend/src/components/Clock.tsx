@@ -18,8 +18,6 @@ export default function Clock({ player }: Props) {
 
   const timeString = useMemo(() => {
     const time = clockColor === "white" ? whiteTime : blackTime;
-    console.log("black", blackTime);
-    console.log("white", whiteTime);
     const totalSeconds = Math.max(Math.floor(time / 1000), 0);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
