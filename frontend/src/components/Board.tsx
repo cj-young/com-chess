@@ -23,7 +23,8 @@ export default function Board() {
     legalMoves,
     makeMove,
     moveIndex,
-    setMoveIndex
+    setMoveIndex,
+    gameState
   } = useLiveGameContext();
 
   const isUpToDate = useMemo(() => {
@@ -134,52 +135,64 @@ export default function Board() {
               );
             })}
         </div>
-        <div className="pieces">
-          {pieces.map(
-            (piece, i) =>
-              piece.active && (
-                <PieceComponent piece={piece} key={i} boardRef={boardRef} />
-              )
-          )}
-        </div>
-        {selectedPiece && (
-          <SquareHighlight square={selectedPiece.square} type="selectedPiece" />
-        )}
-        {moveIndex >= 0 && (
+        {gameState === "playing" && (
           <>
-            <SquareHighlight
-              square={moves[moveIndex].from}
-              type="previousMove"
-            />
-            <SquareHighlight square={moves[moveIndex].to} type="previousMove" />
+            <div className="pieces">
+              {pieces.map(
+                (piece, i) =>
+                  piece.active && (
+                    <PieceComponent piece={piece} key={i} boardRef={boardRef} />
+                  )
+              )}
+            </div>
+            {selectedPiece && (
+              <SquareHighlight
+                square={selectedPiece.square}
+                type="selectedPiece"
+              />
+            )}
+            {moveIndex >= 0 && (
+              <>
+                <SquareHighlight
+                  square={moves[moveIndex].from}
+                  type="previousMove"
+                />
+                <SquareHighlight
+                  square={moves[moveIndex].to}
+                  type="previousMove"
+                />
+              </>
+            )}
+            {legalMoves.map((legalMove, i) => (
+              <SquareHighlight square={legalMove} type="legalMove" key={i} />
+            ))}
+            {gameOverModal}
           </>
         )}
-        {legalMoves.map((legalMove, i) => (
-          <SquareHighlight square={legalMove} type="legalMove" key={i} />
-        ))}
-        {gameOverModal}
       </div>
-      <div className="controls">
-        <button className="flip-board" onClick={handleFlipBoard}>
-          <img src={flipIcon} alt="Flip board" />
-        </button>
-        <div className="right-buttons">
-          <button
-            className={`prev-move ${moveIndex >= 0 ? "" : "disabled"}`}
-            onClick={handlePrevMove}
-            aria-disabled={moveIndex < 0}
-          >
-            <img src={leftIcon} alt="View previous move" />
+      {gameState === "playing" && (
+        <div className="controls">
+          <button className="flip-board" onClick={handleFlipBoard}>
+            <img src={flipIcon} alt="Flip board" />
           </button>
-          <button
-            className={`next-move ${isUpToDate ? "disabled" : ""}`}
-            onClick={handleNextMove}
-            aria-disabled={!isUpToDate}
-          >
-            <img src={rightIcon} alt="View next move" />
-          </button>
+          <div className="right-buttons">
+            <button
+              className={`prev-move ${moveIndex >= 0 ? "" : "disabled"}`}
+              onClick={handlePrevMove}
+              aria-disabled={moveIndex < 0}
+            >
+              <img src={leftIcon} alt="View previous move" />
+            </button>
+            <button
+              className={`next-move ${isUpToDate ? "disabled" : ""}`}
+              onClick={handleNextMove}
+              aria-disabled={!isUpToDate}
+            >
+              <img src={rightIcon} alt="View next move" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

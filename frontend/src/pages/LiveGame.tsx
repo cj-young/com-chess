@@ -29,7 +29,8 @@ export default function LiveGame() {
     turn,
     justMoved,
     whiteTime,
-    blackTime
+    blackTime,
+    setMoveIndex
   } = useLiveGameContext();
 
   const justMovedRef = useRef<boolean>(false);
@@ -62,6 +63,7 @@ export default function LiveGame() {
       setWhiteTime(game.info.whiteTime);
       setBlackTime(game.info.blackTime);
       setJustMoved(false);
+      // setMoveIndex(game.moves.length - 1);
       moveStartTime.current = Date.now();
 
       const turn = game.moves.length % 2 === 0 ? "white" : "black";
