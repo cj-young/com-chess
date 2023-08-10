@@ -74,7 +74,6 @@ export function LiveGameContextProvider({ children }: Props) {
     setMoveIndex(moves.length - 1);
   }, [moves]);
   const pieces = useMemo(() => {
-    console.log(moves);
     return applyMoves(
       generateStartingPosition(),
       moves.slice(0, moveIndex + 1)

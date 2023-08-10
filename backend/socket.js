@@ -676,6 +676,106 @@ module.exports = (server, sessionMiddleware, passport) => {
       }
     });
 
+    socket.on("timeout", async (color) => {
+      try {
+        const user = await User.findById(userId);
+        const game = await LiveGame.findById(user.currentGame);
+
+        if (!game) return;
+
+        const elapsedTime = Date.now() - game.lastMoveTime;
+        const clockTime = color === "white" ? game.whiteTime : game.blackTime;
+        const opponentId =
+          user.id === game.whitePlayer.toString()
+            ? game.blackPlayer.toString()
+            : game.whitePlayer.toString();
+        if (elapsedTime >= clockTime) {
+          if (
+            isInsufficientMaterial(
+              game.moves,
+              color === "white" ? "black" : "white"
+            )
+          ) {
+            const pastGame = await PastGame.create({
+              moves: game.moves,
+              blackPlayer: game.blackPlayer,
+              whitePlayer: game.whitePlayer,
+              minutes: game.minutes,
+              increment: game.increment,
+              winner: null
+            });
+
+            socket.emit("gameDrawn", {
+              type: "insufficientMaterialTimeout",
+              id: pastGame.id
+            });
+            if (connectedUsers.has(opponentId)) {
+              io.to(connectedUsers.get(opponentId)).emit("gameDrawn", {
+                type: "insufficientMaterialTimeout",
+                id: pastGame.id
+              });
+            }
+
+            await Promise.all([
+              LiveGame.findByIdAndDelete(game.id),
+              User.findByIdAndUpdate(game.blackPlayer, {
+                $set: { currentGame: null }
+              }),
+              User.findByIdAndUpdate(game.whitePlayer, {
+                $set: { currentGame: null }
+              })
+            ]);
+          } else {
+            const pastGame = await PastGame.create({
+              moves: game.moves,
+              blackPlayer: game.blackPlayer,
+              whitePlayer: game.whitePlayer,
+              minutes: game.minutes,
+              increment: game.increment,
+              winner: color === "white" ? "black" : "white"
+            });
+
+            const winnerId =
+              color === "white"
+                ? game.blackPlayer.toString()
+                : game.whitePlayer.toString();
+            const loserId =
+              color === "white"
+                ? game.whitePlayer.toString()
+                : game.blackPlayer.toString();
+
+            if (connectedUsers.has(winnerId)) {
+              io.to(connectedUsers.get(winnerId)).emit("gameWon", {
+                type: "timeout",
+                id: pastGame.id
+              });
+            }
+            if (connectedUsers.has(loserId)) {
+              io.to(connectedUsers.get(loserId)).emit("gameLost", {
+                type: "timeout",
+                id: pastGame.id
+              });
+            }
+
+            await Promise.all([
+              LiveGame.findByIdAndDelete(game.id),
+              User.findByIdAndUpdate(game.blackPlayer, {
+                $set: { currentGame: null }
+              }),
+              User.findByIdAndUpdate(game.whitePlayer, {
+                $set: { currentGame: null }
+              })
+            ]);
+          }
+        } else {
+          socket.emit("timeoutFailure");
+        }
+      } catch (error) {
+        console.error(error);
+        socket.emit("timeoutFailure");
+      }
+    });
+
     io.on("disconnect", () => {
       connectedUsers.delete(userId);
     });

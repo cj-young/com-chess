@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo } from "react";
 import "../styles/Clock.scss";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
 import { PieceType, pieceImages, pieceValues } from "../utils/Piece";
@@ -8,16 +8,8 @@ type Props = {
 };
 
 export default function Clock({ player }: Props) {
-  const {
-    orientation,
-    gameInfo,
-    blackTime,
-    whiteTime,
-    pieces,
-    justMoved,
-    turn,
-    moveStartTime
-  } = useLiveGameContext();
+  const { orientation, gameInfo, blackTime, whiteTime, pieces } =
+    useLiveGameContext();
 
   const clockColor = useMemo(() => {
     if (player === "bottom") return orientation;
@@ -26,6 +18,8 @@ export default function Clock({ player }: Props) {
 
   const timeString = useMemo(() => {
     const time = clockColor === "white" ? whiteTime : blackTime;
+    console.log("black", blackTime);
+    console.log("white", whiteTime);
     const totalSeconds = Math.max(Math.floor(time / 1000), 0);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;

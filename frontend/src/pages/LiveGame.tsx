@@ -33,6 +33,7 @@ export default function LiveGame() {
   } = useLiveGameContext();
 
   const justMovedRef = useRef<boolean>(false);
+  const didTimeOutRef = useRef<boolean>(false);
 
   justMovedRef.current = justMoved;
 
@@ -60,15 +61,17 @@ export default function LiveGame() {
       setOrientation(game.yourColor);
       setWhiteTime(game.info.whiteTime);
       setBlackTime(game.info.blackTime);
+      setJustMoved(false);
       moveStartTime.current = Date.now();
 
       const turn = game.moves.length % 2 === 0 ? "white" : "black";
-      console.log(game);
       const timeElapsedSinceMove = Date.now() - game.lastMoveTime;
-      if (turn === "white")
+      if (turn === "white") {
         setWhiteTime((prevWhiteTime) => prevWhiteTime - timeElapsedSinceMove);
-      if (turn === "black")
+      }
+      if (turn === "black") {
         setBlackTime((prevBlackTime) => prevBlackTime - timeElapsedSinceMove);
+      }
     });
 
     socket.on("gameDeclined", () => {
@@ -96,17 +99,22 @@ export default function LiveGame() {
     const startTime = turn === "white" ? whiteTime : blackTime;
 
     const timerInterval = setInterval(() => {
+      const newTime = startTime - (Date.now() - moveStartTime.current);
+      if (newTime <= 0 && !didTimeOutRef.current) {
+        socket.emit("timeout", turn);
+      }
+
       if (turn === "white" && !justMovedRef.current) {
-        setWhiteTime(startTime - (Date.now() - moveStartTime.current));
+        setWhiteTime(newTime);
       } else if (turn === "black" && !justMovedRef.current) {
-        setBlackTime(startTime - (Date.now() - moveStartTime.current));
+        setBlackTime(newTime);
       }
     }, 250);
 
     return () => {
       clearInterval(timerInterval);
     };
-  }, [turn]);
+  }, [moveStartTime.current, turn]);
 
   return gameState === "loading" ? (
     <Loading />
