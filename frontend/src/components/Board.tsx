@@ -145,7 +145,7 @@ export default function Board() {
         {selectedPiece && (
           <SquareHighlight square={selectedPiece.square} type="selectedPiece" />
         )}
-        {moveIndex > 0 && (
+        {moveIndex >= 0 && (
           <>
             <SquareHighlight
               square={moves[moveIndex].from}
