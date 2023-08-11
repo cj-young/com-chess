@@ -69,7 +69,7 @@ const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
 export function LiveGameContextProvider({ children }: Props) {
   const [gameState, setGameState] = useState<TGameState>("loading");
   const [moves, setMoves] = useState<Move[]>([]);
-  const [moveIndex, setMoveIndex] = useState(0);
+  const [moveIndex, setMoveIndex] = useState(-1);
   useLayoutEffect(() => {
     setMoveIndex(moves.length - 1);
   }, [moves]);
@@ -119,7 +119,7 @@ export function LiveGameContextProvider({ children }: Props) {
   function resetLiveGameContext() {
     setMoves([]);
     setGameState("loading");
-    setMoveIndex(0);
+    setMoveIndex(-1);
     setColor("white");
     setGameInfo({
       blackUsername: "",

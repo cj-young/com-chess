@@ -776,6 +776,49 @@ module.exports = (server, sessionMiddleware, passport) => {
       }
     });
 
+    socket.on("resign", async () => {
+      try {
+        const user = await User.findById(userId);
+        const game = await LiveGame.findById(user.currentGame);
+
+        if (!game) throw new Error("No game found");
+
+        const pastGame = await PastGame.create({
+          moves: game.moves,
+          blackPlayer: game.blackPlayer,
+          whitePlayer: game.whitePlayer,
+          minutes: game.minutes,
+          increment: game.increment,
+          winner: user.id === game.whitePlayer.toString() ? "black" : "white"
+        });
+
+        const opponentId =
+          user.id === game.whitePlayer.toString()
+            ? game.blackPlayer.toString()
+            : game.whitePlayer.toString();
+
+        socket.emit("gameLost", { type: "resignation", id: pastGame.id });
+        if (connectedUsers.has(opponentId)) {
+          io.to(connectedUsers.get(opponentId)).emit("gameWon", {
+            type: "resignation",
+            id: pastGame.id
+          });
+        }
+
+        await Promise.all([
+          LiveGame.findByIdAndDelete(game.id),
+          User.findByIdAndUpdate(game.blackPlayer, {
+            $set: { currentGame: null }
+          }),
+          User.findByIdAndUpdate(game.whitePlayer, {
+            $set: { currentGame: null }
+          })
+        ]);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
     io.on("disconnect", () => {
       connectedUsers.delete(userId);
     });

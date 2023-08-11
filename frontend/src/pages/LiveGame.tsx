@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import "../styles/LiveGame.scss";
 import flagIcon from "../assets/flag-solid.svg";
 import handshakeIcon from "../assets/handshake-simple-solid.svg";
+import xIcon from "../assets/xmark-solid-light.svg";
 import { socket } from "../config/socket";
 import CreateGame from "../components/CreateGame";
 import Loading from "./Loading";
@@ -14,6 +15,9 @@ import { useLiveGameContext } from "../contexts/LiveGameContext";
 
 export default function LiveGame() {
   const [waitingUsername, setWaitingUsername] = useState("");
+  const [beingConfirmed, setBeingConfirmed] = useState<
+    "resign" | "draw" | null
+  >(null);
 
   const {
     setMoves,
@@ -42,6 +46,28 @@ export default function LiveGame() {
     socket.emit("gameCancel");
   }
 
+  function handleResign() {
+    if (beingConfirmed === "resign") {
+      socket.emit("resign");
+      setBeingConfirmed(null);
+    } else if (beingConfirmed === "draw") {
+      setBeingConfirmed(null);
+    } else {
+      setBeingConfirmed("resign");
+    }
+  }
+
+  function handleOfferDraw() {
+    if (beingConfirmed === "draw") {
+      socket.emit("offerDraw");
+      setBeingConfirmed(null);
+    } else if (beingConfirmed === "resign") {
+      setBeingConfirmed(null);
+    } else {
+      setBeingConfirmed("draw");
+    }
+  }
+
   useEffect(() => {
     socket.emit("joinLive");
 
@@ -63,7 +89,7 @@ export default function LiveGame() {
       setWhiteTime(game.info.whiteTime);
       setBlackTime(game.info.blackTime);
       setJustMoved(false);
-      // setMoveIndex(game.moves.length - 1);
+      setMoveIndex(game.moves.length - 1);
       moveStartTime.current = Date.now();
 
       const turn = game.moves.length % 2 === 0 ? "white" : "black";
@@ -138,11 +164,35 @@ export default function LiveGame() {
             </div>
             <div className="draw-resign-container">
               <div className="draw-resign">
-                <button>
-                  <img src={flagIcon} alt="Resign" />
+                <button
+                  onClick={handleResign}
+                  className={`${
+                    beingConfirmed === "resign"
+                      ? "confirming"
+                      : beingConfirmed === "draw"
+                      ? "is-rejector"
+                      : ""
+                  }`}
+                >
+                  <img
+                    src={beingConfirmed === "draw" ? xIcon : flagIcon}
+                    alt="Resign"
+                  />
                 </button>
-                <button>
-                  <img src={handshakeIcon} alt="Draw" />
+                <button
+                  onClick={handleOfferDraw}
+                  className={`${
+                    beingConfirmed === "draw"
+                      ? "confirming"
+                      : beingConfirmed === "resign"
+                      ? "is-rejector"
+                      : ""
+                  }`}
+                >
+                  <img
+                    src={beingConfirmed === "resign" ? xIcon : handshakeIcon}
+                    alt="Draw"
+                  />
                 </button>
               </div>
             </div>
