@@ -354,7 +354,9 @@ module.exports = (server, sessionMiddleware, passport) => {
         if (user.currentGame) {
           const game = await LiveGame.findByIdAndDelete(user.currentGame);
           const opponentId =
-            game.whitePlayer === user.id ? game.blackPlayer : game.whitePlayer;
+            game.whitePlayer.toString() === user.id
+              ? game.blackPlayer.toString()
+              : game.whitePlayer.toString();
           opponent = await User.findById(opponentId);
         } else if (user.outgoingGameRequest) {
           opponent = await User.findOne({
@@ -365,19 +367,22 @@ module.exports = (server, sessionMiddleware, passport) => {
         }
 
         if (!opponent) {
-          User.findByIdAndUpdate(userId, {
+          await User.findByIdAndUpdate(userId, {
             $set: { outgoingGameRequest: null, currentGame: null }
           });
           throw new Error("Opponent not found");
         }
 
         removeGameRequest(opponent, user.username);
-        User.findByIdAndUpdate(userId, {
-          $set: { outgoingGameRequest: null, currentGame: null }
-        });
-        User.findByIdAndUpdate(opponent.id, {
-          $set: { outgoingGameRequest: null, currentGame: null }
-        });
+
+        await Promise.all([
+          User.findByIdAndUpdate(userId, {
+            $set: { outgoingGameRequest: null, currentGame: null }
+          }),
+          User.findByIdAndUpdate(opponent.id, {
+            $set: { outgoingGameRequest: null, currentGame: null }
+          })
+        ]);
 
         socket.emit("liveCreating", true);
         if (connectedUsers.has(opponent.id)) {
