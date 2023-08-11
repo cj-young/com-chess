@@ -303,17 +303,19 @@ module.exports = (server, sessionMiddleware, passport) => {
         const sterilizedGame = await sterilizeGame(game);
         const whiteId = game.whitePlayer.toString();
         const blackId = game.blackPlayer.toString();
-        if (connectedUsers.has(whiteId)) {
-          io.to(connectedUsers.get(whiteId)).emit("startGame", {
-            ...sterilizedGame,
-            yourColor: "white"
-          });
-        }
-        if (connectedUsers.has(blackId)) {
-          io.to(connectedUsers.get(blackId)).emit("startGame", {
-            ...sterilizedGame,
-            yourColor: "black"
-          });
+        if (liveUsers.has(whiteId) && liveUsers.has(blackId)) {
+          if (connectedUsers.has(whiteId)) {
+            io.to(connectedUsers.get(whiteId)).emit("startGame", {
+              ...sterilizedGame,
+              yourColor: "white"
+            });
+          }
+          if (connectedUsers.has(blackId)) {
+            io.to(connectedUsers.get(blackId)).emit("startGame", {
+              ...sterilizedGame,
+              yourColor: "black"
+            });
+          }
         }
       } catch (error) {
         console.error(error);
