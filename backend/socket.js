@@ -415,14 +415,16 @@ module.exports = (server, sessionMiddleware, passport) => {
 
         let timeUpdatedGame;
         if (user.id === whitePlayer) {
-          const adjustedTime = game.whiteTime - adjustedTimeSpent;
+          const adjustedTime =
+            game.whiteTime - adjustedTimeSpent + game.increment * 1000;
           timeUpdatedGame = await LiveGame.findByIdAndUpdate(
             game.id,
             { $set: { lastMoveTime: Date.now(), whiteTime: adjustedTime } },
             { new: true }
           );
         } else {
-          const adjustedTime = game.blackTime - adjustedTimeSpent;
+          const adjustedTime =
+            game.blackTime - adjustedTimeSpent + game.increment * 1000;
           timeUpdatedGame = await LiveGame.findByIdAndUpdate(
             game.id,
             { $set: { lastMoveTime: Date.now(), blackTime: adjustedTime } },
