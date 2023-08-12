@@ -127,12 +127,12 @@ export default function Board() {
         <div className="squares">
           {Array(8)
             .fill(null)
-            .map((row, i) => {
+            .map((_row, i) => {
               return (
                 <div className="row" key={i}>
                   {Array(8)
                     .fill(null)
-                    .map((square, j) => (
+                    .map((_square, j) => (
                       <div className="square" key={j}></div>
                     ))}
                 </div>
