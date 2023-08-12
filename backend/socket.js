@@ -826,6 +826,61 @@ module.exports = (server, sessionMiddleware, passport) => {
       }
     });
 
+    socket.on("offerDraw", async () => {
+      const user = await User.findById(userId);
+      const game = await LiveGame.findById(user.currentGame);
+
+      if (!game) throw new Error("No game found");
+
+      const opponentId =
+        user.id === game.whitePlayer.toString()
+          ? game.blackPlayer.toString()
+          : game.whitePlayer.toString();
+
+      if (connectedUsers.has(opponentId)) {
+        io.to(connectedUsers.get(opponentId)).emit("drawRequest");
+      }
+    });
+
+    socket.on("drawAccept", async () => {
+      const user = await User.findById(userId);
+      const game = await LiveGame.findById(user.currentGame);
+
+      if (!game) throw new Error("No game found");
+
+      const pastGame = await PastGame.create({
+        moves: game.moves,
+        blackPlayer: game.blackPlayer,
+        whitePlayer: game.whitePlayer,
+        minutes: game.minutes,
+        increment: game.increment,
+        winner: null
+      });
+
+      const opponentId =
+        user.id === game.whitePlayer.toString()
+          ? game.blackPlayer.toString()
+          : game.whitePlayer.toString();
+
+      socket.emit("gameDrawn", { type: "draw", id: pastGame.id });
+      if (connectedUsers.has(opponentId)) {
+        io.to(connectedUsers.get(opponentId)).emit("gameDrawn", {
+          type: "draw",
+          id: pastGame.id
+        });
+      }
+
+      await Promise.all([
+        LiveGame.findByIdAndDelete(game.id),
+        User.findByIdAndUpdate(game.blackPlayer, {
+          $set: { currentGame: null }
+        }),
+        User.findByIdAndUpdate(game.whitePlayer, {
+          $set: { currentGame: null }
+        })
+      ]);
+    });
+
     io.on("disconnect", () => {
       connectedUsers.delete(userId);
     });

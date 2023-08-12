@@ -19,7 +19,7 @@ export default function LiveGame() {
   const [beingConfirmed, setBeingConfirmed] = useState<
     "resign" | "draw" | null
   >(null);
-  const [drawRequested, setDrawRequested] = useState(true);
+  const [drawRequested, setDrawRequested] = useState(false);
 
   const {
     setMoves,
@@ -76,6 +76,15 @@ export default function LiveGame() {
     }
   }
 
+  function handleAcceptDraw() {
+    socket.emit("drawAccept");
+    setDrawRequested(false);
+  }
+
+  function handleDeclineDraw() {
+    setDrawRequested(false);
+  }
+
   useEffect(() => {
     socket.emit("joinLive");
 
@@ -123,12 +132,17 @@ export default function LiveGame() {
       setJustMoved(false);
     });
 
+    socket.on("drawRequest", () => {
+      setDrawRequested(true);
+    });
+
     return () => {
       socket.emit("leaveLive");
       socket.off("liveWaiting");
       socket.off("liveCreating");
       socket.off("startGame");
       socket.off("move");
+      socket.off("drawRequest");
     };
   }, []);
 
@@ -189,10 +203,16 @@ export default function LiveGame() {
                       offered a draw
                     </span>
                     <div className="draw-request-buttons">
-                      <button className="accept-draw">
+                      <button
+                        className="accept-draw"
+                        onClick={handleAcceptDraw}
+                      >
                         <img src={checkIcon} alt="Accept" />
                       </button>
-                      <button className="decline-draw">
+                      <button
+                        className="decline-draw"
+                        onClick={handleDeclineDraw}
+                      >
                         <img src={xIcon} alt="Decline" />
                       </button>
                     </div>
