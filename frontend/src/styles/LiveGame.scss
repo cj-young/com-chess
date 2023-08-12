@@ -83,10 +83,12 @@
     border-radius: var(--br-primary);
     padding: 0.75rem;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     gap: 0.5rem;
     margin-top: 1rem;
+    color: var(--clr-text-primary);
+    max-width: 100%;
 
     button {
       width: 2rem;
@@ -114,6 +116,27 @@
 
       &:hover {
         opacity: 0.8;
+      }
+    }
+
+    .draw-request-buttons {
+      margin-left: 1rem;
+      display: flex;
+      gap: 0.25rem;
+
+      button {
+        padding: 0.375rem;
+        background-color: var(--clr-bg-300);
+      }
+
+      .accept-draw:hover {
+        background-color: var(--clr-accent);
+        opacity: 1;
+      }
+
+      .decline-draw:hover {
+        background-color: var(--clr-error);
+        opacity: 1;
       }
     }
   }

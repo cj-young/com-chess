@@ -12,15 +12,19 @@ import { socket } from "../config/socket";
 import CreateGame from "../components/CreateGame";
 import Loading from "./Loading";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
+import checkIcon from "../assets/check-solid.svg";
 
 export default function LiveGame() {
   const [waitingUsername, setWaitingUsername] = useState("");
   const [beingConfirmed, setBeingConfirmed] = useState<
     "resign" | "draw" | null
   >(null);
+  const [drawRequested, setDrawRequested] = useState(true);
 
   const {
     setMoves,
+    color,
+    gameInfo,
     setColor,
     setGameInfo,
     setOrientation,
@@ -174,36 +178,61 @@ export default function LiveGame() {
             </div>
             <div className="draw-resign-container">
               <div className="draw-resign">
-                <button
-                  onClick={handleResign}
-                  className={`${
-                    beingConfirmed === "resign"
-                      ? "confirming"
-                      : beingConfirmed === "draw"
-                      ? "is-rejector"
-                      : ""
-                  }`}
-                >
-                  <img
-                    src={beingConfirmed === "draw" ? xIcon : flagIcon}
-                    alt="Resign"
-                  />
-                </button>
-                <button
-                  onClick={handleOfferDraw}
-                  className={`${
-                    beingConfirmed === "draw"
-                      ? "confirming"
-                      : beingConfirmed === "resign"
-                      ? "is-rejector"
-                      : ""
-                  }`}
-                >
-                  <img
-                    src={beingConfirmed === "resign" ? xIcon : handshakeIcon}
-                    alt="Draw"
-                  />
-                </button>
+                {drawRequested ? (
+                  <>
+                    <span>
+                      <b>
+                        {color === "white"
+                          ? gameInfo.whiteUsername
+                          : gameInfo.blackUsername}
+                      </b>{" "}
+                      offered a draw
+                    </span>
+                    <div className="draw-request-buttons">
+                      <button className="accept-draw">
+                        <img src={checkIcon} alt="Accept" />
+                      </button>
+                      <button className="decline-draw">
+                        <img src={xIcon} alt="Decline" />
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleResign}
+                      className={`${
+                        beingConfirmed === "resign"
+                          ? "confirming"
+                          : beingConfirmed === "draw"
+                          ? "is-rejector"
+                          : ""
+                      }`}
+                    >
+                      <img
+                        src={beingConfirmed === "draw" ? xIcon : flagIcon}
+                        alt="Resign"
+                      />
+                    </button>
+                    <button
+                      onClick={handleOfferDraw}
+                      className={`${
+                        beingConfirmed === "draw"
+                          ? "confirming"
+                          : beingConfirmed === "resign"
+                          ? "is-rejector"
+                          : ""
+                      }`}
+                    >
+                      <img
+                        src={
+                          beingConfirmed === "resign" ? xIcon : handshakeIcon
+                        }
+                        alt="Draw"
+                      />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
             <div className="live-moves-container">
