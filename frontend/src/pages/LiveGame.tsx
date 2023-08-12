@@ -34,13 +34,17 @@ export default function LiveGame() {
     justMoved,
     whiteTime,
     blackTime,
-    setMoveIndex
+    setMoveIndex,
+    gameOver,
+    setGameOver
   } = useLiveGameContext();
 
   const justMovedRef = useRef<boolean>(false);
   const didTimeOutRef = useRef<boolean>(false);
+  const gameOverRef = useRef<boolean>(false);
 
   justMovedRef.current = justMoved;
+  gameOverRef.current = gameOver;
 
   function cancelGame() {
     socket.emit("gameCancel");
@@ -90,6 +94,7 @@ export default function LiveGame() {
       setBlackTime(game.info.blackTime);
       setJustMoved(false);
       setMoveIndex(game.moves.length - 1);
+      setGameOver(false);
       moveStartTime.current = Date.now();
 
       const turn = game.moves.length % 2 === 0 ? "white" : "black";
@@ -125,8 +130,13 @@ export default function LiveGame() {
 
   useEffect(() => {
     const startTime = turn === "white" ? whiteTime : blackTime;
-
+    if (gameOverRef.current) return;
     const timerInterval = setInterval(() => {
+      console.log(gameOverRef.current);
+      if (gameOverRef.current) {
+        clearInterval(timerInterval);
+        return;
+      }
       const newTime = startTime - (Date.now() - moveStartTime.current);
       if (newTime <= 0 && !didTimeOutRef.current) {
         socket.emit("timeout", turn);
@@ -142,7 +152,7 @@ export default function LiveGame() {
     return () => {
       clearInterval(timerInterval);
     };
-  }, [moveStartTime.current, turn]);
+  }, [moveStartTime.current, turn, gameOverRef.current]);
 
   return gameState === "loading" ? (
     <Loading />

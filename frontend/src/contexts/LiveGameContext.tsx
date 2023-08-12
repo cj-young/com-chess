@@ -62,6 +62,8 @@ type TLiveGameContext = {
   resetLiveGameContext: () => void;
   justMoved: boolean;
   setJustMoved: React.Dispatch<React.SetStateAction<boolean>>;
+  gameOver: boolean;
+  setGameOver: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
@@ -94,6 +96,7 @@ export function LiveGameContextProvider({ children }: Props) {
   const [blackTime, setBlackTime] = useState(0);
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
   const [justMoved, setJustMoved] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
 
   const moveStartTime = useRef<number>(0);
 
@@ -134,6 +137,7 @@ export function LiveGameContextProvider({ children }: Props) {
     setBlackTime(0);
     setSelectedPiece(null);
     setJustMoved(false);
+    setGameOver(false);
     moveStartTime.current = 0;
   }
 
@@ -165,7 +169,9 @@ export function LiveGameContextProvider({ children }: Props) {
         moveStartTime,
         resetLiveGameContext,
         justMoved,
-        setJustMoved
+        setJustMoved,
+        gameOver,
+        setGameOver
       }}
     >
       {children}

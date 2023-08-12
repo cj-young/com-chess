@@ -24,7 +24,8 @@ export default function Board() {
     makeMove,
     moveIndex,
     setMoveIndex,
-    gameState
+    gameState,
+    setGameOver
   } = useLiveGameContext();
 
   const isUpToDate = useMemo(() => {
@@ -82,6 +83,7 @@ export default function Board() {
           close={() => setGameOverModal(null)}
         />
       );
+      setGameOver(true);
     });
 
     socket.on("gameLost", ({ type, id }) => {
@@ -93,6 +95,7 @@ export default function Board() {
           close={() => setGameOverModal(null)}
         />
       );
+      setGameOver(true);
     });
 
     socket.on("gameDrawn", ({ type, id }) => {
@@ -104,6 +107,7 @@ export default function Board() {
           close={() => setGameOverModal(null)}
         />
       );
+      setGameOver(true);
     });
 
     socket.on("startGame", () => {
