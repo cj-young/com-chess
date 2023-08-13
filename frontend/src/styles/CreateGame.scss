@@ -85,11 +85,15 @@
 
   button {
     @include button(var(--fs-500));
-    margin-top: auto;
+    margin-top: 1rem;
     border: none;
     background-color: var(--clr-primary);
     color: var(--clr-text-primary);
     margin-inline: auto;
+
+    @include game-screen {
+      margin-top: auto;
+    }
 
     &.inactive {
       cursor: default;
