@@ -26,12 +26,15 @@ export default function Clock({ player }: Props) {
     return orientation === "white" ? "black" : "white";
   }, [player, orientation]);
 
-  const timeString = useMemo(() => {
+  const time = useMemo(() => {
     const time = clockColor === "white" ? whiteTime : blackTime;
     const totalSeconds = Math.max(Math.floor(time / 1000), 0);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return {
+      minutes,
+      seconds
+    };
   }, [blackTime, whiteTime, clockColor]);
 
   const capturedPieces = useMemo(() => {
@@ -129,7 +132,13 @@ export default function Clock({ player }: Props) {
           {advantage > 0 && <span>+{advantage}</span>}
         </div>
       </div>
-      <div className="clock__time">{timeString}</div>
+      <div className="clock__time">
+        <div className="clock__time__minutes">{time.minutes}</div>
+        <div className="clock__time__separator">:</div>
+        <div className="clock__time__seconds">
+          {time.seconds < 10 ? "0" + time.seconds : time.seconds}
+        </div>
+      </div>
     </div>
   );
 }

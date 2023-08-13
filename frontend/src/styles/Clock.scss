@@ -57,8 +57,18 @@
   }
 
   &__time {
+    display: flex;
     font-size: 2rem;
     color: var(--time-color);
+
+    &__minutes {
+      width: 1ch;
+      text-align: right;
+    }
+
+    &__seconds {
+      width: 2ch;
+    }
   }
 
   &__left {
