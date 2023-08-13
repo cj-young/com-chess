@@ -14,6 +14,7 @@
   position: relative;
   overflow: hidden;
   border-radius: var(--br-primary);
+  --time-percent: 0;
 
   @include game-screen {
     width: 100%;
@@ -45,10 +46,11 @@
     content: "";
     position: absolute;
     left: 0;
-    right: 25%;
+    right: calc(100% - (var(--time-percent) * 100%));
     top: 0;
     height: 6px;
     background-color: var(--clr-neutral-600);
+    transition: right 250ms linear;
   }
 
   &__time {

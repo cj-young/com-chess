@@ -8,8 +8,15 @@ type Props = {
 };
 
 export default function Clock({ player }: Props) {
-  const { orientation, gameInfo, blackTime, whiteTime, pieces } =
-    useLiveGameContext();
+  const {
+    orientation,
+    gameInfo,
+    blackTime,
+    whiteTime,
+    pieces,
+    maxWhiteTime,
+    maxBlackTime
+  } = useLiveGameContext();
 
   const clockColor = useMemo(() => {
     if (player === "bottom") return orientation;
@@ -53,6 +60,14 @@ export default function Clock({ player }: Props) {
     return capturedCounts;
   }, [pieces]);
 
+  const timePercent = useMemo(() => {
+    if (clockColor === "white") {
+      return whiteTime / maxWhiteTime;
+    } else {
+      return blackTime / maxBlackTime;
+    }
+  }, [clockColor, whiteTime, blackTime, maxWhiteTime, maxBlackTime]);
+
   function capturedPieceToDiv(type: PieceType, number = 0, reactKey: any) {
     const res = [];
     for (let i = 0; i < number; i++) {
@@ -89,7 +104,10 @@ export default function Clock({ player }: Props) {
   }, [pieces]);
 
   return (
-    <div className={`clock ${player}`}>
+    <div
+      className={`clock ${player}`}
+      style={{ "--time-percent": timePercent } as React.CSSProperties}
+    >
       <div className="clock__left">
         <div className="clock__username">
           {clockColor === "white"

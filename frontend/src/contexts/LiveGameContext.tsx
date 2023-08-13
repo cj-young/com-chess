@@ -64,6 +64,10 @@ type TLiveGameContext = {
   setJustMoved: React.Dispatch<React.SetStateAction<boolean>>;
   gameOver: boolean;
   setGameOver: React.Dispatch<React.SetStateAction<boolean>>;
+  maxWhiteTime: number;
+  setMaxWhiteTime: React.Dispatch<React.SetStateAction<number>>;
+  maxBlackTime: number;
+  setMaxBlackTime: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const LiveGameContext = createContext<TLiveGameContext>({} as TLiveGameContext);
@@ -97,6 +101,19 @@ export function LiveGameContextProvider({ children }: Props) {
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
   const [justMoved, setJustMoved] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [maxWhiteTime, setMaxWhiteTime] = useState(0);
+  const [maxBlackTime, setMaxBlackTime] = useState(0);
+
+  useLayoutEffect(() => {
+    if (whiteTime > maxWhiteTime) {
+      setMaxWhiteTime(whiteTime);
+    }
+  }, [whiteTime]);
+  useLayoutEffect(() => {
+    if (blackTime > maxBlackTime) {
+      setMaxBlackTime(blackTime);
+    }
+  }, [blackTime]);
 
   const moveStartTime = useRef<number>(0);
 
@@ -114,6 +131,15 @@ export function LiveGameContextProvider({ children }: Props) {
 
   function makeMove(move: Move) {
     setMoves((prevMoves) => [...prevMoves, move]);
+    if (color === "white") {
+      setWhiteTime(
+        (prevWhiteTime) => prevWhiteTime + gameInfo.increment * 1000
+      );
+    } else {
+      setBlackTime(
+        (prevBlackTime) => prevBlackTime + gameInfo.increment * 1000
+      );
+    }
     const timeSpent = Date.now() - moveStartTime.current;
     socket.emit("move", { move, timeSpent });
     setJustMoved(true);
@@ -138,6 +164,8 @@ export function LiveGameContextProvider({ children }: Props) {
     setSelectedPiece(null);
     setJustMoved(false);
     setGameOver(false);
+    setMaxBlackTime(0);
+    setMaxWhiteTime(0);
     moveStartTime.current = 0;
   }
 
@@ -171,7 +199,11 @@ export function LiveGameContextProvider({ children }: Props) {
         justMoved,
         setJustMoved,
         gameOver,
-        setGameOver
+        setGameOver,
+        maxWhiteTime,
+        maxBlackTime,
+        setMaxWhiteTime,
+        setMaxBlackTime
       }}
     >
       {children}

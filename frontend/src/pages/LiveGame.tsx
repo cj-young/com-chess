@@ -40,7 +40,9 @@ export default function LiveGame() {
     blackTime,
     setMoveIndex,
     gameOver,
-    setGameOver
+    setGameOver,
+    setMaxWhiteTime,
+    setMaxBlackTime
   } = useLiveGameContext();
 
   const justMovedRef = useRef<boolean>(false);
@@ -108,6 +110,8 @@ export default function LiveGame() {
       setJustMoved(false);
       setMoveIndex(game.moves.length - 1);
       setGameOver(false);
+      setMaxWhiteTime(game.info.minutes * 1000 * 60);
+      setMaxBlackTime(game.info.minutes * 1000 * 60);
       moveStartTime.current = Date.now();
 
       const turn = game.moves.length % 2 === 0 ? "white" : "black";
