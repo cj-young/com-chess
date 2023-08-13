@@ -97,12 +97,12 @@ export default function Clock({ player }: Props) {
   const advantage = useMemo(() => {
     let res = 0;
     for (let piece of pieces) {
-      if (!piece.active) {
+      if (piece.active && piece.type !== "king") {
         const value = pieceValues.get(piece.type) ?? 0;
         if (piece.color === clockColor) {
-          res -= value;
-        } else {
           res += value;
+        } else {
+          res -= value;
         }
       }
     }
