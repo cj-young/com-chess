@@ -13,6 +13,7 @@ import { socket } from "../config/socket";
 export default function Board() {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [gameOverModal, setGameOverModal] = useState<React.ReactNode>(null);
+  const [hoverSquare, setHoverSquare] = useState<string | null>(null);
   const {
     pieces,
     selectedPiece,
@@ -145,7 +146,12 @@ export default function Board() {
               {pieces.map(
                 (piece, i) =>
                   piece.active && (
-                    <PieceComponent piece={piece} key={i} boardRef={boardRef} />
+                    <PieceComponent
+                      piece={piece}
+                      key={i}
+                      boardRef={boardRef}
+                      setHoverSquare={setHoverSquare}
+                    />
                   )
               )}
             </div>
@@ -170,6 +176,9 @@ export default function Board() {
             {legalMoves.map((legalMove, i) => (
               <SquareHighlight square={legalMove} type="legalMove" key={i} />
             ))}
+            {hoverSquare && (
+              <SquareHighlight square={hoverSquare} type="hoverSquare" />
+            )}
             {gameOverModal}
           </>
         )}

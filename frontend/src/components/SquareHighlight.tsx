@@ -5,7 +5,7 @@ import { useMemo } from "react";
 
 type Props = {
   square: string;
-  type: "previousMove" | "selectedPiece" | "legalMove";
+  type: "previousMove" | "selectedPiece" | "legalMove" | "hoverSquare";
 };
 
 export default function SquareHighlight({ square, type }: Props) {
@@ -24,6 +24,8 @@ export default function SquareHighlight({ square, type }: Props) {
           ? "selected-piece"
           : type === "previousMove"
           ? "previous-move"
+          : type === "hoverSquare"
+          ? "hover-square"
           : `legal-move ${isPiece ? "on-piece-square" : ""}`
       }`}
       style={{

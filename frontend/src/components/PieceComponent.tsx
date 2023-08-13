@@ -6,9 +6,14 @@ import { useLiveGameContext } from "../contexts/LiveGameContext";
 type Props = {
   piece: Piece;
   boardRef: React.RefObject<HTMLDivElement | null>;
+  setHoverSquare: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
-export default function PieceComponent({ piece, boardRef }: Props) {
+export default function PieceComponent({
+  piece,
+  boardRef,
+  setHoverSquare
+}: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [mousePosition, setMousePosition] = useState<{
     x: number;
@@ -89,11 +94,35 @@ export default function PieceComponent({ piece, boardRef }: Props) {
         return;
       }
       setMousePosition({ x: e.clientX, y: e.clientY });
+      if (boardRef.current && pieceRef.current && legalMovesRef.current) {
+        const squareSize = boardRef.current.offsetWidth / 8;
+        const boardRect = boardRef.current.getBoundingClientRect();
+
+        let newFile = Math.floor((e.clientX - boardRect.left) / squareSize);
+        let newRank = Math.floor((e.clientY - boardRect.top) / squareSize);
+
+        if (orientation === "black") {
+          newFile = 7 - newFile;
+          newRank = 7 - newRank;
+        }
+
+        if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
+          const newSquare = letterSquare(newRank, newFile);
+          if (newSquare === piece.square) {
+            setHoverSquare(null);
+          } else {
+            if (legalMovesRef.current.includes(newSquare)) {
+              setHoverSquare(newSquare);
+            }
+          }
+        }
+      }
     }
 
     function handleMouseUp(e: MouseEvent) {
       e.preventDefault();
       e.stopPropagation();
+      setHoverSquare(null);
       if (!canDrag) {
         setIsDragging(false);
         return;
@@ -149,10 +178,35 @@ export default function PieceComponent({ piece, boardRef }: Props) {
       }
       const touch = e.touches[0];
       setMousePosition({ x: touch.clientX, y: touch.clientY });
+
+      if (boardRef.current && pieceRef.current && legalMovesRef.current) {
+        const squareSize = boardRef.current.offsetWidth / 8;
+        const boardRect = boardRef.current.getBoundingClientRect();
+
+        let newFile = Math.floor((touch.clientX - boardRect.left) / squareSize);
+        let newRank = Math.floor((touch.clientY - boardRect.top) / squareSize);
+
+        if (orientation === "black") {
+          newFile = 7 - newFile;
+          newRank = 7 - newRank;
+        }
+
+        if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
+          const newSquare = letterSquare(newRank, newFile);
+          if (newSquare === piece.square) {
+            setHoverSquare(null);
+          } else {
+            if (legalMovesRef.current.includes(newSquare)) {
+              setHoverSquare(newSquare);
+            }
+          }
+        }
+      }
     }
 
     function handleTouchEnd(e: TouchEvent) {
       e.preventDefault();
+      setHoverSquare(null);
       if (!canDrag) {
         setIsDragging(false);
         return;
