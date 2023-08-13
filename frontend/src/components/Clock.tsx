@@ -15,7 +15,10 @@ export default function Clock({ player }: Props) {
     whiteTime,
     pieces,
     maxWhiteTime,
-    maxBlackTime
+    maxBlackTime,
+    justMoved,
+    turn,
+    gameOver
   } = useLiveGameContext();
 
   const clockColor = useMemo(() => {
@@ -105,7 +108,9 @@ export default function Clock({ player }: Props) {
 
   return (
     <div
-      className={`clock ${player}`}
+      className={`clock ${player} ${
+        turn === clockColor && !justMoved && !gameOver ? "active" : ""
+      }`}
       style={{ "--time-percent": timePercent } as React.CSSProperties}
     >
       <div className="clock__left">

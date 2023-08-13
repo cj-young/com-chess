@@ -15,6 +15,9 @@
   overflow: hidden;
   border-radius: var(--br-primary);
   --time-percent: 0;
+  --bar-color: var(--clr-neutral-600);
+  --time-color: var(--clr-neutral-400);
+  color: var(--clr-text-primary);
 
   @include game-screen {
     width: 100%;
@@ -49,12 +52,13 @@
     right: calc(100% - (var(--time-percent) * 100%));
     top: 0;
     height: 6px;
-    background-color: var(--clr-neutral-600);
+    background-color: var(--bar-color);
     transition: right 250ms linear;
   }
 
   &__time {
     font-size: 2rem;
+    color: var(--time-color);
   }
 
   &__left {
@@ -88,5 +92,10 @@
     & + & {
       margin-left: -1rem;
     }
+  }
+
+  &.active {
+    --bar-color: var(--clr-primary);
+    --time-color: var(--clr-text-primary);
   }
 }
