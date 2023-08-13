@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Piece from "../utils/Piece";
 import { letterSquare } from "../utils/squareConverters";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
@@ -66,6 +66,10 @@ export default function PieceComponent({ piece, boardRef }: Props) {
     };
   }, []);
 
+  useEffect(() => {
+    if (piece !== selectedPiece) setIsDragging(false);
+  }, [selectedPiece]);
+
   function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
     e.stopPropagation();
     e.preventDefault();
@@ -124,6 +128,66 @@ export default function PieceComponent({ piece, boardRef }: Props) {
     }
   }
 
+  function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!canDrag) return;
+    setIsDragging(true);
+    const touch = e.touches[0];
+    const upWillDeselect = selectedPieceRef.current?.square === piece.square;
+    setSelectedPiece(piece);
+    setMousePosition({ x: touch.clientX, y: touch.clientY });
+
+    document.addEventListener("touchmove", handleTouchMove);
+    document.addEventListener("touchend", handleTouchEnd);
+
+    function handleTouchMove(e: TouchEvent) {
+      e.preventDefault();
+      if (!canDrag) {
+        setIsDragging(false);
+        return;
+      }
+      const touch = e.touches[0];
+      setMousePosition({ x: touch.clientX, y: touch.clientY });
+    }
+
+    function handleTouchEnd(e: TouchEvent) {
+      e.preventDefault();
+      if (!canDrag) {
+        setIsDragging(false);
+        return;
+      }
+      const touch = e.changedTouches[0];
+      if (boardRef.current && pieceRef.current && legalMovesRef.current) {
+        const squareSize = boardRef.current.offsetWidth / 8;
+        const boardRect = boardRef.current.getBoundingClientRect();
+
+        let newFile = Math.floor((touch.clientX - boardRect.left) / squareSize);
+        let newRank = Math.floor((touch.clientY - boardRect.top) / squareSize);
+
+        if (orientation === "black") {
+          newFile = 7 - newFile;
+          newRank = 7 - newRank;
+        }
+
+        if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
+          const newSquare = letterSquare(newRank, newFile);
+          if (newSquare === piece.square) {
+            if (upWillDeselect) setSelectedPiece(null);
+          } else {
+            if (legalMovesRef.current.includes(newSquare)) {
+              makeMove({ to: newSquare, from: piece.square });
+            }
+            setSelectedPiece(null);
+          }
+        }
+      }
+      setIsDragging(false);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
+    }
+  }
+
   return (
     <div
       className="piece"
@@ -138,6 +202,7 @@ export default function PieceComponent({ piece, boardRef }: Props) {
         cursor: isDragging ? "grabbing" : canDrag ? "pointer" : "default"
       }}
       onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
       ref={pieceRef}
     >
       <img src={piece.image} alt={`${piece.color} ${piece.type}`} />
