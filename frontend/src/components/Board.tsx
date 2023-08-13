@@ -9,6 +9,7 @@ import SquareHighlight from "./SquareHighlight";
 import { letterSquare } from "../utils/squareConverters";
 import GameOver from "./GameOver";
 import { socket } from "../config/socket";
+import PawnPromoter from "./PawnPromoter";
 
 export default function Board() {
   const boardRef = useRef<HTMLDivElement | null>(null);
@@ -28,6 +29,7 @@ export default function Board() {
     gameState,
     setGameOver
   } = useLiveGameContext();
+  const [pawnPromoter, setPawnPromoter] = useState<JSX.Element | null>(null);
 
   const isUpToDate = useMemo(() => {
     return moveIndex === moves.length - 1;
@@ -35,6 +37,7 @@ export default function Board() {
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
+    setPawnPromoter(null);
     if (!selectedPiece) return;
     if (boardRef.current) {
       const squareSize = boardRef.current.offsetWidth / 8;
@@ -49,7 +52,22 @@ export default function Board() {
         const newSquare = letterSquare(newRank, newFile);
         if (newSquare === selectedPiece.square) return;
         if (legalMoves.includes(newSquare)) {
-          makeMove({ to: newSquare, from: selectedPiece.square });
+          if (
+            selectedPiece.type === "pawn" &&
+            ((selectedPiece.color === "white" && newSquare[1] === "8") ||
+              (selectedPiece.color === "black" && newSquare[1] === "1"))
+          ) {
+            setPawnPromoter(
+              <PawnPromoter
+                from={selectedPiece.square}
+                to={newSquare}
+                color={selectedPiece.color}
+                close={() => setPawnPromoter(null)}
+              />
+            );
+          } else {
+            makeMove({ to: newSquare, from: selectedPiece.square });
+          }
         }
         setSelectedPiece(null);
       }
@@ -151,6 +169,7 @@ export default function Board() {
                       key={i}
                       boardRef={boardRef}
                       setHoverSquare={setHoverSquare}
+                      setPawnPromoter={setPawnPromoter}
                     />
                   )
               )}
@@ -182,6 +201,7 @@ export default function Board() {
             {gameOverModal}
           </>
         )}
+        {pawnPromoter}
       </div>
       {gameState === "playing" && (
         <div className="controls">

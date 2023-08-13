@@ -154,7 +154,6 @@ export default function LiveGame() {
     const startTime = turn === "white" ? whiteTime : blackTime;
     if (gameOverRef.current) return;
     const timerInterval = setInterval(() => {
-      console.log(gameOverRef.current);
       if (gameOverRef.current) {
         clearInterval(timerInterval);
         return;

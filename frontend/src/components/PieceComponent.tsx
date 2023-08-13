@@ -2,17 +2,20 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Piece from "../utils/Piece";
 import { letterSquare } from "../utils/squareConverters";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
+import PawnPromoter from "./PawnPromoter";
 
 type Props = {
   piece: Piece;
   boardRef: React.RefObject<HTMLDivElement | null>;
   setHoverSquare: React.Dispatch<React.SetStateAction<string | null>>;
+  setPawnPromoter: React.Dispatch<React.SetStateAction<JSX.Element | null>>;
 };
 
 export default function PieceComponent({
   piece,
   boardRef,
-  setHoverSquare
+  setHoverSquare,
+  setPawnPromoter
 }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [mousePosition, setMousePosition] = useState<{
@@ -78,6 +81,7 @@ export default function PieceComponent({
   function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
     e.stopPropagation();
     e.preventDefault();
+    setPawnPromoter(null);
     if (!canDrag) return;
     setIsDragging(true);
     const upWillDeselect = selectedPieceRef.current?.square === piece.square;
@@ -145,7 +149,22 @@ export default function PieceComponent({
             if (upWillDeselect) setSelectedPiece(null);
           } else {
             if (legalMovesRef.current.includes(newSquare)) {
-              makeMove({ to: newSquare, from: piece.square });
+              if (
+                piece.type === "pawn" &&
+                ((piece.color === "white" && newSquare[1] === "8") ||
+                  (piece.color === "black" && newSquare[1] === "1"))
+              ) {
+                setPawnPromoter(
+                  <PawnPromoter
+                    from={piece.square}
+                    to={newSquare}
+                    color={piece.color}
+                    close={() => setPawnPromoter(null)}
+                  />
+                );
+              } else {
+                makeMove({ to: newSquare, from: piece.square });
+              }
             }
             setSelectedPiece(null);
           }
@@ -159,7 +178,7 @@ export default function PieceComponent({
 
   function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
     e.stopPropagation();
-    e.preventDefault();
+    setPawnPromoter(null);
     if (!canDrag) return;
     setIsDragging(true);
     const touch = e.touches[0];
@@ -167,8 +186,8 @@ export default function PieceComponent({
     setSelectedPiece(piece);
     setMousePosition({ x: touch.clientX, y: touch.clientY });
 
-    document.addEventListener("touchmove", handleTouchMove);
-    document.addEventListener("touchend", handleTouchEnd);
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleTouchEnd, { passive: false });
 
     function handleTouchMove(e: TouchEvent) {
       e.preventDefault();
@@ -230,7 +249,22 @@ export default function PieceComponent({
             if (upWillDeselect) setSelectedPiece(null);
           } else {
             if (legalMovesRef.current.includes(newSquare)) {
-              makeMove({ to: newSquare, from: piece.square });
+              if (
+                piece.type === "pawn" &&
+                ((piece.color === "white" && newSquare[1] === "8") ||
+                  (piece.color === "black" && newSquare[1] === "1"))
+              ) {
+                setPawnPromoter(
+                  <PawnPromoter
+                    from={piece.square}
+                    to={newSquare}
+                    color={piece.color}
+                    close={() => setPawnPromoter(null)}
+                  />
+                );
+              } else {
+                makeMove({ to: newSquare, from: piece.square });
+              }
             }
             setSelectedPiece(null);
           }
@@ -253,10 +287,12 @@ export default function PieceComponent({
           ? pieceLeft
           : `calc((100% / 8) * ${orientation === "white" ? file : 7 - file})`,
         zIndex: isDragging ? "1000" : "2",
-        cursor: isDragging ? "grabbing" : canDrag ? "pointer" : "default"
+        cursor: isDragging ? "grabbing" : canDrag ? "pointer" : "default",
+        touchAction: "none"
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
+      onClick={(e) => e.stopPropagation()}
       ref={pieceRef}
     >
       <img src={piece.image} alt={`${piece.color} ${piece.type}`} />
