@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FocusEvent, useMemo } from "react";
+import { useState, ChangeEvent, useMemo } from "react";
 import "../styles/CreateGame.scss";
 import { useUserContext } from "../contexts/UserContext";
 import { socket } from "../config/socket";
@@ -11,7 +11,12 @@ export default function CreateGame() {
   const { friends } = useUserContext();
 
   const canCreate = useMemo<boolean>(() => {
-    return opponent.length > 0 && minutes.length > 0 && increment.length > 0;
+    return (
+      opponent.length > 0 &&
+      minutes.length > 0 &&
+      increment.length > 0 &&
+      +minutes > 0
+    );
   }, [minutes, increment, opponent]);
 
   function handleMinutesChange(e: ChangeEvent<HTMLInputElement>) {
@@ -21,8 +26,9 @@ export default function CreateGame() {
     }
   }
 
-  function handleMinutesBlur(e: FocusEvent<HTMLInputElement>) {
+  function handleMinutesBlur() {
     if (+minutes > 60) setMinutes("60");
+    else if (+minutes <= 0) setMinutes("1");
   }
 
   function handleIncrementChange(e: ChangeEvent<HTMLInputElement>) {
@@ -32,7 +38,7 @@ export default function CreateGame() {
     }
   }
 
-  function handleIncrementBlur(e: FocusEvent<HTMLInputElement>) {
+  function handleIncrementBlur() {
     if (+increment > 30) setIncrement("30");
   }
 
