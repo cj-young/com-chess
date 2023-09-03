@@ -28,6 +28,7 @@ type Props = {
   showControls: boolean;
   makeMove: (move: Move) => void;
   modal: React.ReactNode;
+  canDragCB: (piece: Piece) => boolean;
 };
 
 export default function Board({
@@ -42,6 +43,7 @@ export default function Board({
   showControls,
   makeMove,
   modal,
+  canDragCB,
 }: Props) {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [hoverSquare, setHoverSquare] = useState<string | null>(null);
@@ -138,6 +140,9 @@ export default function Board({
                       selectedPiece={selectedPiece}
                       setSelectedPiece={setSelectedPiece}
                       legalMoves={legalMoves}
+                      orientation={orientation}
+                      makeMove={makeMove}
+                      canDrag={canDragCB(piece)}
                     />
                   )
               )}

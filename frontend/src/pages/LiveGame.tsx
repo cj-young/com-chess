@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Board from "../components/Board";
 import Chat from "../components/Chat";
 import Clock from "../components/Clock";
@@ -14,6 +14,7 @@ import Loading from "./Loading";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
 import checkIcon from "../assets/check-solid.svg";
 import GameOver from "../components/GameOver";
+import Piece from "../utils/Piece";
 
 export default function LiveGame() {
   const [waitingUsername, setWaitingUsername] = useState("");
@@ -55,6 +56,17 @@ export default function LiveGame() {
   const justMovedRef = useRef<boolean>(false);
   const didTimeOutRef = useRef<boolean>(false);
   const gameOverRef = useRef<boolean>(false);
+
+  const canDragCB = useCallback(
+    (piece: Piece) => {
+      return (
+        piece.color === color &&
+        turn === color &&
+        moveIndex === moves.length - 1
+      );
+    },
+    [color, moveIndex, moves]
+  );
 
   justMovedRef.current = justMoved;
   gameOverRef.current = gameOver;
@@ -257,6 +269,7 @@ export default function LiveGame() {
           showPieces={gameState === "playing"}
           makeMove={makeMove}
           modal={gameOverModal}
+          canDragCB={canDragCB}
         />
         {gameState === "playing" && (
           <>

@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Piece from "../utils/Piece";
 import { letterSquare } from "../utils/squareConverters";
-import { useLiveGameContext } from "../contexts/LiveGameContext";
 import PawnPromoter from "./PawnPromoter";
+
+type Move = {
+  to: string;
+  from: string;
+  promoteTo?: "knight" | "bishop" | "rook" | "queen";
+};
 
 type Props = {
   piece: Piece;
@@ -12,6 +17,9 @@ type Props = {
   selectedPiece: Piece | null;
   setSelectedPiece: React.Dispatch<React.SetStateAction<Piece | null>>;
   legalMoves: string[];
+  orientation: "white" | "black";
+  makeMove: (move: Move) => void;
+  canDrag: boolean;
 };
 
 export default function PieceComponent({
@@ -22,6 +30,9 @@ export default function PieceComponent({
   selectedPiece,
   setSelectedPiece,
   legalMoves,
+  orientation,
+  makeMove,
+  canDrag,
 }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [mousePosition, setMousePosition] = useState<{
@@ -40,19 +51,19 @@ export default function PieceComponent({
     return [top, left];
   }, [pieceRef.current, mousePosition, isDragging]);
 
-  const { makeMove, orientation, color, turn, moveIndex, moves } =
-    useLiveGameContext();
+  // all in can drag
+  // const { color, turn, moveIndex, moves } = useLiveGameContext();
 
   const selectedPieceRef = useRef<null | Piece>(null);
   selectedPieceRef.current = selectedPiece;
   const legalMovesRef = useRef<string[]>([]);
   legalMovesRef.current = legalMoves;
 
-  const canDrag = useMemo(() => {
-    return (
-      piece.color === color && turn === color && moveIndex === moves.length - 1
-    );
-  }, [piece, color, moveIndex, moves]);
+  // const canDrag = useMemo(() => {
+  //   return (
+  //     piece.color === color && turn === color && moveIndex === moves.length - 1
+  //   );
+  // }, [piece, color, moveIndex, moves]);
 
   const rank = piece.numRank;
   const file = piece.numFile;
