@@ -1,35 +1,60 @@
-import { useRef, useEffect, useState, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
 import "../styles/Board.scss";
 import flipIcon from "../assets/repeat-solid.svg";
 import leftIcon from "../assets/angle-left-solid.svg";
 import rightIcon from "../assets/angle-right-solid.svg";
 import PieceComponent from "./PieceComponent";
-import { useLiveGameContext } from "../contexts/LiveGameContext";
 import SquareHighlight from "./SquareHighlight";
 import { letterSquare } from "../utils/squareConverters";
-import GameOver from "./GameOver";
-import { socket } from "../config/socket";
 import PawnPromoter from "./PawnPromoter";
+import Piece from "../utils/Piece";
+import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
 
-export default function Board() {
+type Move = {
+  to: string;
+  from: string;
+  promoteTo?: "knight" | "bishop" | "rook" | "queen";
+};
+
+type Props = {
+  pieces: Piece[];
+  moves: Move[];
+  orientation: "white" | "black";
+  setOrientation: React.Dispatch<React.SetStateAction<"white" | "black">>;
+  prevMove: () => void;
+  nextMove: () => void;
+  moveIndex: number;
+  showPieces: boolean;
+  showControls: boolean;
+  makeMove: (move: Move) => void;
+  modal: React.ReactNode;
+};
+
+export default function Board({
+  pieces,
+  moves,
+  orientation,
+  setOrientation,
+  prevMove,
+  nextMove,
+  moveIndex,
+  showPieces,
+  showControls,
+  makeMove,
+  modal,
+}: Props) {
   const boardRef = useRef<HTMLDivElement | null>(null);
-  const [gameOverModal, setGameOverModal] = useState<React.ReactNode>(null);
   const [hoverSquare, setHoverSquare] = useState<string | null>(null);
-  const {
-    pieces,
-    selectedPiece,
-    setSelectedPiece,
-    orientation,
-    setOrientation,
-    moves,
-    legalMoves,
-    makeMove,
-    moveIndex,
-    setMoveIndex,
-    gameState,
-    setGameOver
-  } = useLiveGameContext();
   const [pawnPromoter, setPawnPromoter] = useState<JSX.Element | null>(null);
+  const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
+
+  const legalMoves = useMemo(() => {
+    if (selectedPiece) {
+      return generateLegalMoves(pieces, selectedPiece, moves);
+    } else {
+      return [];
+    }
+  }, [selectedPiece]);
 
   const isUpToDate = useMemo(() => {
     return moveIndex === moves.length - 1;
@@ -74,71 +99,11 @@ export default function Board() {
     }
   }
 
-  function handlePrevMove() {
-    if (moveIndex >= 0) {
-      setMoveIndex((prevMoveIndex) => prevMoveIndex - 1);
-    }
-  }
-
-  function handleNextMove() {
-    if (moveIndex < moves.length - 1) {
-      setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
-    }
-  }
-
   function handleFlipBoard() {
     setOrientation((prevOrientation) =>
       prevOrientation === "white" ? "black" : "white"
     );
   }
-
-  useEffect(() => {
-    socket.on("gameWon", ({ type, id }) => {
-      setGameOverModal(
-        <GameOver
-          type={type}
-          gameId={id}
-          winStatus="won"
-          close={() => setGameOverModal(null)}
-        />
-      );
-      setGameOver(true);
-    });
-
-    socket.on("gameLost", ({ type, id }) => {
-      setGameOverModal(
-        <GameOver
-          type={type}
-          gameId={id}
-          winStatus="lost"
-          close={() => setGameOverModal(null)}
-        />
-      );
-      setGameOver(true);
-    });
-
-    socket.on("gameDrawn", ({ type, id }) => {
-      setGameOverModal(
-        <GameOver
-          type={type}
-          gameId={id}
-          winStatus="drawn"
-          close={() => setGameOverModal(null)}
-        />
-      );
-      setGameOver(true);
-    });
-
-    socket.on("startGame", () => {
-      setGameOverModal(null);
-    });
-
-    return () => {
-      socket.off("gameWon");
-      socket.off("gameLost");
-      socket.off("gameDrawn");
-    };
-  }, []);
 
   return (
     <div className="board-container">
@@ -158,7 +123,7 @@ export default function Board() {
               );
             })}
         </div>
-        {gameState === "playing" && (
+        {showPieces && (
           <>
             <div className="pieces">
               {pieces.map(
@@ -170,6 +135,9 @@ export default function Board() {
                       boardRef={boardRef}
                       setHoverSquare={setHoverSquare}
                       setPawnPromoter={setPawnPromoter}
+                      selectedPiece={selectedPiece}
+                      setSelectedPiece={setSelectedPiece}
+                      legalMoves={legalMoves}
                     />
                   )
               )}
@@ -198,12 +166,12 @@ export default function Board() {
             {hoverSquare && (
               <SquareHighlight square={hoverSquare} type="hoverSquare" />
             )}
-            {gameOverModal}
+            {modal}
           </>
         )}
         {pawnPromoter}
       </div>
-      {gameState === "playing" && (
+      {showControls && (
         <div className="controls">
           <button className="flip-board" onClick={handleFlipBoard}>
             <img src={flipIcon} alt="Flip board" />
@@ -211,14 +179,14 @@ export default function Board() {
           <div className="right-buttons">
             <button
               className={`prev-move ${moveIndex >= 0 ? "" : "disabled"}`}
-              onClick={handlePrevMove}
+              onClick={prevMove}
               aria-disabled={moveIndex < 0}
             >
               <img src={leftIcon} alt="View previous move" />
             </button>
             <button
               className={`next-move ${isUpToDate ? "disabled" : ""}`}
-              onClick={handleNextMove}
+              onClick={nextMove}
               aria-disabled={!isUpToDate}
             >
               <img src={rightIcon} alt="View next move" />

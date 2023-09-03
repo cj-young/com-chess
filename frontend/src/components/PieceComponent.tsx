@@ -9,13 +9,19 @@ type Props = {
   boardRef: React.RefObject<HTMLDivElement | null>;
   setHoverSquare: React.Dispatch<React.SetStateAction<string | null>>;
   setPawnPromoter: React.Dispatch<React.SetStateAction<JSX.Element | null>>;
+  selectedPiece: Piece | null;
+  setSelectedPiece: React.Dispatch<React.SetStateAction<Piece | null>>;
+  legalMoves: string[];
 };
 
 export default function PieceComponent({
   piece,
   boardRef,
   setHoverSquare,
-  setPawnPromoter
+  setPawnPromoter,
+  selectedPiece,
+  setSelectedPiece,
+  legalMoves,
 }: Props) {
   const [isDragging, setIsDragging] = useState(false);
   const [mousePosition, setMousePosition] = useState<{
@@ -34,17 +40,8 @@ export default function PieceComponent({
     return [top, left];
   }, [pieceRef.current, mousePosition, isDragging]);
 
-  const {
-    makeMove,
-    orientation,
-    color,
-    selectedPiece,
-    setSelectedPiece,
-    legalMoves,
-    turn,
-    moveIndex,
-    moves
-  } = useLiveGameContext();
+  const { makeMove, orientation, color, turn, moveIndex, moves } =
+    useLiveGameContext();
 
   const selectedPieceRef = useRef<null | Piece>(null);
   selectedPieceRef.current = selectedPiece;
@@ -288,7 +285,7 @@ export default function PieceComponent({
           : `calc((100% / 8) * ${orientation === "white" ? file : 7 - file})`,
         zIndex: isDragging ? "1000" : "2",
         cursor: isDragging ? "grabbing" : canDrag ? "pointer" : "default",
-        touchAction: "none"
+        touchAction: "none",
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}

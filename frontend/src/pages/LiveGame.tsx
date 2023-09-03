@@ -13,6 +13,7 @@ import CreateGame from "../components/CreateGame";
 import Loading from "./Loading";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
 import checkIcon from "../assets/check-solid.svg";
+import GameOver from "../components/GameOver";
 
 export default function LiveGame() {
   const [waitingUsername, setWaitingUsername] = useState("");
@@ -20,9 +21,12 @@ export default function LiveGame() {
     "resign" | "draw" | null
   >(null);
   const [drawRequested, setDrawRequested] = useState(false);
+  const [gameOverModal, setGameOverModal] = useState<React.ReactNode>(null);
 
   const {
+    moves,
     setMoves,
+    pieces,
     color,
     gameInfo,
     setColor,
@@ -38,11 +42,14 @@ export default function LiveGame() {
     justMoved,
     whiteTime,
     blackTime,
+    moveIndex,
     setMoveIndex,
     gameOver,
     setGameOver,
     setMaxWhiteTime,
-    setMaxBlackTime
+    setMaxBlackTime,
+    orientation,
+    makeMove,
   } = useLiveGameContext();
 
   const justMovedRef = useRef<boolean>(false);
@@ -140,6 +147,46 @@ export default function LiveGame() {
       setDrawRequested(true);
     });
 
+    socket.on("gameWon", ({ type, id }) => {
+      setGameOverModal(
+        <GameOver
+          type={type}
+          gameId={id}
+          winStatus="won"
+          close={() => setGameOverModal(null)}
+        />
+      );
+      setGameOver(true);
+    });
+
+    socket.on("gameLost", ({ type, id }) => {
+      setGameOverModal(
+        <GameOver
+          type={type}
+          gameId={id}
+          winStatus="lost"
+          close={() => setGameOverModal(null)}
+        />
+      );
+      setGameOver(true);
+    });
+
+    socket.on("gameDrawn", ({ type, id }) => {
+      setGameOverModal(
+        <GameOver
+          type={type}
+          gameId={id}
+          winStatus="drawn"
+          close={() => setGameOverModal(null)}
+        />
+      );
+      setGameOver(true);
+    });
+
+    socket.on("startGame", () => {
+      setGameOverModal(null);
+    });
+
     return () => {
       socket.emit("leaveLive");
       socket.off("liveWaiting");
@@ -147,6 +194,9 @@ export default function LiveGame() {
       socket.off("startGame");
       socket.off("move");
       socket.off("drawRequest");
+      socket.off("gameWon");
+      socket.off("gameLost");
+      socket.off("gameDrawn");
     };
   }, []);
 
@@ -187,7 +237,27 @@ export default function LiveGame() {
           </div>
         )}
 
-        <Board />
+        <Board
+          pieces={pieces}
+          moves={moves}
+          orientation={orientation}
+          setOrientation={setOrientation}
+          prevMove={() => {
+            if (moveIndex >= 0) {
+              setMoveIndex((prevMoveIndex) => prevMoveIndex - 1);
+            }
+          }}
+          nextMove={() => {
+            if (moveIndex < moves.length - 1) {
+              setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
+            }
+          }}
+          moveIndex={moveIndex}
+          showControls={gameState === "playing"}
+          showPieces={gameState === "playing"}
+          makeMove={makeMove}
+          modal={gameOverModal}
+        />
         {gameState === "playing" && (
           <>
             <div className="clock-container bottom">
