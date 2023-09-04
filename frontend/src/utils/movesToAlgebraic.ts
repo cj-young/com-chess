@@ -12,7 +12,7 @@ const pieceSymbols = {
   bishop: "B",
   rook: "R",
   queen: "Q",
-  king: "K"
+  king: "K",
 };
 
 export default function movesToAlgebraic(
@@ -36,7 +36,10 @@ export default function movesToAlgebraic(
   for (let i = 0; i < moves.length; i++) {
     const move = moves[i];
     const currentMoves = moves.slice(0, i + 1);
-    const piece = board[numRank(move.from)][numFile(move.from)];
+    const piece = Object.assign(
+      {},
+      board[numRank(move.from)][numFile(move.from)]
+    );
     if (!piece) throw new Error("Invalid moves");
 
     if (piece.type === "king") {
@@ -122,7 +125,7 @@ export default function movesToAlgebraic(
     res.push(
       `${pieceSymbols[piece.type]}${specifiedRank}${specifiedFile}${
         isCapture ? captureString : ""
-      }${move.to}${move.promoteTo ? `=${pieceSymbols[piece.type]}` : ""}${
+      }${move.to}${move.promoteTo ? `=${pieceSymbols[move.promoteTo]}` : ""}${
         isCheck ? (opponentCanMove ? "+" : "#") : ""
       }`
     );
