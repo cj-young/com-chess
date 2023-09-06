@@ -62,10 +62,11 @@ export default function LiveGame() {
       return (
         piece.color === color &&
         turn === color &&
-        moveIndex === moves.length - 1
+        moveIndex === moves.length - 1 &&
+        !gameOver
       );
     },
-    [color, moveIndex, moves]
+    [color, moveIndex, moves, gameOver]
   );
 
   justMovedRef.current = justMoved;
