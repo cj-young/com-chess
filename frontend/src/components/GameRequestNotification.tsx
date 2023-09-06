@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import "../styles/GameRequestNotification.scss";
 import { socket } from "../config/socket";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   remove: () => Promise<void>;
@@ -12,7 +13,7 @@ type Props = {
 const dropIn = {
   hidden: {
     y: "-100%",
-    opacity: 1
+    opacity: 1,
   },
   visible: {
     y: "0",
@@ -21,23 +22,26 @@ const dropIn = {
       duration: 0.025,
       type: "spring",
       damping: 12,
-      stiffness: 100
-    }
+      stiffness: 100,
+    },
   },
   exit: {
-    opacity: 0
-  }
+    opacity: 0,
+  },
 };
 
 export default function GameRequestNotification({
   remove,
   username,
   minutes,
-  increment
+  increment,
 }: Props) {
+  const navigate = useNavigate();
+
   function handleAccept() {
     socket.emit("gameAccept", username);
     remove();
+    navigate("/play/live");
   }
 
   function handleDecline() {
