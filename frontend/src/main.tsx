@@ -6,15 +6,18 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthContextProvider } from "./contexts/AuthContext.tsx";
 import { UserContextProvider } from "./contexts/UserContext.tsx";
 import { LiveGameContextProvider } from "./contexts/LiveGameContext.tsx";
+import { BotGameContextProvider } from "./contexts/BotGameContext.tsx";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <AuthContextProvider>
       <UserContextProvider>
         <LiveGameContextProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
+          <BotGameContextProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </BotGameContextProvider>
         </LiveGameContextProvider>
       </UserContextProvider>
     </AuthContextProvider>

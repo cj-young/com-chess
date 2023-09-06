@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import Play from "./pages/Play";
 import Notifications from "./components/Notifications";
 import LiveGame from "./pages/LiveGame";
+import BotGame from "./pages/BotGame";
 
 export default function App() {
   const [initialLoading, setInitialLoading] = useState(true);
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="/user/:username" element={<Profile />} />
               <Route path="/play" element={<Play />} />
               <Route path="/play/live" element={<LiveGame />} />
+              <Route path="/play/bot" element={<BotGame />} />
             </>
           ) : (
             <Route path="/*" element={<SetUsername />} />
