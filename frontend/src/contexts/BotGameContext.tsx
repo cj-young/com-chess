@@ -4,7 +4,6 @@ import {
   useState,
   useMemo,
   useLayoutEffect,
-  useEffect,
 } from "react";
 import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
@@ -24,8 +23,6 @@ type Move = {
 };
 
 type TGameState = "creating" | "playing";
-
-type TGame = {};
 
 type TBotGameContext = {
   gameState: TGameState;
@@ -48,6 +45,10 @@ type TBotGameContext = {
   gameOver: boolean;
   setGameOver: React.Dispatch<React.SetStateAction<boolean>>;
   updateLocalStorage: () => void;
+  difficulty: "easy" | "medium" | "hard" | "impossible";
+  setDifficulty: React.Dispatch<
+    React.SetStateAction<"easy" | "medium" | "hard" | "impossible">
+  >;
 };
 
 const BotGameContext = createContext<TBotGameContext>({} as TBotGameContext);
@@ -67,8 +68,8 @@ export function BotGameContextProvider({ children }: Props) {
   }, [moves, moveIndex]);
 
   const [difficulty, setDifficulty] = useState<
-    null | "easy" | "medium" | "hard" | "impossible"
-  >(null);
+    "easy" | "medium" | "hard" | "impossible"
+  >("impossible");
   const [color, setColor] = useState<"white" | "black">("white");
   const [orientation, setOrientation] = useState<"white" | "black">("white");
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
@@ -134,6 +135,8 @@ export function BotGameContextProvider({ children }: Props) {
         gameOver,
         setGameOver,
         updateLocalStorage,
+        difficulty,
+        setDifficulty,
       }}
     >
       {children}
