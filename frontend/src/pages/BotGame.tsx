@@ -6,6 +6,7 @@ import { useBotGameContext } from "../contexts/BotGameContext";
 import flagIcon from "../assets/flag-solid.svg";
 import "../styles/BotGame.scss";
 import ChooseBot from "../components/ChooseBot";
+import Moves from "../components/Moves";
 
 export default function BotGame() {
   const [gameOverModal, setGameOverModal] = useState<React.ReactNode>(null);
@@ -83,7 +84,11 @@ export default function BotGame() {
               </div>
             </div>
             <div className="bot-moves-container">
-              <div className="bot-moves"></div>
+              <Moves
+                moves={moves}
+                moveIndex={moveIndex}
+                setMoveIndex={setMoveIndex}
+              />
             </div>
           </>
         )}

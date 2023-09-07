@@ -14,7 +14,7 @@ type Props = {
   setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
 };
 
-export default function LiveMoves({ moves, moveIndex, setMoveIndex }: Props) {
+export default function Moves({ moves, moveIndex, setMoveIndex }: Props) {
   const algebraicMoves = useMemo(() => {
     const res: string[][] = [];
     const ungroupedMoves = movesToAlgebraic(moves);
