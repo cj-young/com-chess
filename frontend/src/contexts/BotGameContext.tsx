@@ -4,6 +4,7 @@ import {
   useState,
   useMemo,
   useLayoutEffect,
+  useEffect,
 } from "react";
 import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
@@ -23,6 +24,8 @@ type Move = {
 };
 
 type TGameState = "creating" | "playing";
+
+type TGame = {};
 
 type TBotGameContext = {
   gameState: TGameState;
@@ -44,6 +47,7 @@ type TBotGameContext = {
   resetBotGameContext: () => void;
   gameOver: boolean;
   setGameOver: React.Dispatch<React.SetStateAction<boolean>>;
+  updateLocalStorage: () => void;
 };
 
 const BotGameContext = createContext<TBotGameContext>({} as TBotGameContext);
@@ -62,6 +66,9 @@ export function BotGameContextProvider({ children }: Props) {
     );
   }, [moves, moveIndex]);
 
+  const [difficulty, setDifficulty] = useState<
+    null | "easy" | "medium" | "hard" | "impossible"
+  >(null);
   const [color, setColor] = useState<"white" | "black">("white");
   const [orientation, setOrientation] = useState<"white" | "black">("white");
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
@@ -78,6 +85,17 @@ export function BotGameContextProvider({ children }: Props) {
   const turn = useMemo(() => {
     return moves.length % 2 === 0 ? "white" : "black";
   }, [moves]);
+
+  function updateLocalStorage() {
+    localStorage.setItem(
+      "botGame",
+      JSON.stringify({
+        color,
+        difficulty,
+        moves,
+      })
+    );
+  }
 
   function makeMove(move: Move) {
     setMoves((prevMoves) => [...prevMoves, move]);
@@ -115,6 +133,7 @@ export function BotGameContextProvider({ children }: Props) {
         resetBotGameContext,
         gameOver,
         setGameOver,
+        updateLocalStorage,
       }}
     >
       {children}
