@@ -1,11 +1,20 @@
 import { useMemo } from "react";
-import { useLiveGameContext } from "../contexts/LiveGameContext";
 import "../styles/LiveMoves.scss";
 import movesToAlgebraic from "../utils/movesToAlgebraic";
 
-export default function LiveMoves() {
-  const { moves, moveIndex, setMoveIndex } = useLiveGameContext();
+type Move = {
+  from: string;
+  to: string;
+  promoteTo?: "knight" | "bishop" | "rook" | "queen";
+};
 
+type Props = {
+  moves: Move[];
+  moveIndex: number;
+  setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
+};
+
+export default function LiveMoves({ moves, moveIndex, setMoveIndex }: Props) {
   const algebraicMoves = useMemo(() => {
     const res: string[][] = [];
     const ungroupedMoves = movesToAlgebraic(moves);

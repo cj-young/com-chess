@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import Board from "../components/Board";
 import Chat from "../components/Chat";
 import Clock from "../components/Clock";
-import LiveMoves from "../components/LiveMoves";
+import LiveMoves from "../components/Moves";
 import Navbar from "../components/Navbar";
 import "../styles/LiveGame.scss";
 import flagIcon from "../assets/flag-solid.svg";
@@ -343,7 +343,11 @@ export default function LiveGame() {
               </div>
             </div>
             <div className="live-moves-container">
-              <LiveMoves />
+              <LiveMoves
+                moves={moves}
+                moveIndex={moveIndex}
+                setMoveIndex={setMoveIndex}
+              />
             </div>
             <div className="chat-container">
               <Chat />
