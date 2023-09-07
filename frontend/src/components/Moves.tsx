@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import "../styles/LiveMoves.scss";
+import "../styles/Moves.scss";
 import movesToAlgebraic from "../utils/movesToAlgebraic";
 
 type Move = {
