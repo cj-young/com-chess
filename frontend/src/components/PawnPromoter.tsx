@@ -3,16 +3,29 @@ import "../styles/PawnPromoter.scss";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
 import { numFile } from "../utils/squareConverters";
 
+type Move = {
+  from: string;
+  to: string;
+  promoteTo?: "knight" | "bishop" | "rook" | "queen";
+};
+
 type Props = {
   from: string;
   to: string;
   color: "white" | "black";
   close: () => void;
+  makeMove: (move: Move) => void;
+  orientation: "white" | "black";
 };
 
-export default function PawnPromoter({ from, to, color, close }: Props) {
-  let { makeMove, orientation } = useLiveGameContext();
-
+export default function PawnPromoter({
+  from,
+  to,
+  color,
+  close,
+  makeMove,
+  orientation,
+}: Props) {
   function handlePromote(newPiece: "queen" | "rook" | "bishop" | "knight") {
     makeMove({ from, to, promoteTo: newPiece });
     close();
@@ -27,7 +40,7 @@ export default function PawnPromoter({ from, to, color, close }: Props) {
             orientation === "white"
               ? `calc(${numFile(to)} * 100% / 8)`
               : `calc(${7 - numFile(to)} * 100% / 8)`,
-          flexDirection: "column" as "column"
+          flexDirection: "column" as "column",
         }
       : {
           bottom: 0,
@@ -35,7 +48,7 @@ export default function PawnPromoter({ from, to, color, close }: Props) {
             orientation === "white"
               ? `calc(${numFile(to)} * 100% / 8)`
               : `calc(${7 - numFile(to)} * 100% / 8)`,
-          flexDirection: "column-reverse" as "column-reverse"
+          flexDirection: "column-reverse" as "column-reverse",
         };
 
   return (

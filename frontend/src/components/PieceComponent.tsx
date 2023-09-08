@@ -159,6 +159,8 @@ export default function PieceComponent({
                     to={newSquare}
                     color={piece.color}
                     close={() => setPawnPromoter(null)}
+                    makeMove={makeMove}
+                    orientation={orientation}
                   />
                 );
               } else {
@@ -259,6 +261,8 @@ export default function PieceComponent({
                     to={newSquare}
                     color={piece.color}
                     close={() => setPawnPromoter(null)}
+                    makeMove={makeMove}
+                    orientation={orientation}
                   />
                 );
               } else {

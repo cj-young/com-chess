@@ -90,6 +90,8 @@ export default function Board({
                 to={newSquare}
                 color={selectedPiece.color}
                 close={() => setPawnPromoter(null)}
+                makeMove={makeMove}
+                orientation={orientation}
               />
             );
           } else {
