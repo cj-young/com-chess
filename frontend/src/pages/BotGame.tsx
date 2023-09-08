@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useLayoutEffect } from "react";
 import Piece from "../utils/Piece";
 import Navbar from "../components/Navbar";
 import Board from "../components/Board";
@@ -25,6 +25,13 @@ export default function BotGame() {
     turn,
     moveIndex,
     gameOver,
+    resetBotGameContext,
+    setColor,
+    setMoves,
+    setDifficulty,
+    setGameState,
+    setSelectedPiece,
+    setGameOver,
   } = useBotGameContext();
 
   const canDragCB = useCallback(
@@ -40,6 +47,23 @@ export default function BotGame() {
   );
 
   gameOverRef.current = gameOver;
+
+  useLayoutEffect(() => {
+    const currentGame = localStorage.getItem("botGame");
+    if (currentGame) {
+      const data = JSON.parse(currentGame);
+      setColor(data.color);
+      setDifficulty(data.difficulty);
+      setMoves(data.moves);
+      setMoveIndex(data.moves.length - 1);
+      setGameState("playing");
+      setSelectedPiece(null);
+      setGameOver(false);
+      setOrientation(data.color);
+    } else {
+      resetBotGameContext();
+    }
+  }, []);
 
   return (
     <div className="bot-game">
