@@ -1,16 +1,21 @@
-import { useLiveGameContext } from "../contexts/LiveGameContext";
 import { numFile, numRank } from "../utils/squareConverters";
 import "../styles/SquareHighlight.scss";
 import { useMemo } from "react";
+import Piece from "../utils/Piece";
 
 type Props = {
   square: string;
   type: "previousMove" | "selectedPiece" | "legalMove" | "hoverSquare";
+  orientation: "white" | "black";
+  pieces: Piece[];
 };
 
-export default function SquareHighlight({ square, type }: Props) {
-  const { orientation, pieces } = useLiveGameContext();
-
+export default function SquareHighlight({
+  square,
+  type,
+  orientation,
+  pieces,
+}: Props) {
   const isPiece = useMemo(() => {
     for (let piece of pieces)
       if (piece.square === square && piece.active) return true;
@@ -34,7 +39,7 @@ export default function SquareHighlight({ square, type }: Props) {
         })`,
         left: `calc((100% / 8) * ${
           orientation === "white" ? numFile(square) : 7 - numFile(square)
-        })`
+        })`,
       }}
     ></div>
   );

@@ -151,6 +151,8 @@ export default function Board({
               <SquareHighlight
                 square={selectedPiece.square}
                 type="selectedPiece"
+                orientation={orientation}
+                pieces={pieces}
               />
             )}
             {moveIndex >= 0 && (
@@ -158,18 +160,33 @@ export default function Board({
                 <SquareHighlight
                   square={moves[moveIndex].from}
                   type="previousMove"
+                  orientation={orientation}
+                  pieces={pieces}
                 />
                 <SquareHighlight
                   square={moves[moveIndex].to}
                   type="previousMove"
+                  orientation={orientation}
+                  pieces={pieces}
                 />
               </>
             )}
             {legalMoves.map((legalMove, i) => (
-              <SquareHighlight square={legalMove} type="legalMove" key={i} />
+              <SquareHighlight
+                square={legalMove}
+                type="legalMove"
+                orientation={orientation}
+                pieces={pieces}
+                key={i}
+              />
             ))}
             {hoverSquare && (
-              <SquareHighlight square={hoverSquare} type="hoverSquare" />
+              <SquareHighlight
+                square={hoverSquare}
+                type="hoverSquare"
+                orientation={orientation}
+                pieces={pieces}
+              />
             )}
             {modal}
           </>
