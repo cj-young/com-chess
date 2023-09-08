@@ -51,19 +51,10 @@ export default function PieceComponent({
     return [top, left];
   }, [pieceRef.current, mousePosition, isDragging]);
 
-  // all in can drag
-  // const { color, turn, moveIndex, moves } = useLiveGameContext();
-
   const selectedPieceRef = useRef<null | Piece>(null);
   selectedPieceRef.current = selectedPiece;
   const legalMovesRef = useRef<string[]>([]);
   legalMovesRef.current = legalMoves;
-
-  // const canDrag = useMemo(() => {
-  //   return (
-  //     piece.color === color && turn === color && moveIndex === moves.length - 1
-  //   );
-  // }, [piece, color, moveIndex, moves]);
 
   const rank = piece.numRank;
   const file = piece.numFile;
