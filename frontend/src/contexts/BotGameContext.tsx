@@ -101,6 +101,12 @@ export function BotGameContextProvider({ children }: Props) {
 
   function makeMove(move: Move) {
     setMoves((prevMoves) => [...prevMoves, move]);
+    const currentGame = localStorage.getItem("botGame");
+    if (currentGame) {
+      const data = JSON.parse(currentGame);
+      data.moves.push(move);
+      localStorage.setItem("botGame", JSON.stringify(data));
+    }
   }
 
   function resetBotGameContext() {
