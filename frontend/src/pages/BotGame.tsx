@@ -7,6 +7,7 @@ import flagIcon from "../assets/flag-solid.svg";
 import "../styles/BotGame.scss";
 import ChooseBot from "../components/ChooseBot";
 import Moves from "../components/Moves";
+import PlayerInfo from "../components/PlayerInfo";
 
 export default function BotGame() {
   const [gameOverModal, setGameOverModal] = useState<React.ReactNode>(null);
@@ -45,8 +46,13 @@ export default function BotGame() {
       <Navbar />
       <div className="bot-game__container">
         {gameState === "playing" && (
-          <div className="clock-container top">
-            <div className="clock"></div>
+          <div className="player-info-container top">
+            <PlayerInfo
+              pieces={pieces}
+              username="Testerasfdas"
+              orientation="white"
+              color="white"
+            />
           </div>
         )}
 
@@ -74,9 +80,16 @@ export default function BotGame() {
         />
         {gameState === "playing" && (
           <>
-            <div className="clock-container bottom">
-              <div className="clock"></div>
-            </div>
+            {gameState === "playing" && (
+              <div className="player-info-container bottom">
+                <PlayerInfo
+                  pieces={pieces}
+                  username="second"
+                  orientation="white"
+                  color="black"
+                />
+              </div>
+            )}
             <div className="resign-container">
               <div className="resign">
                 <img src={flagIcon} alt="Flag" />

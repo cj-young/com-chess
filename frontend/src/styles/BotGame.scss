@@ -12,8 +12,8 @@
     @include game-screen {
       display: grid;
       grid-template-areas:
-        "moves board topclock"
-        "moves board bottomclock"
+        "moves board topinfo"
+        "moves board bottominfo"
         "moves board resign"
         "moves board chat";
       grid-template-columns: 1fr min(100%, 30rem, 75vh) 1fr;
@@ -61,16 +61,16 @@
   }
 }
 
-.clock-container {
+.player-info-container {
   padding-inline: 1rem;
 }
 
-.clock-container.top {
-  grid-area: topclock;
+.player-info-container.top {
+  grid-area: topinfo;
 }
 
-.clock-container.bottom {
-  grid-area: bottomclock;
+.player-info-container.bottom {
+  grid-area: bottominfo;
 }
 
 .resign-container {

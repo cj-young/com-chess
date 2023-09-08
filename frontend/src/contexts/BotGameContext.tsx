@@ -54,7 +54,7 @@ type TBotGameContext = {
 const BotGameContext = createContext<TBotGameContext>({} as TBotGameContext);
 
 export function BotGameContextProvider({ children }: Props) {
-  const [gameState, setGameState] = useState<TGameState>("creating");
+  const [gameState, setGameState] = useState<TGameState>("playing");
   const [moves, setMoves] = useState<Move[]>([]);
   const [moveIndex, setMoveIndex] = useState(-1);
   useLayoutEffect(() => {
