@@ -91,10 +91,10 @@ export default function BotGame() {
               </div>
             )}
             <div className="resign-container">
-              <div className="resign">
+              <button className="resign">
                 <img src={flagIcon} alt="Flag" />
                 <span>Resign</span>
-              </div>
+              </button>
             </div>
             <div className="bot-moves-container">
               <Moves
