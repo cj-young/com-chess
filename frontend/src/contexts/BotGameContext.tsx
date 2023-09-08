@@ -49,12 +49,13 @@ type TBotGameContext = {
   setDifficulty: React.Dispatch<
     React.SetStateAction<"easy" | "medium" | "hard" | "impossible">
   >;
+  startGame: (difficulty: "easy" | "medium" | "hard" | "impossible") => void;
 };
 
 const BotGameContext = createContext<TBotGameContext>({} as TBotGameContext);
 
 export function BotGameContextProvider({ children }: Props) {
-  const [gameState, setGameState] = useState<TGameState>("playing");
+  const [gameState, setGameState] = useState<TGameState>("creating");
   const [moves, setMoves] = useState<Move[]>([]);
   const [moveIndex, setMoveIndex] = useState(-1);
   useLayoutEffect(() => {
@@ -112,6 +113,29 @@ export function BotGameContextProvider({ children }: Props) {
     setGameOver(false);
   }
 
+  function startGame(difficulty: "easy" | "medium" | "hard" | "impossible") {
+    const playerColor = ["white", "black"][Math.floor(Math.random() * 2)] as
+      | "white"
+      | "black";
+
+    setMoveIndex(-1);
+    setMoves([]);
+    setGameState("playing");
+    setOrientation(playerColor);
+    setColor(playerColor);
+    setGameOver(false);
+    setSelectedPiece(null);
+
+    localStorage.setItem(
+      "botGame",
+      JSON.stringify({
+        color: playerColor,
+        difficulty,
+        moves: [],
+      })
+    );
+  }
+
   return (
     <BotGameContext.Provider
       value={{
@@ -137,6 +161,7 @@ export function BotGameContextProvider({ children }: Props) {
         updateLocalStorage,
         difficulty,
         setDifficulty,
+        startGame,
       }}
     >
       {children}

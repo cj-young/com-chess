@@ -1,10 +1,17 @@
 import { useState } from "react";
 import "../styles/ChooseBot.scss";
+import { useBotGameContext } from "../contexts/BotGameContext";
 
 type BotLevel = null | "easy" | "medium" | "hard" | "impossible";
 
 export default function ChooseBot() {
   const [botLevel, setBotLevel] = useState<BotLevel>(null);
+
+  const { startGame } = useBotGameContext();
+
+  function handleSubmit() {
+    if (botLevel) startGame(botLevel);
+  }
 
   return (
     <div className="choose-bot">
@@ -26,7 +33,9 @@ export default function ChooseBot() {
           </div>
         ))}
       </div>
-      <button>Create Game</button>
+      <button className={botLevel ? "" : "inactive"} onClick={handleSubmit}>
+        Create Game
+      </button>
     </div>
   );
 }
