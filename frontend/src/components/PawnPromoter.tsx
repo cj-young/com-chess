@@ -1,6 +1,5 @@
 import { pieceImages } from "../utils/Piece";
 import "../styles/PawnPromoter.scss";
-import { useLiveGameContext } from "../contexts/LiveGameContext";
 import { numFile } from "../utils/squareConverters";
 
 type Move = {
