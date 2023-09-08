@@ -292,6 +292,7 @@ export default function PieceComponent({
         zIndex: isDragging ? "1000" : "2",
         cursor: isDragging ? "grabbing" : canDrag ? "pointer" : "default",
         touchAction: "none",
+        userSelect: "none",
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
