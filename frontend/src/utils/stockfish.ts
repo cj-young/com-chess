@@ -13,7 +13,7 @@ export function findBestMove(
   level: number
 ): Promise<Move> {
   const uciMoves = moves.map((move) => moveToUCI(move));
-  const moveTime = 2000 + Math.floor(Math.random() * 1500);
+  const moveTime = 1000 + Math.floor(Math.random() * 1500);
 
   sf.postMessage(`position startpos move ${uciMoves.join(" ")}`);
   sf.postMessage(`setoption name Skill Level value ${level}`);
