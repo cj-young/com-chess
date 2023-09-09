@@ -21,10 +21,10 @@ const PastGameSchema = new Schema({
     type: [MoveSchema],
   },
   blackPlayer: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.Mixed,
   },
   whitePlayer: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.Mixed,
   },
   minutes: {
     type: Number,
