@@ -117,6 +117,7 @@ export function BotGameContextProvider({ children }: Props) {
     setOrientation("white");
     setSelectedPiece(null);
     setGameOver(false);
+    setDifficulty("impossible");
   }
 
   function startGame(difficulty: "easy" | "medium" | "hard" | "impossible") {
@@ -131,6 +132,7 @@ export function BotGameContextProvider({ children }: Props) {
     setColor(playerColor);
     setGameOver(false);
     setSelectedPiece(null);
+    setDifficulty(difficulty);
 
     localStorage.setItem(
       "botGame",
