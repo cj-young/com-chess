@@ -14,8 +14,8 @@ module.exports = (server, sessionMiddleware, passport) => {
   const io = new Server(server, {
     cors: {
       origin: "http://localhost:4000",
-      credentials: true
-    }
+      credentials: true,
+    },
   });
 
   const wrap = (middleware) => (socket, next) =>
@@ -61,7 +61,7 @@ module.exports = (server, sessionMiddleware, passport) => {
 
         receiver.sendNotification(io, connectedUsers, {
           type: "friendRequest",
-          from: user.username
+          from: user.username,
         });
 
         socket.emit("friendRequestSuccess", username);
@@ -90,11 +90,11 @@ module.exports = (server, sessionMiddleware, passport) => {
 
         user.sendNotification(io, connectedUsers, {
           type: "friendAccept",
-          from: requester.username
+          from: requester.username,
         });
         requester.sendNotification(io, connectedUsers, {
           type: "friendAccept",
-          from: user.username
+          from: user.username,
         });
       } catch (error) {
         socket.emit("friendDecisionFailure", error.message);
@@ -109,11 +109,11 @@ module.exports = (server, sessionMiddleware, passport) => {
 
         user.sendNotification(io, connectedUsers, {
           type: "friendDidDecline",
-          from: requester.username
+          from: requester.username,
         });
         requester.sendNotification(io, connectedUsers, {
           type: "friendWasDeclined",
-          from: user.username
+          from: user.username,
         });
       } catch (error) {
         socket.emit("friendDecisionFailure", error.message);
@@ -123,12 +123,12 @@ module.exports = (server, sessionMiddleware, passport) => {
     async function sterilizeGame(game) {
       const [whitePlayer, blackPlayer] = await Promise.all([
         User.findById(game.whitePlayer),
-        User.findById(game.blackPlayer)
+        User.findById(game.blackPlayer),
       ]);
 
       const [whiteUsername, blackUsername] = [
         whitePlayer.username,
-        blackPlayer.username
+        blackPlayer.username,
       ];
 
       if (!whiteUsername || !blackUsername)
@@ -140,10 +140,10 @@ module.exports = (server, sessionMiddleware, passport) => {
           minutes: game.minutes,
           increment: game.increment,
           whiteTime: game.whiteTime,
-          blackTime: game.blackTime
+          blackTime: game.blackTime,
         },
         moves: game.moves,
-        lastMoveTime: game.lastMoveTime
+        lastMoveTime: game.lastMoveTime,
       };
     }
 
@@ -166,7 +166,7 @@ module.exports = (server, sessionMiddleware, passport) => {
             socket.emit("liveWaiting", opponent.username);
           } else {
             const updatedGame = await LiveGame.findByIdAndUpdate(game.id, {
-              $set: { started: true }
+              $set: { started: true },
             });
             const sterilizedGame = await sterilizeGame(updatedGame);
             const whiteId = game.whitePlayer.toString();
@@ -174,13 +174,13 @@ module.exports = (server, sessionMiddleware, passport) => {
             if (connectedUsers.has(whiteId)) {
               io.to(connectedUsers.get(whiteId)).emit("startGame", {
                 ...sterilizedGame,
-                yourColor: "white"
+                yourColor: "white",
               });
             }
             if (connectedUsers.has(blackId)) {
               io.to(connectedUsers.get(blackId)).emit("startGame", {
                 ...sterilizedGame,
-                yourColor: "black"
+                yourColor: "black",
               });
             }
           }
@@ -208,12 +208,12 @@ module.exports = (server, sessionMiddleware, passport) => {
         const incomingInvite = {
           from: user.username,
           minutes,
-          increment
+          increment,
         };
         const outgoingInvite = {
           to: receiver.username,
           minutes,
-          increment
+          increment,
         };
 
         receiver.incomingGameRequests.push(incomingInvite);
@@ -223,7 +223,7 @@ module.exports = (server, sessionMiddleware, passport) => {
         const socketId = connectedUsers.get(receiver.id);
         io.to(socketId).emit("notification", {
           type: "gameRequest",
-          ...incomingInvite
+          ...incomingInvite,
         });
         socket.emit("liveWaiting", receiver.username);
       } catch (error) {
@@ -246,7 +246,7 @@ module.exports = (server, sessionMiddleware, passport) => {
           { username: username },
           { $set: { outgoingGameRequest: null } },
           { new: true }
-        )
+        ),
       ]);
     }
 
@@ -283,7 +283,7 @@ module.exports = (server, sessionMiddleware, passport) => {
           blackTime: gameRequest.minutes * 60 * 1000,
           whiteTime: gameRequest.minutes * 60 * 1000,
           minutes: gameRequest.minutes,
-          increment: gameRequest.increment
+          increment: gameRequest.increment,
         });
 
         await Promise.all([
@@ -296,7 +296,7 @@ module.exports = (server, sessionMiddleware, passport) => {
             user.id,
             { $set: { currentGame: game.id } },
             { new: true }
-          )
+          ),
         ]);
         removeGameRequest(user, username);
 
@@ -307,13 +307,13 @@ module.exports = (server, sessionMiddleware, passport) => {
           if (connectedUsers.has(whiteId)) {
             io.to(connectedUsers.get(whiteId)).emit("startGame", {
               ...sterilizedGame,
-              yourColor: "white"
+              yourColor: "white",
             });
           }
           if (connectedUsers.has(blackId)) {
             io.to(connectedUsers.get(blackId)).emit("startGame", {
               ...sterilizedGame,
-              yourColor: "black"
+              yourColor: "black",
             });
           }
         }
@@ -333,7 +333,7 @@ module.exports = (server, sessionMiddleware, passport) => {
         removeGameRequest(user, username);
         opponent.sendNotification(io, connectedUsers, {
           type: "gameDeclined",
-          from: user.username
+          from: user.username,
         });
         if (connectedUsers.has(opponent.id)) {
           io.to(connectedUsers.get(opponent.id)).emit(
@@ -360,7 +360,7 @@ module.exports = (server, sessionMiddleware, passport) => {
           opponent = await User.findById(opponentId);
         } else if (user.outgoingGameRequest) {
           opponent = await User.findOne({
-            username: user.outgoingGameRequest.to
+            username: user.outgoingGameRequest.to,
           });
         } else {
           throw new Error("No game to cancel");
@@ -368,7 +368,7 @@ module.exports = (server, sessionMiddleware, passport) => {
 
         if (!opponent) {
           await User.findByIdAndUpdate(userId, {
-            $set: { outgoingGameRequest: null, currentGame: null }
+            $set: { outgoingGameRequest: null, currentGame: null },
           });
           throw new Error("Opponent not found");
         }
@@ -377,11 +377,11 @@ module.exports = (server, sessionMiddleware, passport) => {
 
         await Promise.all([
           User.findByIdAndUpdate(userId, {
-            $set: { outgoingGameRequest: null, currentGame: null }
+            $set: { outgoingGameRequest: null, currentGame: null },
           }),
           User.findByIdAndUpdate(opponent.id, {
-            $set: { outgoingGameRequest: null, currentGame: null }
-          })
+            $set: { outgoingGameRequest: null, currentGame: null },
+          }),
         ]);
 
         socket.emit("liveCreating", true);
@@ -404,7 +404,7 @@ module.exports = (server, sessionMiddleware, passport) => {
         const { moves } = game;
         const [blackPlayer, whitePlayer] = [
           game.blackPlayer.toString(),
-          game.whitePlayer.toString()
+          game.whitePlayer.toString(),
         ];
         const turn = game.moves.length % 2 === 0 ? "white" : "black";
         const BUFFER = 1000; // 1 second buffer to account for possible latency
@@ -439,7 +439,7 @@ module.exports = (server, sessionMiddleware, passport) => {
           socket.emit("move", {
             moves,
             blackTime: timeUpdatedGame.blackTime,
-            whiteTime: timeUpdatedGame.whiteTime
+            whiteTime: timeUpdatedGame.whiteTime,
           });
           throw new Error("Move attempted by user when it is not their turn");
         }
@@ -455,7 +455,7 @@ module.exports = (server, sessionMiddleware, passport) => {
           socket.emit("move", {
             moves,
             blackTime: timeUpdatedGame.blackTime,
-            whiteTime: timeUpdatedGame.whiteTime
+            whiteTime: timeUpdatedGame.whiteTime,
           });
           throw new Error("Piece not found");
         }
@@ -471,7 +471,7 @@ module.exports = (server, sessionMiddleware, passport) => {
           socket.emit("move", {
             moves,
             blackTime: timeUpdatedGame.blackTime,
-            whiteTime: timeUpdatedGame.whiteTime
+            whiteTime: timeUpdatedGame.whiteTime,
           });
           throw new Error("Illegal move");
         }
@@ -492,13 +492,13 @@ module.exports = (server, sessionMiddleware, passport) => {
         socket.emit("move", {
           moves: updatedGame.moves,
           blackTime: timeUpdatedGame.blackTime,
-          whiteTime: timeUpdatedGame.whiteTime
+          whiteTime: timeUpdatedGame.whiteTime,
         });
         if (connectedUsers.has(opponent.id)) {
           io.to(connectedUsers.get(opponent.id)).emit("move", {
             moves: updatedGame.moves,
             blackTime: timeUpdatedGame.blackTime,
-            whiteTime: timeUpdatedGame.whiteTime
+            whiteTime: timeUpdatedGame.whiteTime,
           });
         }
 
@@ -518,14 +518,15 @@ module.exports = (server, sessionMiddleware, passport) => {
               winner:
                 user.id === updatedGame.whitePlayer.toString()
                   ? "white"
-                  : "black"
+                  : "black",
+              gameType: "live",
             });
 
             socket.emit("gameWon", { type: "checkmate", id: pastGame.id });
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameLost", {
                 type: "checkmate",
-                id: pastGame.id
+                id: pastGame.id,
               });
             }
           } else {
@@ -535,14 +536,15 @@ module.exports = (server, sessionMiddleware, passport) => {
               whitePlayer: updatedGame.whitePlayer,
               minutes: updatedGame.minutes,
               increment: updatedGame.increment,
-              winner: null
+              winner: null,
+              gameType: "live",
             });
 
             socket.emit("gameDrawn", { type: "stalemate", id: pastGame.id });
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
                 type: "stalemate",
-                id: pastGame.id
+                id: pastGame.id,
               });
             }
           }
@@ -550,11 +552,11 @@ module.exports = (server, sessionMiddleware, passport) => {
           await Promise.all([
             LiveGame.findByIdAndDelete(updatedGame.id),
             User.findByIdAndUpdate(updatedGame.blackPlayer, {
-              $set: { currentGame: null }
+              $set: { currentGame: null },
             }),
             User.findByIdAndUpdate(updatedGame.whitePlayer, {
-              $set: { currentGame: null }
-            })
+              $set: { currentGame: null },
+            }),
           ]);
         } else {
           // Check for repetition
@@ -577,25 +579,26 @@ module.exports = (server, sessionMiddleware, passport) => {
               whitePlayer: updatedGame.whitePlayer,
               minutes: updatedGame.minutes,
               increment: updatedGame.increment,
-              winner: null
+              winner: null,
+              gameType: "live",
             });
 
             socket.emit("gameDrawn", { type: "repetition", id: pastGame.id });
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
                 type: "repetition",
-                id: pastGame.id
+                id: pastGame.id,
               });
             }
 
             await Promise.all([
               LiveGame.findByIdAndDelete(updatedGame.id),
               User.findByIdAndUpdate(updatedGame.blackPlayer, {
-                $set: { currentGame: null }
+                $set: { currentGame: null },
               }),
               User.findByIdAndUpdate(updatedGame.whitePlayer, {
-                $set: { currentGame: null }
-              })
+                $set: { currentGame: null },
+              }),
             ]);
           } else if (+movesToFEN(updatedGame.moves).split(" ")[4] >= 100) {
             const pastGame = await PastGame.create({
@@ -604,25 +607,26 @@ module.exports = (server, sessionMiddleware, passport) => {
               whitePlayer: updatedGame.whitePlayer,
               minutes: updatedGame.minutes,
               increment: updatedGame.increment,
-              winner: null
+              winner: null,
+              gameType: "live",
             });
 
             socket.emit("gameDrawn", { type: "fiftyMove", id: pastGame.id });
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
                 type: "fiftyMove",
-                id: pastGame.id
+                id: pastGame.id,
               });
             }
 
             await Promise.all([
               LiveGame.findByIdAndDelete(updatedGame.id),
               User.findByIdAndUpdate(updatedGame.blackPlayer, {
-                $set: { currentGame: null }
+                $set: { currentGame: null },
               }),
               User.findByIdAndUpdate(updatedGame.whitePlayer, {
-                $set: { currentGame: null }
-              })
+                $set: { currentGame: null },
+              }),
             ]);
           } else if (
             isInsufficientMaterial(updatedGame.moves, "white") &&
@@ -634,28 +638,29 @@ module.exports = (server, sessionMiddleware, passport) => {
               whitePlayer: updatedGame.whitePlayer,
               minutes: updatedGame.minutes,
               increment: updatedGame.increment,
-              winner: null
+              winner: null,
+              gameType: "live",
             });
 
             socket.emit("gameDrawn", {
               type: "insufficientMaterial",
-              id: pastGame.id
+              id: pastGame.id,
             });
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
                 type: "insufficientMaterial",
-                id: pastGame.id
+                id: pastGame.id,
               });
             }
 
             await Promise.all([
               LiveGame.findByIdAndDelete(updatedGame.id),
               User.findByIdAndUpdate(updatedGame.blackPlayer, {
-                $set: { currentGame: null }
+                $set: { currentGame: null },
               }),
               User.findByIdAndUpdate(updatedGame.whitePlayer, {
-                $set: { currentGame: null }
-              })
+                $set: { currentGame: null },
+              }),
             ]);
           }
         }
@@ -679,7 +684,7 @@ module.exports = (server, sessionMiddleware, passport) => {
         if (connectedUsers.has(opponent.id)) {
           io.to(connectedUsers.get(opponent.id)).emit("liveChat", {
             from: user.username,
-            message: message
+            message: message,
           });
         }
       }
@@ -711,28 +716,29 @@ module.exports = (server, sessionMiddleware, passport) => {
               whitePlayer: game.whitePlayer,
               minutes: game.minutes,
               increment: game.increment,
-              winner: null
+              winner: null,
+              gameType: "live",
             });
 
             socket.emit("gameDrawn", {
               type: "insufficientMaterialTimeout",
-              id: pastGame.id
+              id: pastGame.id,
             });
             if (connectedUsers.has(opponentId)) {
               io.to(connectedUsers.get(opponentId)).emit("gameDrawn", {
                 type: "insufficientMaterialTimeout",
-                id: pastGame.id
+                id: pastGame.id,
               });
             }
 
             await Promise.all([
               LiveGame.findByIdAndDelete(game.id),
               User.findByIdAndUpdate(game.blackPlayer, {
-                $set: { currentGame: null }
+                $set: { currentGame: null },
               }),
               User.findByIdAndUpdate(game.whitePlayer, {
-                $set: { currentGame: null }
-              })
+                $set: { currentGame: null },
+              }),
             ]);
           } else {
             const pastGame = await PastGame.create({
@@ -741,7 +747,8 @@ module.exports = (server, sessionMiddleware, passport) => {
               whitePlayer: game.whitePlayer,
               minutes: game.minutes,
               increment: game.increment,
-              winner: color === "white" ? "black" : "white"
+              winner: color === "white" ? "black" : "white",
+              gameType: "live",
             });
 
             const winnerId =
@@ -756,24 +763,24 @@ module.exports = (server, sessionMiddleware, passport) => {
             if (connectedUsers.has(winnerId)) {
               io.to(connectedUsers.get(winnerId)).emit("gameWon", {
                 type: "timeout",
-                id: pastGame.id
+                id: pastGame.id,
               });
             }
             if (connectedUsers.has(loserId)) {
               io.to(connectedUsers.get(loserId)).emit("gameLost", {
                 type: "timeout",
-                id: pastGame.id
+                id: pastGame.id,
               });
             }
 
             await Promise.all([
               LiveGame.findByIdAndDelete(game.id),
               User.findByIdAndUpdate(game.blackPlayer, {
-                $set: { currentGame: null }
+                $set: { currentGame: null },
               }),
               User.findByIdAndUpdate(game.whitePlayer, {
-                $set: { currentGame: null }
-              })
+                $set: { currentGame: null },
+              }),
             ]);
           }
         } else {
@@ -798,7 +805,8 @@ module.exports = (server, sessionMiddleware, passport) => {
           whitePlayer: game.whitePlayer,
           minutes: game.minutes,
           increment: game.increment,
-          winner: user.id === game.whitePlayer.toString() ? "black" : "white"
+          winner: user.id === game.whitePlayer.toString() ? "black" : "white",
+          gameType: "live",
         });
 
         const opponentId =
@@ -810,18 +818,18 @@ module.exports = (server, sessionMiddleware, passport) => {
         if (connectedUsers.has(opponentId)) {
           io.to(connectedUsers.get(opponentId)).emit("gameWon", {
             type: "resignation",
-            id: pastGame.id
+            id: pastGame.id,
           });
         }
 
         await Promise.all([
           LiveGame.findByIdAndDelete(game.id),
           User.findByIdAndUpdate(game.blackPlayer, {
-            $set: { currentGame: null }
+            $set: { currentGame: null },
           }),
           User.findByIdAndUpdate(game.whitePlayer, {
-            $set: { currentGame: null }
-          })
+            $set: { currentGame: null },
+          }),
         ]);
       } catch (error) {
         console.error(error);
@@ -856,7 +864,8 @@ module.exports = (server, sessionMiddleware, passport) => {
         whitePlayer: game.whitePlayer,
         minutes: game.minutes,
         increment: game.increment,
-        winner: null
+        winner: null,
+        gameType: "live",
       });
 
       const opponentId =
@@ -868,18 +877,18 @@ module.exports = (server, sessionMiddleware, passport) => {
       if (connectedUsers.has(opponentId)) {
         io.to(connectedUsers.get(opponentId)).emit("gameDrawn", {
           type: "draw",
-          id: pastGame.id
+          id: pastGame.id,
         });
       }
 
       await Promise.all([
         LiveGame.findByIdAndDelete(game.id),
         User.findByIdAndUpdate(game.blackPlayer, {
-          $set: { currentGame: null }
+          $set: { currentGame: null },
         }),
         User.findByIdAndUpdate(game.whitePlayer, {
-          $set: { currentGame: null }
-        })
+          $set: { currentGame: null },
+        }),
       ]);
     });
 

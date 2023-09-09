@@ -5,36 +5,39 @@ const Schema = mongoose.Schema;
 const MoveSchema = new Schema({
   from: {
     type: String,
-    required: true
+    required: true,
   },
   to: {
     type: String,
-    required: true
+    required: true,
   },
   promoteTo: {
-    type: String
-  }
+    type: String,
+  },
 });
 
 const PastGameSchema = new Schema({
   moves: {
-    type: [MoveSchema]
+    type: [MoveSchema],
   },
   blackPlayer: {
-    type: Schema.Types.ObjectId
+    type: Schema.Types.ObjectId,
   },
   whitePlayer: {
-    type: Schema.Types.ObjectId
+    type: Schema.Types.ObjectId,
   },
   minutes: {
-    type: Number
+    type: Number,
   },
   increment: {
-    type: Number
+    type: Number,
   },
   winner: {
-    type: String
-  }
+    type: String,
+  },
+  gameType: {
+    type: String,
+  },
 });
 
 const PastGame = mongoose.model("PastGame", PastGameSchema);
