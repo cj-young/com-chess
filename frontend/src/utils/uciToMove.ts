@@ -14,13 +14,13 @@ const promotableSuffixes = new Map([
 export default function uciToMove(move: string): Move {
   if (move.length < 5) {
     return {
-      to: move.slice(0, 2),
-      from: move.slice(2, 4),
+      from: move.slice(0, 2),
+      to: move.slice(2, 4),
     };
   } else {
     return {
-      to: move.slice(0, 2),
-      from: move.slice(2, 4),
+      from: move.slice(0, 2),
+      to: move.slice(2, 4),
       promoteTo: promotableSuffixes.get(move[4]) as
         | "knight"
         | "bishop"
