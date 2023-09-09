@@ -10,7 +10,7 @@ module.exports = (moves, color) => {
     ["bishop", 0],
     ["rook", 0],
     ["queen", 0],
-    ["king", 0]
+    ["king", 0],
   ]);
 
   const firstPieceIndex = color === "white" ? 0 : 16;
@@ -41,7 +41,7 @@ module.exports = (moves, color) => {
       i < opponentFirstPieceIndex + 16;
       i++
     ) {
-      if (pieces[i].type !== "king" && piece.active) return false;
+      if (pieces[i].type !== "king" && pieces[i].active) return false;
     }
 
     return true;
