@@ -1,4 +1,10 @@
-import { useCallback, useRef, useState, useLayoutEffect } from "react";
+import {
+  useCallback,
+  useRef,
+  useState,
+  useLayoutEffect,
+  useEffect,
+} from "react";
 import Piece from "../utils/Piece";
 import Navbar from "../components/Navbar";
 import Board from "../components/Board";
@@ -8,10 +14,22 @@ import "../styles/BotGame.scss";
 import ChooseBot from "../components/ChooseBot";
 import Moves from "../components/Moves";
 import PlayerInfo from "../components/PlayerInfo";
+import { findBestMove, stockfishLevels } from "../utils/stockfish";
+
+type Move = {
+  from: string;
+  to: string;
+  promoteTo?: "knight" | "bishop" | "rook" | "queen";
+};
 
 export default function BotGame() {
   const [gameOverModal, setGameOverModal] = useState<React.ReactNode>(null);
   const gameOverRef = useRef<boolean>(false);
+
+  const sfRef = useRef<Worker>();
+  const sfReady = useRef(false);
+
+  localStorage.clear();
 
   const {
     moves,
@@ -32,6 +50,7 @@ export default function BotGame() {
     setGameState,
     setSelectedPiece,
     setGameOver,
+    difficulty,
   } = useBotGameContext();
 
   const canDragCB = useCallback(
@@ -48,6 +67,26 @@ export default function BotGame() {
 
   gameOverRef.current = gameOver;
 
+  const modifiedMakeMove = useCallback(
+    (move: Move) => {
+      const isBotTurn =
+        moves.length % 2 === 0 ? color === "white" : color === "black";
+      if (sfRef.current && isBotTurn) {
+        console.log(difficulty);
+        findBestMove(
+          [...moves, move],
+          sfRef.current,
+          stockfishLevels.get(difficulty) as number
+        ).then((newMove) => {
+          console.log(newMove);
+          makeMove(newMove);
+        });
+      }
+      makeMove(move);
+    },
+    [sfRef.current, difficulty, moves]
+  );
+
   useLayoutEffect(() => {
     const currentGame = localStorage.getItem("botGame");
     if (currentGame) {
@@ -63,6 +102,34 @@ export default function BotGame() {
     } else {
       resetBotGameContext();
     }
+  }, []);
+
+  useEffect(() => {
+    const stockfish = new Worker("/stockfishtest/stockfish.js");
+
+    const messageCB = (e: MessageEvent) => {
+      const response = e.data;
+      if (response === "readyok") {
+        console.log("stockfish ready");
+        setTimeout(() => {
+          stockfish.postMessage("position startpos moves e2e4 e7e5");
+          stockfish.postMessage("go movetime 2000");
+        }, 1000);
+        sfReady.current = true;
+      }
+    };
+
+    stockfish.addEventListener("message", messageCB);
+
+    stockfish.postMessage("uci");
+    stockfish.postMessage("isready");
+
+    sfRef.current = stockfish;
+
+    return () => {
+      stockfish.removeEventListener("message", messageCB);
+      stockfish.postMessage("quit");
+    };
   }, []);
 
   return (
@@ -98,7 +165,7 @@ export default function BotGame() {
           moveIndex={moveIndex}
           showControls={gameState === "playing"}
           showPieces={gameState === "playing"}
-          makeMove={makeMove}
+          makeMove={modifiedMakeMove}
           modal={gameOverModal}
           canDragCB={canDragCB}
         />
