@@ -141,8 +141,8 @@ export default function BotGame() {
             <PlayerInfo
               pieces={pieces}
               username="Testerasfdas"
-              orientation="white"
-              color="white"
+              orientation={orientation}
+              color={orientation === "white" ? "black" : "white"}
             />
           </div>
         )}
@@ -176,8 +176,8 @@ export default function BotGame() {
                 <PlayerInfo
                   pieces={pieces}
                   username="second"
-                  orientation="white"
-                  color="black"
+                  orientation={orientation}
+                  color={orientation === "black" ? "black" : "white"}
                 />
               </div>
             )}
