@@ -296,7 +296,9 @@ export default function PieceComponent({
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => {
+        if (canDrag) e.stopPropagation();
+      }}
       ref={pieceRef}
     >
       <img src={piece.image} alt={`${piece.color} ${piece.type}`} />
