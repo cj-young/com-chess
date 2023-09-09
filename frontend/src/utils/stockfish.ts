@@ -41,3 +41,10 @@ export function findBestMove(
     sf.addEventListener("messageerror", onMessageError);
   });
 }
+
+export const stockfishLevels = new Map([
+  ["easy", 0],
+  ["medium", 5],
+  ["hard", 10],
+  ["impossible", 20],
+]);
