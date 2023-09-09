@@ -3,13 +3,13 @@ import {
   SetStateAction,
   createContext,
   useState,
-  useContext
+  useContext,
 } from "react";
 import validator from "validator";
 
 export type User = { id: string; username: string | null } | null;
 
-type IAuthContext = {
+type TAuthContext = {
   user: User;
   setUser: Dispatch<SetStateAction<User>>;
   logInLocal: (identifier: string, password: string) => Promise<void>;
@@ -29,7 +29,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-const AuthContext = createContext<IAuthContext>({} as IAuthContext);
+const AuthContext = createContext<TAuthContext>({} as TAuthContext);
 
 export function AuthContextProvider({ children }: Props) {
   const [user, setUser] = useState<User>(null);
@@ -46,9 +46,9 @@ export function AuthContextProvider({ children }: Props) {
           credentials: "include",
           headers: {
             Accept: "application/json",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ identifier, password })
+          body: JSON.stringify({ identifier, password }),
         }
       );
 
@@ -68,7 +68,7 @@ export function AuthContextProvider({ children }: Props) {
       console.log(data);
       const user: User = {
         id: data.id,
-        username: data.username
+        username: data.username,
       };
 
       setUser(user);
@@ -96,8 +96,8 @@ export function AuthContextProvider({ children }: Props) {
       {
         credentials: "include",
         headers: {
-          Accept: "application/json"
-        }
+          Accept: "application/json",
+        },
       }
     );
 
@@ -153,9 +153,9 @@ export function AuthContextProvider({ children }: Props) {
         credentials: "include",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, email, password, confirmPassword })
+        body: JSON.stringify({ username, email, password, confirmPassword }),
       }
     );
 
@@ -174,7 +174,7 @@ export function AuthContextProvider({ children }: Props) {
     const data = await response.json();
     const user: User = {
       id: data.id,
-      username: data.username
+      username: data.username,
     };
     setUser(user);
   }
@@ -186,8 +186,8 @@ export function AuthContextProvider({ children }: Props) {
         credentials: "include",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       }
     );
     if (!response.ok) throw new Error("Invalid authentication");
@@ -213,9 +213,9 @@ export function AuthContextProvider({ children }: Props) {
         credentials: "include",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username })
+        body: JSON.stringify({ username }),
       }
     );
 
@@ -234,7 +234,7 @@ export function AuthContextProvider({ children }: Props) {
     const data = await response.json();
     const user: User = {
       id: data.id,
-      username: data.username
+      username: data.username,
     };
     setUser(user);
   }
@@ -255,7 +255,7 @@ export function AuthContextProvider({ children }: Props) {
         signUpLocal,
         getUser,
         updateUsername,
-        logInGoogle
+        logInGoogle,
       }}
     >
       {children}
