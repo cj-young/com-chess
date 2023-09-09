@@ -9,6 +9,7 @@ import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
 import Piece from "../utils/Piece";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
+import { findBestMove, stockfishLevels } from "../utils/stockfish";
 
 type Props = {
   children: React.ReactNode;
@@ -133,6 +134,19 @@ export function BotGameContextProvider({ children }: Props) {
     setGameOver(false);
     setSelectedPiece(null);
     setDifficulty(difficulty);
+
+    // Make first move with bot if it is white
+    if (playerColor === "black") {
+      const stockfish = new Worker("/stockfishtest/stockfish.js");
+      findBestMove(
+        [],
+        stockfish,
+        stockfishLevels.get(difficulty) as number
+      ).then((newMove) => {
+        makeMove(newMove);
+        stockfish.terminate();
+      });
+    }
 
     localStorage.setItem(
       "botGame",
