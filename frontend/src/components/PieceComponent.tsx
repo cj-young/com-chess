@@ -78,6 +78,7 @@ export default function PieceComponent({
   }, [selectedPiece]);
 
   function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
+    if (canDrag) e.stopPropagation();
     e.stopPropagation();
     e.preventDefault();
     setPawnPromoter(null);
@@ -178,7 +179,7 @@ export default function PieceComponent({
   }
 
   function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
-    e.stopPropagation();
+    if (canDrag) e.stopPropagation();
     setPawnPromoter(null);
     if (!canDrag) return;
     setIsDragging(true);
@@ -296,9 +297,6 @@ export default function PieceComponent({
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
-      onClick={(e) => {
-        if (canDrag) e.stopPropagation();
-      }}
       ref={pieceRef}
     >
       <img src={piece.image} alt={`${piece.color} ${piece.type}`} />

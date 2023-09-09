@@ -62,7 +62,7 @@ export default function Board({
     return moveIndex === moves.length - 1;
   }, [moves, moveIndex]);
 
-  function handleClick(e: React.MouseEvent<HTMLDivElement>) {
+  function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     setPawnPromoter(null);
     if (!selectedPiece) return;
@@ -103,6 +103,48 @@ export default function Board({
     }
   }
 
+  function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setPawnPromoter(null);
+    const touch = e.touches[0];
+    if (!selectedPiece) return;
+    if (boardRef.current) {
+      const squareSize = boardRef.current.offsetWidth / 8;
+      const boardRect = boardRef.current.getBoundingClientRect();
+      let newFile = Math.floor((touch.clientX - boardRect.left) / squareSize);
+      let newRank = Math.floor((touch.clientY - boardRect.top) / squareSize);
+      if (orientation === "black") {
+        newFile = 7 - newFile;
+        newRank = 7 - newRank;
+      }
+      if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
+        const newSquare = letterSquare(newRank, newFile);
+        if (newSquare === selectedPiece.square) return;
+        if (legalMoves.includes(newSquare)) {
+          if (
+            selectedPiece.type === "pawn" &&
+            ((selectedPiece.color === "white" && newSquare[1] === "8") ||
+              (selectedPiece.color === "black" && newSquare[1] === "1"))
+          ) {
+            setPawnPromoter(
+              <PawnPromoter
+                from={selectedPiece.square}
+                to={newSquare}
+                color={selectedPiece.color}
+                close={() => setPawnPromoter(null)}
+                makeMove={makeMove}
+                orientation={orientation}
+              />
+            );
+          } else {
+            makeMove({ to: newSquare, from: selectedPiece.square });
+          }
+        }
+        setSelectedPiece(null);
+      }
+    }
+  }
+
   function handleFlipBoard() {
     setOrientation((prevOrientation) =>
       prevOrientation === "white" ? "black" : "white"
@@ -111,7 +153,12 @@ export default function Board({
 
   return (
     <div className="board-container">
-      <div className="board" ref={boardRef} onClick={handleClick}>
+      <div
+        className="board"
+        ref={boardRef}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+      >
         <div className="squares">
           {Array(8)
             .fill(null)
