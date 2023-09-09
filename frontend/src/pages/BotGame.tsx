@@ -15,6 +15,8 @@ import ChooseBot from "../components/ChooseBot";
 import Moves from "../components/Moves";
 import PlayerInfo from "../components/PlayerInfo";
 import { findBestMove, stockfishLevels } from "../utils/stockfish";
+import { useUserContext } from "../contexts/UserContext";
+import { useAuthContext } from "../contexts/AuthContext";
 
 type Move = {
   from: string;
@@ -52,6 +54,8 @@ export default function BotGame() {
     setGameOver,
     difficulty,
   } = useBotGameContext();
+
+  const { user } = useAuthContext();
 
   const canDragCB = useCallback(
     (piece: Piece) => {
@@ -140,7 +144,11 @@ export default function BotGame() {
           <div className="player-info-container top">
             <PlayerInfo
               pieces={pieces}
-              username="Testerasfdas"
+              username={
+                color === orientation
+                  ? `${difficulty[0].toUpperCase() + difficulty.slice(1)} Bot`
+                  : user?.username || ""
+              }
               orientation={orientation}
               color={orientation === "white" ? "black" : "white"}
             />
@@ -175,7 +183,13 @@ export default function BotGame() {
               <div className="player-info-container bottom">
                 <PlayerInfo
                   pieces={pieces}
-                  username="second"
+                  username={
+                    color !== orientation
+                      ? `${
+                          difficulty[0].toUpperCase() + difficulty.slice(1)
+                        } Bot`
+                      : user?.username || ""
+                  }
                   orientation={orientation}
                   color={orientation === "black" ? "black" : "white"}
                 />
