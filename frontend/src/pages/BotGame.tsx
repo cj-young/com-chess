@@ -15,8 +15,12 @@ import ChooseBot from "../components/ChooseBot";
 import Moves from "../components/Moves";
 import PlayerInfo from "../components/PlayerInfo";
 import { findBestMove, stockfishLevels } from "../utils/stockfish";
-import { useUserContext } from "../contexts/UserContext";
 import { useAuthContext } from "../contexts/AuthContext";
+import canMove from "../utils/canMove";
+import isInCheck from "../utils/isInCheck";
+import movesToFEN from "../utils/movesToFEN";
+import isInsufficientMaterial from "../utils/isInsufficientMaterial";
+import GameOver from "../components/GameOver";
 
 type Move = {
   from: string;
@@ -91,6 +95,47 @@ export default function BotGame() {
     [sfRef.current, difficulty, moves]
   );
 
+  async function endGame(
+    type:
+      | "checkmate"
+      | "resignation"
+      | "stalemate"
+      | "repetition"
+      | "fiftyMove"
+      | "insufficientMaterial",
+    winStatus: "won" | "lost" | "drawn"
+  ) {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/botGameEnd`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      setGameOverModal(
+        <GameOver
+          type={type}
+          gameId={data.gameId}
+          winStatus={winStatus}
+          close={() => setGameOverModal(null)}
+          newGame={() => {
+            resetBotGameContext();
+            setGameState("creating");
+          }}
+        />
+      );
+      setGameOver(true);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   useLayoutEffect(() => {
     const currentGame = localStorage.getItem("botGame");
     if (currentGame) {
@@ -135,6 +180,41 @@ export default function BotGame() {
       stockfish.postMessage("quit");
     };
   }, []);
+
+  useEffect(() => {
+    if (!canMove(pieces, moves)) {
+      // Check for checkmate and stalemate
+      if (isInCheck(pieces, turn === "white" ? "white" : "black")) {
+        const winStatus = turn === color ? "lost" : "won";
+        console.log("checkmate!");
+        endGame("checkmate", winStatus);
+      } else {
+        console.log("stalemate!");
+        endGame("stalemate", "drawn");
+      }
+    } else {
+      // Check for repetition
+      const currentFEN = movesToFEN(moves).split(" ").slice(0, -2).join(" ");
+      let count = 0;
+
+      for (let i = 0; i < moves.length + 1; i++) {
+        const fenPosition = movesToFEN(moves.slice(0, i));
+        if (fenPosition.split(" ").slice(0, -2).join(" ") === currentFEN)
+          count++;
+      }
+
+      if (count >= 3) {
+        endGame("repetition", "drawn");
+      } else if (+movesToFEN(moves).split(" ")[4] >= 100) {
+        endGame("fiftyMove", "drawn");
+      } else if (
+        isInsufficientMaterial(moves, "white") &&
+        isInsufficientMaterial(moves, "black")
+      ) {
+        endGame("insufficientMaterial", "drawn");
+      }
+    }
+  }, [moves, pieces]);
 
   return (
     <div className="bot-game">
