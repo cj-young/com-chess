@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useRef } from "react";
 import "../styles/GameOver.scss";
 import exitIcon from "../assets/xmark-solid-light.svg";
-import { useLiveGameContext } from "../contexts/LiveGameContext";
 
 type Props =
   | {
@@ -10,6 +9,7 @@ type Props =
       gameId: string;
       winStatus: "won" | "lost";
       close: () => void;
+      newGame: () => void;
     }
   | {
       type:
@@ -22,12 +22,17 @@ type Props =
       gameId: string;
       winStatus: "drawn";
       close: () => void;
+      newGame: () => void;
     };
 
-export default function GameOver({ type, gameId, winStatus, close }: Props) {
+export default function GameOver({
+  type,
+  gameId,
+  winStatus,
+  close,
+  newGame,
+}: Props) {
   const modalRef = useRef<HTMLDivElement | null>(null);
-
-  const { setGameState, resetLiveGameContext } = useLiveGameContext();
 
   function handleClick(e: React.MouseEvent<HTMLDivElement>) {
     if (e.target === modalRef.current) {
@@ -115,8 +120,7 @@ export default function GameOver({ type, gameId, winStatus, close }: Props) {
             className="new-game"
             onClick={() => {
               close();
-              resetLiveGameContext();
-              setGameState("creating");
+              newGame();
             }}
           >
             New Game

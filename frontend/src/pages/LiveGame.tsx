@@ -51,6 +51,7 @@ export default function LiveGame() {
     setMaxBlackTime,
     orientation,
     makeMove,
+    resetLiveGameContext,
   } = useLiveGameContext();
 
   const justMovedRef = useRef<boolean>(false);
@@ -167,6 +168,10 @@ export default function LiveGame() {
           gameId={id}
           winStatus="won"
           close={() => setGameOverModal(null)}
+          newGame={() => {
+            resetLiveGameContext();
+            setGameState("creating");
+          }}
         />
       );
       setGameOver(true);
@@ -179,6 +184,10 @@ export default function LiveGame() {
           gameId={id}
           winStatus="lost"
           close={() => setGameOverModal(null)}
+          newGame={() => {
+            resetLiveGameContext();
+            setGameState("creating");
+          }}
         />
       );
       setGameOver(true);
@@ -191,6 +200,10 @@ export default function LiveGame() {
           gameId={id}
           winStatus="drawn"
           close={() => setGameOverModal(null)}
+          newGame={() => {
+            resetLiveGameContext();
+            setGameState("creating");
+          }}
         />
       );
       setGameOver(true);
