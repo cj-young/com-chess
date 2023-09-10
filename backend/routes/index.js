@@ -6,7 +6,7 @@ const {
 } = require("../controllers/notificationsController");
 const { isAuthenticated } = require("../controllers/authController");
 const { getFriends } = require("../controllers/friendsController");
-const { postBotGameEnd } = require("../controllers/botGame");
+const { postBotGameEnd } = require("../controllers/botGameController");
 
 const router = express.Router();
 
