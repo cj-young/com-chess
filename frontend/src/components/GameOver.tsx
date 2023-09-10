@@ -3,27 +3,22 @@ import { useRef } from "react";
 import "../styles/GameOver.scss";
 import exitIcon from "../assets/xmark-solid-light.svg";
 
-type Props =
-  | {
-      type: "checkmate" | "resignation" | "timeout";
-      gameId: string;
-      winStatus: "won" | "lost";
-      close: () => void;
-      newGame: () => void;
-    }
-  | {
-      type:
-        | "draw"
-        | "stalemate"
-        | "repetition"
-        | "fiftyMove"
-        | "insufficientMaterial"
-        | "insufficientMaterialTimeout";
-      gameId: string;
-      winStatus: "drawn";
-      close: () => void;
-      newGame: () => void;
-    };
+type Props = {
+  type:
+    | "checkmate"
+    | "resignation"
+    | "timeout"
+    | "draw"
+    | "stalemate"
+    | "repetition"
+    | "fiftyMove"
+    | "insufficientMaterial"
+    | "insufficientMaterialTimeout";
+  gameId: string;
+  winStatus: "won" | "lost" | "drawn";
+  close: () => void;
+  newGame: () => void;
+};
 
 export default function GameOver({
   type,
