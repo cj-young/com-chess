@@ -54,6 +54,8 @@ export default function PawnPromoter({
     <div className="pawn-promoter" style={style}>
       <div
         className="pawn-promoter__queen"
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
           handlePromote("queen");
@@ -63,6 +65,8 @@ export default function PawnPromoter({
       </div>
       <div
         className="pawn-promoter__rook"
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
           handlePromote("rook");
@@ -72,6 +76,8 @@ export default function PawnPromoter({
       </div>
       <div
         className="pawn-promoter__bishop"
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
           handlePromote("bishop");
@@ -81,6 +87,8 @@ export default function PawnPromoter({
       </div>
       <div
         className="pawn-promoter__knight"
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
         onClick={(e) => {
           e.stopPropagation();
           handlePromote("knight");
