@@ -35,8 +35,6 @@ export default function BotGame() {
   const sfRef = useRef<Worker>();
   const sfReady = useRef(false);
 
-  localStorage.clear();
-
   const {
     moves,
     pieces,
