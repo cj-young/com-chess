@@ -106,6 +106,8 @@ export default function BotGame() {
     winStatus: "won" | "lost" | "drawn"
   ) {
     try {
+      if (gameOver) return;
+      setGameOver(true);
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/botGameEnd`,
         {
@@ -130,10 +132,13 @@ export default function BotGame() {
           }}
         />
       );
-      setGameOver(true);
     } catch (error) {
       console.error(error);
     }
+  }
+
+  function resign() {
+    endGame("resignation", "lost");
   }
 
   useLayoutEffect(() => {
@@ -276,7 +281,7 @@ export default function BotGame() {
               </div>
             )}
             <div className="resign-container">
-              <button className="resign">
+              <button className="resign" onClick={resign}>
                 <img src={flagIcon} alt="Flag" />
                 <span>Resign</span>
               </button>
