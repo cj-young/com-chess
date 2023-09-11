@@ -163,10 +163,6 @@ export default function BotGame() {
       const response = e.data;
       if (response === "readyok") {
         console.log("stockfish ready");
-        setTimeout(() => {
-          stockfish.postMessage("position startpos moves e2e4 e7e5");
-          stockfish.postMessage("go movetime 2000");
-        }, 1000);
         sfReady.current = true;
       }
     };
