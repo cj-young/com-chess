@@ -9,7 +9,6 @@ import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
 import Piece from "../utils/Piece";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
-import { findBestMove, stockfishLevels } from "../utils/stockfish";
 
 type Props = {
   children: React.ReactNode;
@@ -101,13 +100,33 @@ export function BotGameContextProvider({ children }: Props) {
   }
 
   function makeMove(move: Move) {
-    setMoves((prevMoves) => [...prevMoves, move]);
-    const currentGame = localStorage.getItem("botGame");
-    if (currentGame) {
-      const data = JSON.parse(currentGame);
-      data.moves.push(move);
-      localStorage.setItem("botGame", JSON.stringify(data));
-    }
+    setMoves((prevMoves) => {
+      const prevPieces = applyMoves(generateStartingPosition(), prevMoves);
+      // Verify legality
+      const movedPiece = pieces.filter((p) => p.square === move.from)[0];
+      if (!movedPiece) return prevMoves;
+      const verifiedLegalMoves = generateLegalMoves(
+        prevPieces,
+        movedPiece,
+        moves
+      );
+      let moveFound;
+      for (let legalMove of verifiedLegalMoves) {
+        if (legalMove === move.to) {
+          moveFound = true;
+        }
+      }
+      if (!moveFound) return prevMoves;
+
+      const currentGame = localStorage.getItem("botGame");
+      if (currentGame) {
+        const data = JSON.parse(currentGame);
+        data.moves.push(move);
+        localStorage.setItem("botGame", JSON.stringify(data));
+      }
+
+      return [...prevMoves, move];
+    });
   }
 
   function resetBotGameContext() {
@@ -136,17 +155,17 @@ export function BotGameContextProvider({ children }: Props) {
     setDifficulty(difficulty);
 
     // Make first move with bot if it is white
-    if (playerColor === "black") {
-      const stockfish = new Worker("/stockfishtest/stockfish.js");
-      findBestMove(
-        [],
-        stockfish,
-        stockfishLevels.get(difficulty) as number
-      ).then((newMove) => {
-        makeMove(newMove);
-        stockfish.terminate();
-      });
-    }
+    // if (playerColor === "black") {
+    //   const stockfish = new Worker("/stockfishtest/stockfish.js");
+    //   findBestMove(
+    //     [],
+    //     stockfish,
+    //     stockfishLevels.get(difficulty) as number
+    //   ).then((newMove) => {
+    //     makeMove(newMove);
+    //     stockfish.terminate();
+    //   });
+    // }
 
     localStorage.setItem(
       "botGame",

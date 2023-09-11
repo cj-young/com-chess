@@ -75,12 +75,17 @@ export default function BotGame() {
 
   const modifiedMakeMove = useCallback(
     (move: Move) => {
-      const isBotTurn =
-        moves.length % 2 === 0 ? color === "white" : color === "black";
-      if (sfRef.current && isBotTurn) {
+      makeMove(move);
+    },
+    [sfRef.current, difficulty, moves]
+  );
+
+  useEffect(() => {
+    if (turn !== color) {
+      if (sfRef.current) {
         console.log(difficulty);
         findBestMove(
-          [...moves, move],
+          moves,
           sfRef.current,
           stockfishLevels.get(difficulty) as number
         ).then((newMove) => {
@@ -88,10 +93,8 @@ export default function BotGame() {
           makeMove(newMove);
         });
       }
-      makeMove(move);
-    },
-    [sfRef.current, difficulty, moves]
-  );
+    }
+  }, [moves]);
 
   async function endGame(
     type:
