@@ -79,7 +79,6 @@ export default function PieceComponent({
 
   function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
     if (canDrag) e.stopPropagation();
-    e.stopPropagation();
     e.preventDefault();
     setPawnPromoter(null);
     if (!canDrag) return;
