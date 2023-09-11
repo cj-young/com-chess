@@ -103,13 +103,17 @@ export function BotGameContextProvider({ children }: Props) {
     setMoves((prevMoves) => {
       const prevPieces = applyMoves(generateStartingPosition(), prevMoves);
       // Verify legality
-      const movedPiece = pieces.filter((p) => p.square === move.from)[0];
+      const movedPiece = pieces.filter(
+        (p) => p.square === move.from && p.active
+      )[0];
       if (!movedPiece) return prevMoves;
       const verifiedLegalMoves = generateLegalMoves(
         prevPieces,
         movedPiece,
         moves
       );
+      console.log(movedPiece);
+      console.log(verifiedLegalMoves);
       let moveFound;
       for (let legalMove of verifiedLegalMoves) {
         if (legalMove === move.to) {
