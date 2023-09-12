@@ -1,0 +1,109 @@
+@import "./mixins";
+
+.analyze {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__container {
+    width: 100%;
+    height: 100%;
+
+    @include game-screen {
+      display: grid;
+      grid-template-areas:
+        "moves board topinfo"
+        "moves board bottominfo"
+        "moves board blank"
+        "moves board blank";
+      grid-template-columns: 1fr 2rem min(100%, 30rem, 75vh) 1fr;
+      grid-auto-rows: min-content min-content 0.5fr 1fr;
+      overflow-y: hidden;
+    }
+
+    &.show-games {
+      @include game-screen {
+        grid-template-areas:
+          "moves eval board topinfo"
+          "moves eval board bottominfo"
+          "moves eval board blank"
+          "games eval board blank";
+      }
+    }
+  }
+}
+
+.analyze-moves-container {
+  padding: 1rem;
+  grid-area: moves;
+  height: 20rem;
+
+  @include game-screen {
+    height: unset;
+  }
+}
+
+.board-container {
+  grid-area: board;
+
+  @include game-screen {
+    width: unset;
+    height: unset;
+  }
+}
+
+.player-info-container {
+  padding-inline: 1rem;
+}
+
+.player-info-container.top {
+  grid-area: topinfo;
+}
+
+.player-info-container.bottom {
+  grid-area: bottominfo;
+}
+
+.past-games-container {
+  grid-area: games;
+  padding: 1rem;
+  padding-top: 0;
+  height: 20rem;
+  margin-top: 2rem;
+
+  @include game-screen {
+    height: 100%;
+    margin-top: 0;
+  }
+
+  .past-games {
+    background-color: var(--clr-bg-200);
+    width: 100%;
+    height: 100%;
+    border-radius: var(--br-primary);
+  }
+}
+
+.eval-container {
+  grid-area: eval;
+  padding-block: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include game-screen {
+    padding-inline: 0;
+  }
+
+  .eval {
+    background-color: white;
+    height: 1.5rem;
+    border-radius: var(--br-primary);
+    width: min(100%, 30rem, 60vh);
+
+    @include game-screen {
+      height: 100%;
+      width: 100%;
+    }
+  }
+}
