@@ -22,12 +22,6 @@ import movesToFEN from "../utils/movesToFEN";
 import isInsufficientMaterial from "../utils/isInsufficientMaterial";
 import GameOver from "../components/GameOver";
 
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
-
 export default function BotGame() {
   const [gameOverModal, setGameOverModal] = useState<React.ReactNode>(null);
   const gameOverRef = useRef<boolean>(false);
@@ -72,13 +66,6 @@ export default function BotGame() {
   );
 
   gameOverRef.current = gameOver;
-
-  const modifiedMakeMove = useCallback(
-    (move: Move) => {
-      makeMove(move);
-    },
-    [sfRef.current, difficulty, moves]
-  );
 
   useEffect(() => {
     if (turn !== color) {
@@ -255,7 +242,7 @@ export default function BotGame() {
           moveIndex={moveIndex}
           showControls={gameState === "playing"}
           showPieces={gameState === "playing"}
-          makeMove={modifiedMakeMove}
+          makeMove={makeMove}
           modal={gameOverModal}
           canDragCB={canDragCB}
         />
