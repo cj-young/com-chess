@@ -1,5 +1,11 @@
-import { useState, useCallback, useMemo, useLayoutEffect } from "react";
-import { useParams } from "react-router-dom";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useLayoutEffect,
+  useEffect,
+} from "react";
+import { redirect, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import Piece from "../utils/Piece";
 import Navbar from "../components/Navbar";
@@ -24,6 +30,8 @@ export default function Analyze() {
   const [orientation, setOrientation] = useState<"white" | "black">("white");
 
   const { gameId } = useParams();
+
+  const navigate = useNavigate();
 
   const isPastGame = gameId !== undefined;
 
@@ -77,6 +85,60 @@ export default function Analyze() {
       return [...prevMoves, move];
     });
   }
+
+  useEffect(() => {
+    (async () => {
+      try {
+        if (isPastGame) {
+          const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/games/${gameId}`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (!response.ok) {
+            return navigate("/analyze");
+          }
+
+          const data = await response.json();
+          console.log(data);
+        } else {
+          const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/games/list`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const data = await response.json();
+          console.log(data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      // const response = await fetch(
+      //   `${import.meta.env.VITE_BACKEND_URL}/auth/local/login`,
+      //   {
+      //     method: "POST",
+      //     credentials: "include",
+      //     headers: {
+      //       Accept: "application/json",
+      //       "Content-Type": "application/json",
+      //     }
+      //   }
+      // );
+    })();
+  }, []);
 
   return (
     <div className="analyze">
