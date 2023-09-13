@@ -108,7 +108,7 @@ export default function GameOver({
           {subMessage && <p className="sub-message">{subMessage}</p>}
         </div>
         <div className="game-over__buttons">
-          <Link to={"/analyze/live/" + gameId} className="analyze">
+          <Link to={"/analyze/" + gameId} className="analyze">
             Analyze
           </Link>
           <button
