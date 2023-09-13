@@ -521,11 +521,14 @@ module.exports = (server, sessionMiddleware, passport) => {
                   : "black",
             });
 
-            socket.emit("gameWon", { type: "checkmate", id: pastGame.id });
+            socket.emit("gameWon", {
+              type: "checkmate",
+              id: "0" + pastGame.id,
+            });
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameLost", {
                 type: "checkmate",
-                id: pastGame.id,
+                id: "0" + pastGame.id,
               });
             }
           } else {
@@ -538,11 +541,14 @@ module.exports = (server, sessionMiddleware, passport) => {
               winner: null,
             });
 
-            socket.emit("gameDrawn", { type: "stalemate", id: pastGame.id });
+            socket.emit("gameDrawn", {
+              type: "stalemate",
+              id: "0" + pastGame.id,
+            });
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
                 type: "stalemate",
-                id: pastGame.id,
+                id: "0" + pastGame.id,
               });
             }
           }
@@ -580,11 +586,14 @@ module.exports = (server, sessionMiddleware, passport) => {
               winner: null,
             });
 
-            socket.emit("gameDrawn", { type: "repetition", id: pastGame.id });
+            socket.emit("gameDrawn", {
+              type: "repetition",
+              id: "0" + pastGame.id,
+            });
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
                 type: "repetition",
-                id: pastGame.id,
+                id: "0" + pastGame.id,
               });
             }
 
@@ -607,11 +616,14 @@ module.exports = (server, sessionMiddleware, passport) => {
               winner: null,
             });
 
-            socket.emit("gameDrawn", { type: "fiftyMove", id: pastGame.id });
+            socket.emit("gameDrawn", {
+              type: "fiftyMove",
+              id: "0" + pastGame.id,
+            });
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
                 type: "fiftyMove",
-                id: pastGame.id,
+                id: "0" + pastGame.id,
               });
             }
 
@@ -639,12 +651,12 @@ module.exports = (server, sessionMiddleware, passport) => {
 
             socket.emit("gameDrawn", {
               type: "insufficientMaterial",
-              id: pastGame.id,
+              id: "0" + pastGame.id,
             });
             if (connectedUsers.has(opponent.id)) {
               io.to(connectedUsers.get(opponent.id)).emit("gameDrawn", {
                 type: "insufficientMaterial",
-                id: pastGame.id,
+                id: "0" + pastGame.id,
               });
             }
 
@@ -716,12 +728,12 @@ module.exports = (server, sessionMiddleware, passport) => {
 
             socket.emit("gameDrawn", {
               type: "insufficientMaterialTimeout",
-              id: pastGame.id,
+              id: "0" + pastGame.id,
             });
             if (connectedUsers.has(opponentId)) {
               io.to(connectedUsers.get(opponentId)).emit("gameDrawn", {
                 type: "insufficientMaterialTimeout",
-                id: pastGame.id,
+                id: "0" + pastGame.id,
               });
             }
 
@@ -756,13 +768,13 @@ module.exports = (server, sessionMiddleware, passport) => {
             if (connectedUsers.has(winnerId)) {
               io.to(connectedUsers.get(winnerId)).emit("gameWon", {
                 type: "timeout",
-                id: pastGame.id,
+                id: "0" + pastGame.id,
               });
             }
             if (connectedUsers.has(loserId)) {
               io.to(connectedUsers.get(loserId)).emit("gameLost", {
                 type: "timeout",
-                id: pastGame.id,
+                id: "0" + pastGame.id,
               });
             }
 
@@ -806,11 +818,11 @@ module.exports = (server, sessionMiddleware, passport) => {
             ? game.blackPlayer.toString()
             : game.whitePlayer.toString();
 
-        socket.emit("gameLost", { type: "resignation", id: pastGame.id });
+        socket.emit("gameLost", { type: "resignation", id: "0" + pastGame.id });
         if (connectedUsers.has(opponentId)) {
           io.to(connectedUsers.get(opponentId)).emit("gameWon", {
             type: "resignation",
-            id: pastGame.id,
+            id: "0" + pastGame.id,
           });
         }
 
@@ -864,11 +876,11 @@ module.exports = (server, sessionMiddleware, passport) => {
           ? game.blackPlayer.toString()
           : game.whitePlayer.toString();
 
-      socket.emit("gameDrawn", { type: "draw", id: pastGame.id });
+      socket.emit("gameDrawn", { type: "draw", id: "0" + pastGame.id });
       if (connectedUsers.has(opponentId)) {
         io.to(connectedUsers.get(opponentId)).emit("gameDrawn", {
           type: "draw",
-          id: pastGame.id,
+          id: "0" + pastGame.id,
         });
       }
 

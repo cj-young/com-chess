@@ -21,7 +21,7 @@ const postBotGameEnd = async (req, res, next) => {
       winner: winningColor,
     });
 
-    res.json({ gameId: pastGame.id });
+    res.json({ gameId: "1" + pastGame.id }); // "1" Prefix indicates bot game
   } catch (error) {
     next(error);
   }
