@@ -16,8 +16,9 @@ const postBotGameEnd = async (req, res, next) => {
 
     const pastGame = await PastBotGame.create({
       moves: moves,
-      blackPlayer: color === "black" ? user.id : difficulty,
-      whitePlayer: color === "white" ? user.id : difficulty,
+      user: user.id,
+      color,
+      difficulty,
       winner: winningColor,
     });
 

@@ -6,6 +6,32 @@ const { mongoose } = require("mongoose");
 
 const router = express.Router();
 
+router.get("/list", async (req, res, next) => {
+  try {
+    const { user } = req;
+    const [liveGames, botGames] = await Promise.all([
+      PastLiveGame.find({
+        $or: [{ blackPlayer: user.id }, { whitePlayer: user.id }],
+      })
+        .sort({ createdAt: -1 })
+        .limit(10),
+      PastBotGame.find({ user: user.id }).sort({ createdAt: -1 }).limit(10),
+    ]);
+
+    console.log(botGames[0]);
+
+    const combinedGames = [
+      ...liveGames.map((game) => game.toObject()),
+      ...botGames.map((game) => game.toObject()),
+    ]
+      .sort((a, b) => a.createdAt - b.createdAt)
+      .slice(0, 10);
+    return res.json({ games: combinedGames });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get("/:gameId", async (req, res, next) => {
   try {
     const gameId = req.params.gameId;
