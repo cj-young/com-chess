@@ -16,6 +16,7 @@ import Board from "../components/Board";
 import Moves from "../components/Moves";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
 import "../styles/Analyze.scss";
+import Loading from "./Loading";
 
 type Move = {
   from: string;
@@ -23,11 +24,26 @@ type Move = {
   promoteTo?: "knight" | "bishop" | "rook" | "queen";
 };
 
+type PastGame =
+  | {
+      type: "live";
+      result: string;
+      opponent: string;
+      minutes: number;
+      increment: number;
+    }
+  | {
+      type: "bot";
+      result: string;
+      difficulty: string;
+    };
+
 export default function Analyze() {
   const [isLoading, setIsLoading] = useState(true);
   const [moves, setMoves] = useState<Move[]>([]);
   const [moveIndex, setMoveIndex] = useState(-1);
   const [orientation, setOrientation] = useState<"white" | "black">("white");
+  const [pastGames, setPastGames] = useState<PastGame[]>([]);
 
   const { gameId } = useParams();
 
@@ -107,6 +123,7 @@ export default function Analyze() {
           }
 
           const data = await response.json();
+          setIsLoading(false);
           console.log(data);
         } else {
           const response = await fetch(
@@ -121,6 +138,7 @@ export default function Analyze() {
             }
           );
           const data = await response.json();
+          setIsLoading(false);
           console.log(data);
         }
       } catch (error) {
@@ -129,7 +147,9 @@ export default function Analyze() {
     })();
   }, []);
 
-  return (
+  return isLoading ? (
+    <Loading />
+  ) : (
     <div className="analyze">
       <Navbar />
       <div className={`analyze__container ${isPastGame ? "" : "show-games"}`}>
