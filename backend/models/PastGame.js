@@ -16,44 +16,50 @@ const MoveSchema = new Schema({
   },
 });
 
-const PastLiveGameSchema = new Schema({
-  moves: {
-    type: [MoveSchema],
+const PastLiveGameSchema = new Schema(
+  {
+    moves: {
+      type: [MoveSchema],
+    },
+    blackPlayer: {
+      type: Schema.Types.ObjectId,
+    },
+    whitePlayer: {
+      type: Schema.Types.ObjectId,
+    },
+    minutes: {
+      type: Number,
+    },
+    increment: {
+      type: Number,
+    },
+    winner: {
+      type: String,
+    },
   },
-  blackPlayer: {
-    type: Schema.Types.ObjectId,
-  },
-  whitePlayer: {
-    type: Schema.Types.ObjectId,
-  },
-  minutes: {
-    type: Number,
-  },
-  increment: {
-    type: Number,
-  },
-  winner: {
-    type: String,
-  },
-});
+  { timestamps: true }
+);
 
-const PastBotGameSchema = new Schema({
-  moves: {
-    type: [MoveSchema],
+const PastBotGameSchema = new Schema(
+  {
+    moves: {
+      type: [MoveSchema],
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+    },
+    color: {
+      type: String,
+    },
+    difficulty: {
+      type: String,
+    },
+    winner: {
+      type: String,
+    },
   },
-  user: {
-    type: Schema.Types.ObjectId,
-  },
-  color: {
-    type: String,
-  },
-  difficulty: {
-    type: String,
-  },
-  winner: {
-    type: String,
-  },
-});
+  { timestamps: true }
+);
 
 const PastLiveGame = mongoose.model("PastLiveGame", PastLiveGameSchema);
 const PastBotGame = mongoose.model("PastBotGame", PastBotGameSchema);
