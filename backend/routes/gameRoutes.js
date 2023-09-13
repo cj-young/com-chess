@@ -1,7 +1,6 @@
 const express = require("express");
 const { PastLiveGame, PastBotGame } = require("../models/PastGame");
 const User = require("../models/User");
-const { isAuthenticated } = require("../controllers/authController");
 const { mongoose } = require("mongoose");
 
 const router = express.Router();
@@ -18,14 +17,35 @@ router.get("/list", async (req, res, next) => {
       PastBotGame.find({ user: user.id }).sort({ createdAt: -1 }).limit(10),
     ]);
 
-    console.log(botGames[0]);
-
     const combinedGames = [
-      ...liveGames.map((game) => game.toObject()),
-      ...botGames.map((game) => game.toObject()),
+      ...liveGames.map((game) => ({ ...game.toObject(), type: "live" })),
+      ...botGames.map((game) => ({ ...game.toObject(), type: "bot" })),
     ]
-      .sort((a, b) => a.createdAt - b.createdAt)
+      .sort((a, b) => b.createdAt - a.createdAt)
       .slice(0, 10);
+
+    for (let i = 0; i < combinedGames.length; i++) {
+      const game = combinedGames[i];
+      let winStatus;
+      if (game.type === "bot") {
+        winStatus = game.winner
+          ? game.winner === game.color
+            ? "won"
+            : "lost"
+          : "drawn";
+      } else {
+        const isWhite = user.id === game.whitePlayer.toString();
+        winStatus = game.winner
+          ? (game.winner === "white" && isWhite) ||
+            (game.winner === "black" && !isWhite)
+            ? "won"
+            : "lost"
+          : "drawn";
+      }
+
+      combinedGames[i] = { ...game, winStatus };
+    }
+
     return res.json({ games: combinedGames });
   } catch (error) {
     next(error);
