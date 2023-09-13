@@ -105,6 +105,7 @@ export default function BotGame() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ moves, color, difficulty, result: winStatus }),
         }
       );
       const data = await response.json();
