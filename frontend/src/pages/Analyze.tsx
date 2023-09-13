@@ -126,17 +126,6 @@ export default function Analyze() {
       } catch (error) {
         console.error(error);
       }
-      // const response = await fetch(
-      //   `${import.meta.env.VITE_BACKEND_URL}/auth/local/login`,
-      //   {
-      //     method: "POST",
-      //     credentials: "include",
-      //     headers: {
-      //       Accept: "application/json",
-      //       "Content-Type": "application/json",
-      //     }
-      //   }
-      // );
     })();
   }, []);
 
