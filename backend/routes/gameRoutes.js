@@ -42,6 +42,7 @@ router.get("/:gameId", async (req, res, next) => {
         moves: game.moves,
         color: game.color,
         winner: game.winner,
+        difficulty: game.difficulty,
         type: "bot",
       });
     }
