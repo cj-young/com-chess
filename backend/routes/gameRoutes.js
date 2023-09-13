@@ -1,5 +1,5 @@
 const express = require("express");
-const PastGame = require("../models/PastGame");
+const { PastLiveGame } = require("../models/PastGame");
 const User = require("../models/User");
 const { isAuthenticated } = require("../controllers/authController");
 const { mongoose } = require("mongoose");
@@ -12,7 +12,7 @@ router.get("/:gameId", async (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(gameId)) {
       res.status(404).json({ message: "Game not found" });
     }
-    const game = await PastGame.findById(gameId);
+    const game = await PastLiveGame.findById(gameId);
     if (!game) {
       res.status(404).json({ message: "Game not found" });
     }

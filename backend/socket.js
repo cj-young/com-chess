@@ -6,7 +6,7 @@ const generateLegalMoves = require("./utils/moveVerification/generateLegalMoves"
 const generateStartingPosition = require("./utils/generateStartingPosition");
 const isInCheck = require("./utils/moveVerification/isInCheck");
 const canMove = require("./utils/moveVerification/canMove");
-const PastGame = require("./models/PastGame");
+const { PastLiveGame } = require("./models/PastGame");
 const movesToFEN = require("./utils/movesToFEN");
 const isInsufficientMaterial = require("./utils/isInsufficientMaterial");
 
@@ -509,7 +509,7 @@ module.exports = (server, sessionMiddleware, passport) => {
 
         if (!canMove(updatedPieces, updatedGame.moves)) {
           if (isInCheck(updatedPieces, turn === "white" ? "black" : "white")) {
-            const pastGame = await PastGame.create({
+            const pastGame = await PastLiveGame.create({
               moves: updatedGame.moves,
               blackPlayer: updatedGame.blackPlayer,
               whitePlayer: updatedGame.whitePlayer,
@@ -519,7 +519,6 @@ module.exports = (server, sessionMiddleware, passport) => {
                 user.id === updatedGame.whitePlayer.toString()
                   ? "white"
                   : "black",
-              gameType: "live",
             });
 
             socket.emit("gameWon", { type: "checkmate", id: pastGame.id });
@@ -530,14 +529,13 @@ module.exports = (server, sessionMiddleware, passport) => {
               });
             }
           } else {
-            const pastGame = await PastGame.create({
+            const pastGame = await PastLiveGame.create({
               moves: updatedGame.moves,
               blackPlayer: updatedGame.blackPlayer,
               whitePlayer: updatedGame.whitePlayer,
               minutes: updatedGame.minutes,
               increment: updatedGame.increment,
               winner: null,
-              gameType: "live",
             });
 
             socket.emit("gameDrawn", { type: "stalemate", id: pastGame.id });
@@ -573,14 +571,13 @@ module.exports = (server, sessionMiddleware, passport) => {
           }
 
           if (count >= 3) {
-            const pastGame = await PastGame.create({
+            const pastGame = await PastLiveGame.create({
               moves: updatedGame.moves,
               blackPlayer: updatedGame.blackPlayer,
               whitePlayer: updatedGame.whitePlayer,
               minutes: updatedGame.minutes,
               increment: updatedGame.increment,
               winner: null,
-              gameType: "live",
             });
 
             socket.emit("gameDrawn", { type: "repetition", id: pastGame.id });
@@ -601,14 +598,13 @@ module.exports = (server, sessionMiddleware, passport) => {
               }),
             ]);
           } else if (+movesToFEN(updatedGame.moves).split(" ")[4] >= 100) {
-            const pastGame = await PastGame.create({
+            const pastGame = await PastLiveGame.create({
               moves: updatedGame.moves,
               blackPlayer: updatedGame.blackPlayer,
               whitePlayer: updatedGame.whitePlayer,
               minutes: updatedGame.minutes,
               increment: updatedGame.increment,
               winner: null,
-              gameType: "live",
             });
 
             socket.emit("gameDrawn", { type: "fiftyMove", id: pastGame.id });
@@ -632,14 +628,13 @@ module.exports = (server, sessionMiddleware, passport) => {
             isInsufficientMaterial(updatedGame.moves, "white") &&
             isInsufficientMaterial(updatedGame.moves, "black")
           ) {
-            const pastGame = await PastGame.create({
+            const pastGame = await PastLiveGame.create({
               moves: updatedGame.moves,
               blackPlayer: updatedGame.blackPlayer,
               whitePlayer: updatedGame.whitePlayer,
               minutes: updatedGame.minutes,
               increment: updatedGame.increment,
               winner: null,
-              gameType: "live",
             });
 
             socket.emit("gameDrawn", {
@@ -710,14 +705,13 @@ module.exports = (server, sessionMiddleware, passport) => {
               color === "white" ? "black" : "white"
             )
           ) {
-            const pastGame = await PastGame.create({
+            const pastGame = await PastLiveGame.create({
               moves: game.moves,
               blackPlayer: game.blackPlayer,
               whitePlayer: game.whitePlayer,
               minutes: game.minutes,
               increment: game.increment,
               winner: null,
-              gameType: "live",
             });
 
             socket.emit("gameDrawn", {
@@ -741,14 +735,13 @@ module.exports = (server, sessionMiddleware, passport) => {
               }),
             ]);
           } else {
-            const pastGame = await PastGame.create({
+            const pastGame = await PastLiveGame.create({
               moves: game.moves,
               blackPlayer: game.blackPlayer,
               whitePlayer: game.whitePlayer,
               minutes: game.minutes,
               increment: game.increment,
               winner: color === "white" ? "black" : "white",
-              gameType: "live",
             });
 
             const winnerId =
@@ -799,14 +792,13 @@ module.exports = (server, sessionMiddleware, passport) => {
 
         if (!game) throw new Error("No game found");
 
-        const pastGame = await PastGame.create({
+        const pastGame = await PastLiveGame.create({
           moves: game.moves,
           blackPlayer: game.blackPlayer,
           whitePlayer: game.whitePlayer,
           minutes: game.minutes,
           increment: game.increment,
           winner: user.id === game.whitePlayer.toString() ? "black" : "white",
-          gameType: "live",
         });
 
         const opponentId =
@@ -858,14 +850,13 @@ module.exports = (server, sessionMiddleware, passport) => {
 
       if (!game) throw new Error("No game found");
 
-      const pastGame = await PastGame.create({
+      const pastGame = await PastLiveGame.create({
         moves: game.moves,
         blackPlayer: game.blackPlayer,
         whitePlayer: game.whitePlayer,
         minutes: game.minutes,
         increment: game.increment,
         winner: null,
-        gameType: "live",
       });
 
       const opponentId =

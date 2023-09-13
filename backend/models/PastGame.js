@@ -16,15 +16,15 @@ const MoveSchema = new Schema({
   },
 });
 
-const PastGameSchema = new Schema({
+const PastLiveGameSchema = new Schema({
   moves: {
     type: [MoveSchema],
   },
   blackPlayer: {
-    type: mongoose.Schema.Types.Mixed,
+    type: Schema.Types.ObjectId,
   },
   whitePlayer: {
-    type: mongoose.Schema.Types.Mixed,
+    type: Schema.Types.ObjectId,
   },
   minutes: {
     type: Number,
@@ -35,11 +35,27 @@ const PastGameSchema = new Schema({
   winner: {
     type: String,
   },
-  gameType: {
+});
+
+const PastBotGameSchema = new Schema({
+  moves: {
+    type: [MoveSchema],
+  },
+  user: {
+    type: Schema.Types.ObjectId,
+  },
+  color: {
+    type: String,
+  },
+  difficulty: {
+    type: String,
+  },
+  winner: {
     type: String,
   },
 });
 
-const PastGame = mongoose.model("PastGame", PastGameSchema);
+const PastLiveGame = mongoose.model("PastLiveGame", PastLiveGameSchema);
+const PastBotGame = mongoose.model("PastBotGame", PastBotGameSchema);
 
-module.exports = PastGame;
+module.exports = { PastLiveGame, PastBotGame };

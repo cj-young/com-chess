@@ -1,4 +1,4 @@
-const PastGame = require("../models/PastGame");
+const { PastBotGame } = require("../models/PastGame");
 
 const postBotGameEnd = async (req, res, next) => {
   try {
@@ -14,12 +14,11 @@ const postBotGameEnd = async (req, res, next) => {
       winningColor = color === "white" ? "black" : "white";
     }
 
-    const pastGame = await PastGame.create({
+    const pastGame = await PastBotGame.create({
       moves: moves,
       blackPlayer: color === "black" ? user.id : difficulty,
       whitePlayer: color === "white" ? user.id : difficulty,
       winner: winningColor,
-      gameType: "bot",
     });
 
     res.json({ gameId: pastGame.id });
