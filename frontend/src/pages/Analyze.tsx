@@ -130,6 +130,8 @@ export default function Analyze() {
 
           const data = await response.json();
           setIsLoading(false);
+          setMoves(data.moves);
+          setMoveIndex(data.moves.length - 1);
           console.log(data);
         } else {
           const response = await fetch(
