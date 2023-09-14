@@ -27,6 +27,27 @@ router.get("/list", async (req, res, next) => {
     for (let i = 0; i < combinedGames.length; i++) {
       const game = combinedGames[i];
       let winStatus;
+
+      if (game.type === "live") {
+        const [whitePlayer, blackPlayer] = await Promise.all([
+          User.findById(game.whitePlayer),
+          User.findById(game.blackPlayer),
+        ]);
+        const [whiteUsername, blackUsername] = [
+          whitePlayer.username,
+          blackPlayer.username,
+        ];
+
+        const color =
+          game.whitePlayer.toString() === user.id ? "white" : "black";
+        combinedGames[i] = {
+          ...combinedGames[i],
+          whiteUsername,
+          blackUsername,
+          color,
+        };
+      }
+
       if (game.type === "bot") {
         winStatus = game.winner
           ? game.winner === game.color
@@ -43,7 +64,7 @@ router.get("/list", async (req, res, next) => {
           : "drawn";
       }
 
-      combinedGames[i] = { ...game, winStatus };
+      combinedGames[i] = { ...combinedGames[i], winStatus };
     }
 
     return res.json({ games: combinedGames });
