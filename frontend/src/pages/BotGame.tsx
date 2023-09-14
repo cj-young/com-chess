@@ -121,6 +121,7 @@ export default function BotGame() {
           }}
         />
       );
+      localStorage.removeItem("botGame");
     } catch (error) {
       console.error(error);
     }

@@ -5,7 +5,7 @@ import {
   useLayoutEffect,
   useEffect,
 } from "react";
-import { redirect, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import Piece from "../utils/Piece";
 import Navbar from "../components/Navbar";
@@ -27,15 +27,21 @@ type Move = {
 type PastGame =
   | {
       type: "live";
-      result: string;
       opponent: string;
       minutes: number;
       increment: number;
+      whiteUsername: string;
+      blackUsername: string;
+      color: string;
+      readonly _id: string;
+      winner: string;
     }
   | {
       type: "bot";
-      result: string;
       difficulty: string;
+      color: string;
+      readonly _id: string;
+      winner: string;
     };
 
 export default function Analyze() {
@@ -138,6 +144,7 @@ export default function Analyze() {
             }
           );
           const data = await response.json();
+          setPastGames(data.games);
           setIsLoading(false);
           console.log(data);
         }
@@ -208,9 +215,52 @@ export default function Analyze() {
               color={orientation === "white" ? "black" : "white"}
             />
           </div>
-          <div className="past-games-container">
-            <div className="past-games"></div>
-          </div>
+          {!isPastGame && (
+            <div className="past-games-container">
+              <div className="past-games">
+                {pastGames.length > 0 ? (
+                  <ul className="past-games-list">
+                    {pastGames.map((game, i) => (
+                      <li className="past-game" key={i}>
+                        <Link
+                          to={`/analyze/${game.type === "bot" ? "1" : "0"}${
+                            game._id
+                          }`}
+                        >
+                          <span className="name">
+                            {game.type === "bot"
+                              ? game.difficulty[0].toUpperCase() +
+                                game.difficulty.slice(1) +
+                                " Bot"
+                              : game.color === "white"
+                              ? game.whiteUsername
+                              : game.blackUsername}
+                          </span>
+                          <span
+                            className={`${
+                              game.winner === null
+                                ? "draw"
+                                : game.winner === game.color
+                                ? "win"
+                                : "loss"
+                            }`}
+                          >
+                            {game.winner === null
+                              ? "Draw"
+                              : game.winner === game.color
+                              ? "Win"
+                              : "Loss"}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="no-games">Past games will appear here</div>
+                )}
+              </div>
+            </div>
+          )}
           <div className="analyze-moves-container">
             <Moves
               moves={moves}
