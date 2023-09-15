@@ -44,12 +44,19 @@ type PastGame =
       winner: string;
     };
 
+type Sideline = {
+  startsAt: number;
+  moves: Move[];
+};
+
 export default function Analyze() {
   const [isLoading, setIsLoading] = useState(true);
   const [moves, setMoves] = useState<Move[]>([]);
   const [moveIndex, setMoveIndex] = useState(-1);
   const [orientation, setOrientation] = useState<"white" | "black">("white");
   const [pastGames, setPastGames] = useState<PastGame[]>([]);
+  const [sidelines, setSidelines] = useState<{ [key: number]: Sideline }[]>([]);
+  const [currentSideline, setCurrentSideline] = useState<number | null>(null);
 
   const { gameId } = useParams();
 
@@ -268,6 +275,8 @@ export default function Analyze() {
               moves={moves}
               moveIndex={moveIndex}
               setMoveIndex={setMoveIndex}
+              sidelines={sidelines}
+              currentSideline={currentSideline}
             />
           </div>
         </>

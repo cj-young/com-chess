@@ -8,13 +8,26 @@ type Move = {
   promoteTo?: "knight" | "bishop" | "rook" | "queen";
 };
 
+type Sideline = {
+  startsAt: number;
+  moves: Move[];
+};
+
 type Props = {
   moves: Move[];
   moveIndex: number;
   setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
+  sidelines?: { [key: number]: Sideline }[];
+  currentSideline?: number | null;
 };
 
-export default function Moves({ moves, moveIndex, setMoveIndex }: Props) {
+export default function Moves({
+  moves,
+  moveIndex,
+  setMoveIndex,
+  sidelines,
+  currentSideline,
+}: Props) {
   const algebraicMoves = useMemo(() => {
     const res: string[][] = [];
     const ungroupedMoves = movesToAlgebraic(moves);
