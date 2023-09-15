@@ -26,8 +26,8 @@
         grid-template-areas:
           "moves eval board topinfo"
           "moves eval board bottominfo"
-          "moves eval board blank"
-          "games eval board blank";
+          "moves eval board games"
+          "moves eval board games";
       }
     }
   }
@@ -67,7 +67,6 @@
 .past-games-container {
   grid-area: games;
   padding: 1rem;
-  padding-top: 0;
   height: 20rem;
   margin-top: 2rem;
 
