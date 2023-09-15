@@ -55,7 +55,30 @@ export default function Analyze() {
   const [moveIndex, setMoveIndex] = useState(-1);
   const [orientation, setOrientation] = useState<"white" | "black">("white");
   const [pastGames, setPastGames] = useState<PastGame[]>([]);
-  const [sidelines, setSidelines] = useState<{ [key: number]: Sideline }[]>([]);
+  const [sidelines, setSidelines] = useState<{ [key: number]: Sideline[] }>({
+    1: [
+      {
+        startsAt: 1,
+        moves: [
+          { from: "e7", to: "e5" },
+          { from: "a2", to: "a3" },
+        ],
+      },
+      {
+        startsAt: 1,
+        moves: [
+          { from: "e7", to: "e6" },
+          { from: "a2", to: "a3" },
+        ],
+      },
+    ],
+    4: [
+      {
+        startsAt: 4,
+        moves: [{ from: "a2", to: "a3" }],
+      },
+    ],
+  });
   const [currentSideline, setCurrentSideline] = useState<
     [number, number] | null
   >(null);
@@ -91,31 +114,80 @@ export default function Analyze() {
   }, [moves]);
 
   function makeMove(move: Move) {
-    setMoves((prevMoves) => {
-      const prevPieces = applyMoves(generateStartingPosition(), prevMoves);
+    if (currentSideline) {
+      setSidelines((prevSidelines) => {
+        const prevPieces = applyMoves(
+          generateStartingPosition(),
+          prevSidelines[currentSideline[0]][currentSideline[1]].moves
+        );
 
-      // Verify legality
-      const movedPiece = pieces.filter(
-        (p) => p.square === move.from && p.active
-      )[0];
-      if (!movedPiece) return prevMoves;
-      const verifiedLegalMoves = generateLegalMoves(
-        prevPieces,
-        movedPiece,
-        moves
-      );
+        // Verify legality
+        const movedPiece = pieces.filter(
+          (p) => p.square === move.from && p.active
+        )[0];
+        if (!movedPiece) return prevSidelines;
+        const verifiedLegalMoves = generateLegalMoves(
+          prevPieces,
+          movedPiece,
+          moves
+        );
 
-      let moveFound;
-      for (let legalMove of verifiedLegalMoves) {
-        if (legalMove === move.to) {
-          moveFound = true;
+        let moveFound;
+        for (let legalMove of verifiedLegalMoves) {
+          if (legalMove === move.to) {
+            moveFound = true;
+          }
         }
-      }
-      if (!moveFound) return prevMoves;
+        if (!moveFound) return prevSidelines;
 
-      return [...prevMoves, move];
-    });
+        const updatedSideline = {
+          startsAt: currentSideline[0],
+          moves: [
+            ...prevSidelines[currentSideline[0]][currentSideline[1]].moves,
+            move,
+          ],
+        };
+
+        return {
+          ...prevSidelines,
+          [currentSideline[0]]: [
+            ...prevSidelines[currentSideline[0]].slice(0, currentSideline[1]),
+            updatedSideline,
+            ...prevSidelines[currentSideline[0]].slice(currentSideline[1] + 1),
+          ],
+        };
+      });
+    } else {
+      setMoves((prevMoves) => {
+        const prevPieces = applyMoves(generateStartingPosition(), prevMoves);
+
+        // Verify legality
+        const movedPiece = pieces.filter(
+          (p) => p.square === move.from && p.active
+        )[0];
+        if (!movedPiece) return prevMoves;
+        const verifiedLegalMoves = generateLegalMoves(
+          prevPieces,
+          movedPiece,
+          moves
+        );
+
+        let moveFound;
+        for (let legalMove of verifiedLegalMoves) {
+          if (legalMove === move.to) {
+            moveFound = true;
+          }
+        }
+        if (!moveFound) return prevMoves;
+
+        return [...prevMoves, move];
+      });
+    }
   }
+
+  useEffect(() => {
+    console.log(sidelines);
+  }, [sidelines]);
 
   useEffect(() => {
     (async () => {

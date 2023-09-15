@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import "../styles/Moves.scss";
 import movesToAlgebraic from "../utils/movesToAlgebraic";
+import Sideline from "./Sideline";
 
 type Move = {
   from: string;
@@ -17,7 +18,7 @@ type Props = {
   moves: Move[];
   moveIndex: number;
   setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
-  sidelines?: { [key: number]: Sideline }[];
+  sidelines?: { [key: number]: Sideline[] };
   currentSideline?: [number, number] | null;
 };
 
@@ -47,26 +48,77 @@ export default function Moves({
       <div className="moves-wrapper">
         <ul>
           {algebraicMoves.map((moveGroup, i) => (
-            <li className="live-moves__move-group" key={i}>
-              <div
-                className={`live-moves__move ${
-                  i * 2 === moveIndex ? "highlighted" : ""
-                }`}
-                onClick={() => setMoveIndex(i * 2)}
-              >
-                {moveGroup[0]}
-              </div>
-              {moveGroup.length > 1 && (
-                <div
-                  className={`live-moves__move ${
-                    i * 2 + 1 === moveIndex ? "highlighted" : ""
-                  }`}
-                  onClick={() => setMoveIndex(i * 2 + 1)}
-                >
-                  {moveGroup[1]}
-                </div>
+            <React.Fragment key={i}>
+              {sidelines && sidelines[i * 2] ? (
+                <>
+                  <li className="live-moves__move-group">
+                    <div
+                      className={`live-moves__move ${
+                        i * 2 === moveIndex ? "highlighted" : ""
+                      }`}
+                      onClick={() => setMoveIndex(i * 2)}
+                    >
+                      {moveGroup[0]}
+                    </div>
+                    {moveGroup.length > 1 && (
+                      <div className={`live-moves__move`}>...</div>
+                    )}
+                  </li>
+                  {sidelines[i * 2].map((sideline, j) => (
+                    <Sideline
+                      sideline={sideline}
+                      index={j}
+                      moves={moves}
+                      key={j}
+                    />
+                  ))}
+                  <li className="live-moves__move-group">
+                    <div className={`live-moves__move`}>...</div>
+                    {moveGroup.length > 1 && (
+                      <div
+                        className={`live-moves__move ${
+                          i * 2 + 1 === moveIndex ? "highlighted" : ""
+                        }`}
+                        onClick={() => setMoveIndex(i * 2 + 1)}
+                      >
+                        {moveGroup[1]}
+                      </div>
+                    )}
+                  </li>
+                </>
+              ) : (
+                <li className="live-moves__move-group" key={i}>
+                  <div
+                    className={`live-moves__move ${
+                      i * 2 === moveIndex ? "highlighted" : ""
+                    }`}
+                    onClick={() => setMoveIndex(i * 2)}
+                  >
+                    {moveGroup[0]}
+                  </div>
+                  {moveGroup.length > 1 && (
+                    <div
+                      className={`live-moves__move ${
+                        i * 2 + 1 === moveIndex ? "highlighted" : ""
+                      }`}
+                      onClick={() => setMoveIndex(i * 2 + 1)}
+                    >
+                      {moveGroup[1]}
+                    </div>
+                  )}
+                </li>
               )}
-            </li>
+              {sidelines &&
+                sidelines[i * 2 + 1] &&
+                sidelines[i * 2 + 1].map((sideline, j) => (
+                  <Sideline
+                    sideline={sideline}
+                    index={j}
+                    moves={moves}
+                    key={j}
+                  />
+                ))}
+            </React.Fragment>
           ))}
         </ul>
       </div>

@@ -1,0 +1,13 @@
+.sideline {
+  ul {
+    position: unset;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  .sideline__move-group {
+    display: flex;
+    gap: 0.25rem;
+  }
+}
