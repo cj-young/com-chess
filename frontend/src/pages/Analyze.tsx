@@ -56,7 +56,9 @@ export default function Analyze() {
   const [orientation, setOrientation] = useState<"white" | "black">("white");
   const [pastGames, setPastGames] = useState<PastGame[]>([]);
   const [sidelines, setSidelines] = useState<{ [key: number]: Sideline }[]>([]);
-  const [currentSideline, setCurrentSideline] = useState<number | null>(null);
+  const [currentSideline, setCurrentSideline] = useState<
+    [number, number] | null
+  >(null);
 
   const { gameId } = useParams();
 

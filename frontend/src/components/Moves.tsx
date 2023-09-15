@@ -18,7 +18,7 @@ type Props = {
   moveIndex: number;
   setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
   sidelines?: { [key: number]: Sideline }[];
-  currentSideline?: number | null;
+  currentSideline?: [number, number] | null;
 };
 
 export default function Moves({
