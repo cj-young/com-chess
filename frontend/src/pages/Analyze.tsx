@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import Piece from "../utils/Piece";
@@ -54,6 +54,9 @@ export default function Analyze() {
     [number, number] | null
   >(null);
 
+  const sfRef = useRef<Worker>();
+  const sfReady = useRef(false);
+
   const { gameId } = useParams();
 
   const navigate = useNavigate();
@@ -89,6 +92,31 @@ export default function Analyze() {
     },
     [turn]
   );
+
+  useEffect(() => {
+    const stockfish = new Worker("/stockfishtest/stockfish.js");
+
+    const messageCB = (e: MessageEvent) => {
+      const response = e.data;
+      if (response === "readyok") {
+        console.log("stockfish ready");
+        sfReady.current = true;
+      }
+      console.log(response);
+    };
+
+    stockfish.addEventListener("message", messageCB);
+
+    stockfish.postMessage("uci");
+    stockfish.postMessage("isready");
+
+    sfRef.current = stockfish;
+
+    return () => {
+      stockfish.removeEventListener("message", messageCB);
+      stockfish.postMessage("quit");
+    };
+  }, []);
 
   function makeMove(move: Move) {
     if (currentSideline) {
