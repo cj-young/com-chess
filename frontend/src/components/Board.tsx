@@ -168,19 +168,17 @@ export default function Board({
   }, []);
 
   return (
-    <div
-      className="board-container"
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-      onClick={() => {
-        if (boardRef.current) boardRef.current.focus();
-      }}
-    >
+    <div className="board-container">
       <div
         className="board"
         ref={boardRef}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        onClick={() => {
+          if (boardRef.current) boardRef.current.focus();
+        }}
       >
         <div className="squares">
           {Array(8)
