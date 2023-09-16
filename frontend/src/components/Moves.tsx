@@ -61,7 +61,12 @@ export default function Moves({
                       {moveGroup[0]}
                     </div>
                     {moveGroup.length > 1 && (
-                      <div className={`live-moves__move`}>...</div>
+                      <div
+                        className={`live-moves__move`}
+                        style={{ cursor: "default" }}
+                      >
+                        ...
+                      </div>
                     )}
                   </li>
                   {sidelines[i * 2].map((sideline, j) => (
@@ -74,7 +79,12 @@ export default function Moves({
                   ))}
                   {moveGroup.length > 1 && (
                     <li className="live-moves__move-group">
-                      <div className={`live-moves__move`}>...</div>
+                      <div
+                        className={`live-moves__move`}
+                        style={{ cursor: "default" }}
+                      >
+                        ...
+                      </div>
                       <div
                         className={`live-moves__move ${
                           i * 2 + 1 === moveIndex ? "highlighted" : ""
