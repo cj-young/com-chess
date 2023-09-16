@@ -32,6 +32,7 @@ type Line = {
   eval: number;
   moves: Move[];
   leadingMoves: Move[];
+  type: "mate" | "cp";
 };
 
 type PastGame =
@@ -140,10 +141,6 @@ export default function Analyze() {
   }, []);
 
   useEffect(() => {
-    console.log(topMoves);
-  }, [topMoves]);
-
-  useEffect(() => {
     if (!sfRef.current || !sfReady.current) return;
 
     const currentId = Date.now().toString();
@@ -203,11 +200,12 @@ export default function Analyze() {
     const firstMoveIndex = parts.indexOf("pv") + 1;
     const isWhiteTurn = leadingMoves.length % 2 === 0;
     return {
-      eval: (+parts[9] / 100) * (isWhiteTurn ? 1 : -1),
+      eval: +parts[9] * (isWhiteTurn ? 1 : -1),
       moves: parts
         .slice(firstMoveIndex, Math.min(firstMoveIndex + 10, parts.length - 2))
         .map(uciToMove),
       leadingMoves,
+      type: parts[8] === "mate" ? "mate" : "cp",
     };
   }
 

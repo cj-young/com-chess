@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import movesToAlgebraic from "../utils/movesToAlgebraic";
 import "../styles/TopLines.scss";
+import getEval from "../utils/getEval";
 
 type Move = {
   from: string;
@@ -12,6 +13,7 @@ type Line = {
   eval: number;
   moves: Move[];
   leadingMoves: Move[];
+  type: "mate" | "cp";
 };
 
 type Props = {
@@ -24,7 +26,7 @@ export default function TopLines({ lines, moveIndex }: Props) {
   const blackStarts = useMemo(() => moveIndex % 2 === 0, [moveIndex]);
 
   const algebraicLines = useMemo(() => {
-    const res: { eval: number; moves: string[][] }[] = [];
+    const res = [];
 
     for (let line of lines) {
       const subRes: string[][] = [];
@@ -40,7 +42,7 @@ export default function TopLines({ lines, moveIndex }: Props) {
         }
       }
 
-      res.push({ eval: line.eval, moves: subRes });
+      res.push({ ...line, algMoves: subRes });
     }
 
     return res;
@@ -57,10 +59,10 @@ export default function TopLines({ lines, moveIndex }: Props) {
                 line.eval < 0 ? "black-adv" : ""
               }`}
             >
-              {line.eval > 0 ? "+" + line.eval : line.eval}
+              {getEval(line).adv}
             </div>
             <ul className="top-lines__line__moves">
-              {line.moves.map((moveGroup, i) => (
+              {line.algMoves.map((moveGroup, i) => (
                 <li className="top-lines__line__move-group">
                   <div className="top-lines__line__move-counter">
                     {i === 0 && blackStarts
