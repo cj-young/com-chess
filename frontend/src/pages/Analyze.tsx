@@ -304,6 +304,13 @@ export default function Analyze() {
           setOrientation={setOrientation}
           prevMove={() => {
             if (moveIndex >= 0) {
+              if (
+                currentSideline &&
+                sidelines[currentSideline[0]][currentSideline[1]].startsAt >=
+                  moveIndex
+              ) {
+                setCurrentSideline(null);
+              }
               setMoveIndex((prevMoveIndex) => prevMoveIndex - 1);
             }
           }}
