@@ -19,6 +19,10 @@ type Props = {
   moves: Move[];
   isCurrent: boolean;
   moveIndex: number;
+  setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
+  setCurrentSideline: React.Dispatch<
+    React.SetStateAction<[number, number] | null>
+  >;
 };
 
 export default function Sideline({
@@ -27,6 +31,8 @@ export default function Sideline({
   moves,
   isCurrent,
   moveIndex,
+  setMoveIndex,
+  setCurrentSideline,
 }: Props) {
   const blackStarts = sideline.startsAt % 2 !== 0;
 
@@ -62,6 +68,10 @@ export default function Sideline({
                   ? "highlighted"
                   : ""
               }`}
+              onClick={() => {
+                setCurrentSideline([sideline.startsAt, index]);
+                setMoveIndex(sideline.startsAt + i * 2);
+              }}
             >
               {moveGroup[0]}
             </div>
@@ -72,6 +82,10 @@ export default function Sideline({
                     ? "highlighted"
                     : ""
                 }`}
+                onClick={() => {
+                  setCurrentSideline([sideline.startsAt, index]);
+                  setMoveIndex(sideline.startsAt + i * 2 + 1);
+                }}
               >
                 {moveGroup[1]}
               </div>

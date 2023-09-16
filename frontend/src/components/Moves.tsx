@@ -20,6 +20,9 @@ type Props = {
   setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
   sidelines?: { [key: number]: Sideline[] };
   currentSideline?: [number, number] | null;
+  setCurrentSideline?: React.Dispatch<
+    React.SetStateAction<[number, number] | null>
+  >;
 };
 
 export default function Moves({
@@ -28,6 +31,7 @@ export default function Moves({
   setMoveIndex,
   sidelines,
   currentSideline,
+  setCurrentSideline,
 }: Props) {
   const algebraicMoves = useMemo(() => {
     const res: string[][] = [];
@@ -49,7 +53,7 @@ export default function Moves({
         <ul>
           {algebraicMoves.map((moveGroup, i) => (
             <React.Fragment key={i}>
-              {sidelines && sidelines[i * 2] ? (
+              {sidelines && setCurrentSideline && sidelines[i * 2] ? (
                 <>
                   <li className="live-moves__move-group">
                     <div
@@ -83,6 +87,8 @@ export default function Moves({
                         currentSideline[0] === i * 2 &&
                         currentSideline[1] === j
                       }
+                      setCurrentSideline={setCurrentSideline}
+                      setMoveIndex={setMoveIndex}
                     />
                   ))}
                   {moveGroup.length > 1 && (
@@ -133,6 +139,7 @@ export default function Moves({
                 </li>
               )}
               {sidelines &&
+                setCurrentSideline &&
                 sidelines[i * 2 + 1] &&
                 sidelines[i * 2 + 1].map((sideline, j) => (
                   <Sideline
@@ -146,6 +153,8 @@ export default function Moves({
                       currentSideline[0] === i * 2 + 1 &&
                       currentSideline[1] === j
                     }
+                    setCurrentSideline={setCurrentSideline}
+                    setMoveIndex={setMoveIndex}
                   />
                 ))}
             </React.Fragment>

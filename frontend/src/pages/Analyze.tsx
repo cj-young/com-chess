@@ -1,10 +1,4 @@
-import {
-  useState,
-  useCallback,
-  useMemo,
-  useLayoutEffect,
-  useEffect,
-} from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import Piece from "../utils/Piece";
@@ -424,6 +418,7 @@ export default function Analyze() {
               setMoveIndex={setMoveIndex}
               sidelines={sidelines}
               currentSideline={currentSideline}
+              setCurrentSideline={setCurrentSideline}
             />
           </div>
         </>
