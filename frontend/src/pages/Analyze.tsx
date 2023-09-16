@@ -55,30 +55,7 @@ export default function Analyze() {
   const [moveIndex, setMoveIndex] = useState(-1);
   const [orientation, setOrientation] = useState<"white" | "black">("white");
   const [pastGames, setPastGames] = useState<PastGame[]>([]);
-  const [sidelines, setSidelines] = useState<{ [key: number]: Sideline[] }>({
-    1: [
-      {
-        startsAt: 1,
-        moves: [
-          { from: "e7", to: "e5" },
-          { from: "a2", to: "a3" },
-        ],
-      },
-      {
-        startsAt: 1,
-        moves: [
-          { from: "e7", to: "e6" },
-          { from: "a2", to: "a3" },
-        ],
-      },
-    ],
-    4: [
-      {
-        startsAt: 4,
-        moves: [{ from: "a2", to: "a3" }],
-      },
-    ],
-  });
+  const [sidelines, setSidelines] = useState<{ [key: number]: Sideline[] }>({});
   const [currentSideline, setCurrentSideline] = useState<
     [number, number] | null
   >(null);
@@ -89,36 +66,46 @@ export default function Analyze() {
 
   const isPastGame = gameId !== undefined;
 
+  const modifiedMoves = useMemo(() => {
+    if (!currentSideline) return moves;
+    const currentSidelineArr =
+      sidelines[currentSideline[0]][currentSideline[1]];
+    return [
+      ...moves.slice(0, currentSidelineArr.startsAt),
+      ...currentSidelineArr.moves,
+    ];
+  }, [moves, sidelines, currentSideline]);
+
   const pieces = useMemo(() => {
     return applyMoves(
       generateStartingPosition(),
-      moves.slice(0, moveIndex + 1)
+      modifiedMoves.slice(0, moveIndex + 1)
     );
   }, [moves, moveIndex]);
 
   const turn = useMemo(() => {
-    return moves.length % 2 === 0 ? "white" : "black";
-  }, [moves]);
+    return moveIndex % 2 === 0 ? "black" : "white";
+  }, [moveIndex]);
 
   const { user } = useAuthContext();
 
   const canDragCB = useCallback(
     (piece: Piece) => {
-      return turn === piece.color && moveIndex === moves.length - 1;
+      return turn === piece.color;
     },
-    [moveIndex, moves, turn]
+    [turn]
   );
 
   useLayoutEffect(() => {
-    setMoveIndex(moves.length - 1);
-  }, [moves]);
+    setMoveIndex(modifiedMoves.length - 1);
+  }, [modifiedMoves]);
 
   function makeMove(move: Move) {
     if (currentSideline) {
       setSidelines((prevSidelines) => {
         const prevPieces = applyMoves(
           generateStartingPosition(),
-          prevSidelines[currentSideline[0]][currentSideline[1]].moves
+          modifiedMoves
         );
 
         // Verify legality
@@ -129,7 +116,7 @@ export default function Analyze() {
         const verifiedLegalMoves = generateLegalMoves(
           prevPieces,
           movedPiece,
-          moves
+          modifiedMoves
         );
 
         let moveFound;
@@ -158,30 +145,79 @@ export default function Analyze() {
         };
       });
     } else {
-      setMoves((prevMoves) => {
-        const prevPieces = applyMoves(generateStartingPosition(), prevMoves);
+      if (moveIndex === moves.length - 1) {
+        setMoves((prevMoves) => {
+          const prevPieces = applyMoves(generateStartingPosition(), prevMoves);
 
-        // Verify legality
-        const movedPiece = pieces.filter(
-          (p) => p.square === move.from && p.active
-        )[0];
-        if (!movedPiece) return prevMoves;
-        const verifiedLegalMoves = generateLegalMoves(
-          prevPieces,
-          movedPiece,
-          moves
-        );
+          // Verify legality
+          const movedPiece = pieces.filter(
+            (p) => p.square === move.from && p.active
+          )[0];
+          if (!movedPiece) return prevMoves;
+          const verifiedLegalMoves = generateLegalMoves(
+            prevPieces,
+            movedPiece,
+            modifiedMoves
+          );
 
-        let moveFound;
-        for (let legalMove of verifiedLegalMoves) {
-          if (legalMove === move.to) {
-            moveFound = true;
+          let moveFound;
+          for (let legalMove of verifiedLegalMoves) {
+            if (legalMove === move.to) {
+              moveFound = true;
+            }
           }
-        }
-        if (!moveFound) return prevMoves;
+          if (!moveFound) return prevMoves;
 
-        return [...prevMoves, move];
-      });
+          return [...prevMoves, move];
+        });
+      } else {
+        setSidelines((prevSidelines) => {
+          const prevPieces = applyMoves(
+            generateStartingPosition(),
+            modifiedMoves.slice(0, moveIndex + 1)
+          );
+
+          // Verify legality
+          const movedPiece = pieces.filter(
+            (p) => p.square === move.from && p.active
+          )[0];
+          if (!movedPiece) return prevSidelines;
+          const verifiedLegalMoves = generateLegalMoves(
+            prevPieces,
+            movedPiece,
+            modifiedMoves.slice(0, moveIndex + 1)
+          );
+
+          let moveFound;
+          for (let legalMove of verifiedLegalMoves) {
+            if (legalMove === move.to) {
+              moveFound = true;
+            }
+          }
+          if (!moveFound) return prevSidelines;
+
+          const updatedSideline = {
+            startsAt: moveIndex + 1,
+            moves: [move],
+          };
+
+          setCurrentSideline([
+            moveIndex + 1,
+            prevSidelines[moveIndex + 1]
+              ? prevSidelines[moveIndex + 1].length
+              : 0,
+          ]);
+          return {
+            ...prevSidelines,
+            [moveIndex + 1]: [
+              ...(prevSidelines[moveIndex + 1]
+                ? prevSidelines[moveIndex + 1]
+                : []),
+              updatedSideline,
+            ],
+          };
+        });
+      }
     }
   }
 
@@ -263,7 +299,7 @@ export default function Analyze() {
 
         <Board
           pieces={pieces}
-          moves={moves}
+          moves={modifiedMoves}
           orientation={orientation}
           setOrientation={setOrientation}
           prevMove={() => {
@@ -272,7 +308,7 @@ export default function Analyze() {
             }
           }}
           nextMove={() => {
-            if (moveIndex < moves.length - 1) {
+            if (moveIndex < modifiedMoves.length - 1) {
               setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
             }
           }}

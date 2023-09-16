@@ -52,11 +52,15 @@ export default function Board({
 
   const legalMoves = useMemo(() => {
     if (selectedPiece) {
-      return generateLegalMoves(pieces, selectedPiece, moves);
+      return generateLegalMoves(
+        pieces,
+        selectedPiece,
+        moves.slice(0, moveIndex + 1)
+      );
     } else {
       return [];
     }
-  }, [selectedPiece]);
+  }, [selectedPiece, pieces, moveIndex]);
 
   const isUpToDate = useMemo(() => {
     return moveIndex === moves.length - 1;
