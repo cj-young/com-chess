@@ -16,6 +16,10 @@
   border-radius: var(--br-primary);
   position: relative;
 
+  &:focus {
+    outline: none;
+  }
+
   @include game-screen {
     width: 100%;
   }
