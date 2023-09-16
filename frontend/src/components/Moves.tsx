@@ -72,9 +72,9 @@ export default function Moves({
                       key={j}
                     />
                   ))}
-                  <li className="live-moves__move-group">
-                    <div className={`live-moves__move`}>...</div>
-                    {moveGroup.length > 1 && (
+                  {moveGroup.length > 1 && (
+                    <li className="live-moves__move-group">
+                      <div className={`live-moves__move`}>...</div>
                       <div
                         className={`live-moves__move ${
                           i * 2 + 1 === moveIndex ? "highlighted" : ""
@@ -83,8 +83,8 @@ export default function Moves({
                       >
                         {moveGroup[1]}
                       </div>
-                    )}
-                  </li>
+                    </li>
+                  )}
                 </>
               ) : (
                 <li className="live-moves__move-group" key={i}>
