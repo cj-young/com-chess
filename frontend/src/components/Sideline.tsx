@@ -60,7 +60,9 @@ export default function Sideline({
         {pairedMoves.map((moveGroup, i) => (
           <li className="sideline__move-group" key={i}>
             <div className="sideline__move-counter">
-              {i === 0 && blackStarts ? `${i + 1}...` : `${i + 1}.`}
+              {i === 0 && blackStarts
+                ? `${i + 1 + Math.floor(sideline.startsAt / 2)}...`
+                : `${i + 1 + Math.floor(sideline.startsAt / 2)}.`}
             </div>
             <div
               className={`sideline__move ${
