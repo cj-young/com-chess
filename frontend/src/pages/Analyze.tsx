@@ -371,7 +371,7 @@ export default function Analyze() {
                   : "Black"
               }
               orientation={orientation}
-              color={orientation === "white" ? "black" : "white"}
+              color={orientation === "white" ? "white" : "black"}
             />
           </div>
           {!isPastGame && (
