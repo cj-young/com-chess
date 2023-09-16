@@ -11,22 +11,27 @@ type Move = {
 type Line = {
   eval: number;
   moves: Move[];
+  leadingMoves: Move[];
 };
 
 type Props = {
   lines: Line[];
   moveIndex: number;
+  moves: Move[];
 };
 
 export default function TopLines({ lines, moveIndex }: Props) {
-  const blackStarts = moveIndex % 2 === 0;
+  const blackStarts = useMemo(() => moveIndex % 2 === 0, [moveIndex]);
 
   const algebraicLines = useMemo(() => {
     const res: { eval: number; moves: string[][] }[] = [];
 
     for (let line of lines) {
       const subRes: string[][] = [];
-      const ungroupedMoves = movesToAlgebraic(line.moves);
+      const ungroupedMoves = movesToAlgebraic([
+        ...line.leadingMoves,
+        ...line.moves,
+      ]).slice(moveIndex + 1);
       for (let i = 0; i < ungroupedMoves.length; i++) {
         if (i % 2 === 0) {
           subRes.push([ungroupedMoves[i]]);
@@ -39,7 +44,7 @@ export default function TopLines({ lines, moveIndex }: Props) {
     }
 
     return res;
-  }, [lines]);
+  }, [lines, blackStarts]);
 
   return (
     <div className="top-lines">

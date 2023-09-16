@@ -1,4 +1,11 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  useRef,
+  useLayoutEffect,
+} from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import Piece from "../utils/Piece";
@@ -12,11 +19,19 @@ import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
 import "../styles/Analyze.scss";
 import Loading from "./Loading";
 import TopLines from "../components/TopLines";
+import uciToMove from "../utils/uciToMove";
+import moveToUCI from "../utils/moveToUCI";
 
 type Move = {
   from: string;
   to: string;
   promoteTo?: "knight" | "bishop" | "rook" | "queen";
+};
+
+type Line = {
+  eval: number;
+  moves: Move[];
+  leadingMoves: Move[];
 };
 
 type PastGame =
@@ -44,6 +59,8 @@ type Sideline = {
   moves: Move[];
 };
 
+const NUM_TOP_MOVES = 3;
+
 export default function Analyze() {
   const [isLoading, setIsLoading] = useState(true);
   const [moves, setMoves] = useState<Move[]>([]);
@@ -54,6 +71,10 @@ export default function Analyze() {
   const [currentSideline, setCurrentSideline] = useState<
     [number, number] | null
   >(null);
+  const [topMoves, setTopMoves] = useState<Line[]>([]);
+  // Buffer required to ensure all top moves are received before display
+  const [bufferMoves, setBufferMoves] = useState<Line[]>([]);
+  const isNewMoves = useRef(false);
 
   const sfRef = useRef<Worker>();
   const sfReady = useRef(false);
@@ -103,7 +124,6 @@ export default function Analyze() {
         console.log("stockfish ready");
         sfReady.current = true;
       }
-      console.log(response);
     };
 
     stockfish.addEventListener("message", messageCB);
@@ -119,7 +139,80 @@ export default function Analyze() {
     };
   }, []);
 
+  useEffect(() => {
+    console.log(topMoves);
+  }, [topMoves]);
+
+  useEffect(() => {
+    if (!sfRef.current || !sfReady.current) return;
+
+    const currentId = Date.now().toString();
+    const stockfish = sfRef.current;
+    stockfish.postMessage(
+      `position startpos move ${modifiedMoves
+        .slice(0, moveIndex + 1)
+        .map(moveToUCI)
+        .join(" ")} id ${currentId}`
+    );
+    stockfish.postMessage(`setoption name MultiPV value ${NUM_TOP_MOVES}`);
+    stockfish.postMessage("go depth 20");
+    isNewMoves.current = true;
+
+    const messageCB = (e: MessageEvent) => {
+      const response = e.data;
+      if (isNewMoves.current) {
+        if (response.split(" ")[2] !== "1") return;
+        else isNewMoves.current = false;
+      }
+      if (response.startsWith("info")) {
+        const line = infoToLine(
+          response,
+          modifiedMoves.slice(0, moveIndex + 1)
+        );
+        const lineRank = +response.split(" ")[6] - 1;
+
+        setBufferMoves((prevBufferMoves) => [
+          ...prevBufferMoves.slice(0, lineRank),
+          line,
+          ...prevBufferMoves.slice(lineRank + 1),
+        ]);
+      }
+    };
+
+    stockfish.addEventListener("message", messageCB);
+
+    return () => {
+      stockfish.postMessage("stop");
+      stockfish.removeEventListener("message", messageCB);
+    };
+  }, [modifiedMoves, sfRef.current, sfReady.current, moveIndex]);
+
+  useEffect(() => {
+    if (bufferMoves[0] && bufferMoves[1] && bufferMoves[2]) {
+      setTopMoves([...bufferMoves]);
+      setBufferMoves([]);
+    }
+  }, [bufferMoves]);
+
+  useLayoutEffect(() => {
+    setTopMoves([]);
+  }, [modifiedMoves]);
+
+  function infoToLine(info: string, leadingMoves: Move[]): Line {
+    const parts = info.split(" ");
+    const firstMoveIndex = parts.indexOf("pv") + 1;
+    const isWhiteTurn = leadingMoves.length % 2 === 0;
+    return {
+      eval: (+parts[9] / 100) * (isWhiteTurn ? 1 : -1),
+      moves: parts
+        .slice(firstMoveIndex, Math.min(firstMoveIndex + 10, parts.length - 2))
+        .map(uciToMove),
+      leadingMoves,
+    };
+  }
+
   function makeMove(move: Move) {
+    let willMove = false;
     if (currentSideline) {
       setSidelines((prevSidelines) => {
         const prevPieces = applyMoves(
@@ -131,7 +224,6 @@ export default function Analyze() {
         const movedPiece = pieces.filter(
           (p) => p.square === move.from && p.active
         )[0];
-        console.log("log 1");
         if (!movedPiece) return prevSidelines;
         const verifiedLegalMoves = generateLegalMoves(
           prevPieces,
@@ -145,7 +237,6 @@ export default function Analyze() {
             moveFound = true;
           }
         }
-        console.log("log 2");
         if (!moveFound) return prevSidelines;
 
         const movesIn =
@@ -162,9 +253,8 @@ export default function Analyze() {
           ],
         };
 
-        setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
+        willMove = true;
 
-        console.log("log 3");
         return {
           ...prevSidelines,
           [currentSideline[0]]: [
@@ -197,8 +287,7 @@ export default function Analyze() {
             }
           }
           if (!moveFound) return prevMoves;
-          setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
-
+          willMove = true;
           return [...prevMoves, move];
         });
       } else {
@@ -209,7 +298,7 @@ export default function Analyze() {
             move.promoteTo === modifiedMoves[moveIndex + 1].promoteTo
           ) {
             // Keep current line if move is the same as next current line move
-            setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
+            willMove = true;
             return prevSidelines;
           }
 
@@ -222,7 +311,7 @@ export default function Analyze() {
                 move.from === sideline.moves[0].from &&
                 move.promoteTo === sideline.moves[0].promoteTo
               ) {
-                setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
+                willMove = true;
                 setCurrentSideline([moveIndex + 1, i]);
                 return prevSidelines;
               }
@@ -265,8 +354,7 @@ export default function Analyze() {
               : 0,
           ]);
 
-          setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
-
+          willMove = true;
           return {
             ...prevSidelines,
             [moveIndex + 1]: [
@@ -279,6 +367,8 @@ export default function Analyze() {
         });
       }
     }
+
+    if (willMove) setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
   }
 
   useEffect(() => {
@@ -402,25 +492,9 @@ export default function Analyze() {
           </div>
           <div className="top-lines-container">
             <TopLines
-              lines={[
-                {
-                  moves: [
-                    { from: "e2", to: "e4" },
-                    { from: "e7", to: "e5" },
-                    { from: "g1", to: "f3" },
-                  ],
-                  eval: -1.23,
-                },
-                {
-                  moves: [
-                    { from: "e2", to: "e4" },
-                    { from: "e7", to: "e5" },
-                    { from: "g1", to: "f3" },
-                  ],
-                  eval: 1.23,
-                },
-              ]}
-              moveIndex={-1}
+              lines={topMoves}
+              moveIndex={moveIndex}
+              moves={modifiedMoves}
             />
           </div>
           {!isPastGame && (
