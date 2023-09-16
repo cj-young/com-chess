@@ -55,9 +55,13 @@
 
   &__move {
     cursor: pointer;
+    width: fit-content;
+    padding: 0.125rem 0.5rem;
   }
 
   &__move.highlighted {
     font-weight: bold;
+    background-color: var(--clr-neutral-600);
+    border-radius: var(--br-primary);
   }
 }

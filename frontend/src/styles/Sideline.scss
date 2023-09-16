@@ -15,10 +15,13 @@
 
   &__move {
     cursor: pointer;
+    padding: 0 0.25rem;
   }
 
   &__move.highlighted {
     font-weight: bold;
+    background-color: var(--clr-neutral-600);
+    border-radius: var(--br-primary);
   }
 
   &__move-counter {
