@@ -300,6 +300,24 @@ export default function Analyze() {
     })();
   }, []);
 
+  function nextMove() {
+    if (moveIndex < modifiedMoves.length - 1) {
+      setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
+    }
+  }
+
+  function prevMove() {
+    if (moveIndex >= 0) {
+      if (
+        currentSideline &&
+        sidelines[currentSideline[0]][currentSideline[1]].startsAt >= moveIndex
+      ) {
+        setCurrentSideline(null);
+      }
+      setMoveIndex((prevMoveIndex) => prevMoveIndex - 1);
+    }
+  }
+
   return isLoading ? (
     <Loading />
   ) : (
@@ -329,23 +347,8 @@ export default function Analyze() {
           moves={modifiedMoves}
           orientation={orientation}
           setOrientation={setOrientation}
-          prevMove={() => {
-            if (moveIndex >= 0) {
-              if (
-                currentSideline &&
-                sidelines[currentSideline[0]][currentSideline[1]].startsAt >=
-                  moveIndex
-              ) {
-                setCurrentSideline(null);
-              }
-              setMoveIndex((prevMoveIndex) => prevMoveIndex - 1);
-            }
-          }}
-          nextMove={() => {
-            if (moveIndex < modifiedMoves.length - 1) {
-              setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
-            }
-          }}
+          prevMove={prevMove}
+          nextMove={nextMove}
           moveIndex={moveIndex}
           showControls={true}
           showPieces={true}
