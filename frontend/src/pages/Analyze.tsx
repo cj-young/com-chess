@@ -96,10 +96,6 @@ export default function Analyze() {
     [turn]
   );
 
-  useLayoutEffect(() => {
-    setMoveIndex(modifiedMoves.length - 1);
-  }, [modifiedMoves]);
-
   function makeMove(move: Move) {
     if (currentSideline) {
       setSidelines((prevSidelines) => {
@@ -135,6 +131,8 @@ export default function Analyze() {
           ],
         };
 
+        setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
+
         return {
           ...prevSidelines,
           [currentSideline[0]]: [
@@ -167,11 +165,38 @@ export default function Analyze() {
             }
           }
           if (!moveFound) return prevMoves;
+          setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
 
           return [...prevMoves, move];
         });
       } else {
         setSidelines((prevSidelines) => {
+          if (
+            move.to === modifiedMoves[moveIndex + 1].to &&
+            move.from === modifiedMoves[moveIndex + 1].from &&
+            move.promoteTo === modifiedMoves[moveIndex + 1].promoteTo
+          ) {
+            // Keep current line if move is the same as next current line move
+            setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
+            return prevSidelines;
+          }
+
+          // Go to sideline if already exists
+          if (sidelines[moveIndex + 1]) {
+            for (let i = 0; i < sidelines[moveIndex + 1].length; i++) {
+              const sideline = sidelines[moveIndex + 1][i];
+              if (
+                move.to === sideline.moves[0].to &&
+                move.from === sideline.moves[0].from &&
+                move.promoteTo === sideline.moves[0].promoteTo
+              ) {
+                setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
+                setCurrentSideline([moveIndex + 1, i]);
+                return prevSidelines;
+              }
+            }
+          }
+
           const prevPieces = applyMoves(
             generateStartingPosition(),
             modifiedMoves.slice(0, moveIndex + 1)
@@ -207,6 +232,9 @@ export default function Analyze() {
               ? prevSidelines[moveIndex + 1].length
               : 0,
           ]);
+
+          setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
+
           return {
             ...prevSidelines,
             [moveIndex + 1]: [
@@ -272,6 +300,11 @@ export default function Analyze() {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    console.log("modifiedMoves", modifiedMoves);
+    console.log("moveIndex", moveIndex);
+  }, [modifiedMoves, moveIndex]);
 
   return isLoading ? (
     <Loading />
