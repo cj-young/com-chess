@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import "../styles/Board.scss";
 import flipIcon from "../assets/repeat-solid.svg";
 import leftIcon from "../assets/angle-left-solid.svg";
@@ -155,8 +155,27 @@ export default function Board({
     );
   }
 
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "ArrowRight") {
+      nextMove();
+    } else if (e.key === "ArrowLeft") {
+      prevMove();
+    }
+  }
+
+  useEffect(() => {
+    if (boardRef.current) boardRef.current.focus();
+  }, []);
+
   return (
-    <div className="board-container">
+    <div
+      className="board-container"
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      onClick={() => {
+        if (boardRef.current) boardRef.current.focus();
+      }}
+    >
       <div
         className="board"
         ref={boardRef}
