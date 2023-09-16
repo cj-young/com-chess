@@ -123,10 +123,16 @@ export default function Analyze() {
         }
         if (!moveFound) return prevSidelines;
 
+        const movesIn =
+          moveIndex -
+          prevSidelines[currentSideline[0]][currentSideline[1]].startsAt;
+
         const updatedSideline = {
           startsAt: currentSideline[0],
           moves: [
-            ...prevSidelines[currentSideline[0]][currentSideline[1]].moves,
+            ...prevSidelines[currentSideline[0]][
+              currentSideline[1]
+            ].moves.slice(0, movesIn + 1),
             move,
           ],
         };
