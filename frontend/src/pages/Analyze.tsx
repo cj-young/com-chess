@@ -102,11 +102,12 @@ export default function Analyze() {
         const movedPiece = pieces.filter(
           (p) => p.square === move.from && p.active
         )[0];
+        console.log("log 1");
         if (!movedPiece) return prevSidelines;
         const verifiedLegalMoves = generateLegalMoves(
           prevPieces,
           movedPiece,
-          modifiedMoves
+          modifiedMoves.slice(0, moveIndex + 1)
         );
 
         let moveFound;
@@ -115,6 +116,7 @@ export default function Analyze() {
             moveFound = true;
           }
         }
+        console.log("log 2");
         if (!moveFound) return prevSidelines;
 
         const movesIn =
@@ -133,6 +135,7 @@ export default function Analyze() {
 
         setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
 
+        console.log("log 3");
         return {
           ...prevSidelines,
           [currentSideline[0]]: [
