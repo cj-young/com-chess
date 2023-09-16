@@ -11,6 +11,7 @@ import Moves from "../components/Moves";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
 import "../styles/Analyze.scss";
 import Loading from "./Loading";
+import TopLines from "../components/TopLines";
 
 type Move = {
   from: string;
@@ -397,6 +398,29 @@ export default function Analyze() {
               }
               orientation={orientation}
               color={orientation === "white" ? "white" : "black"}
+            />
+          </div>
+          <div className="top-lines-container">
+            <TopLines
+              lines={[
+                {
+                  moves: [
+                    { from: "e2", to: "e4" },
+                    { from: "e7", to: "e5" },
+                    { from: "g1", to: "f3" },
+                  ],
+                  eval: -1.23,
+                },
+                {
+                  moves: [
+                    { from: "e2", to: "e4" },
+                    { from: "e7", to: "e5" },
+                    { from: "g1", to: "f3" },
+                  ],
+                  eval: 1.23,
+                },
+              ]}
+              moveIndex={-1}
             />
           </div>
           {!isPastGame && (
