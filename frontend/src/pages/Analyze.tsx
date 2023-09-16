@@ -250,10 +250,6 @@ export default function Analyze() {
   }
 
   useEffect(() => {
-    console.log(sidelines);
-  }, [sidelines]);
-
-  useEffect(() => {
     (async () => {
       try {
         if (isPastGame) {
@@ -300,11 +296,6 @@ export default function Analyze() {
       }
     })();
   }, []);
-
-  useEffect(() => {
-    console.log("modifiedMoves", modifiedMoves);
-    console.log("moveIndex", moveIndex);
-  }, [modifiedMoves, moveIndex]);
 
   return isLoading ? (
     <Loading />

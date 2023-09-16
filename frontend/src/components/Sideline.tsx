@@ -17,9 +17,17 @@ type Props = {
   sideline: Sideline;
   index: number;
   moves: Move[];
+  isCurrent: boolean;
+  moveIndex: number;
 };
 
-export default function Sideline({ sideline, index, moves }: Props) {
+export default function Sideline({
+  sideline,
+  index,
+  moves,
+  isCurrent,
+  moveIndex,
+}: Props) {
   const blackStarts = sideline.startsAt % 2 !== 0;
 
   const pairedMoves = useMemo(() => {
@@ -39,6 +47,7 @@ export default function Sideline({ sideline, index, moves }: Props) {
 
     return res;
   }, [moves, sideline]);
+
   return (
     <li className="sideline">
       <ul>
@@ -47,9 +56,25 @@ export default function Sideline({ sideline, index, moves }: Props) {
             <div className="sideline__move-counter">
               {i === 0 && blackStarts ? `${i + 1}...` : `${i + 1}.`}
             </div>
-            <div className={`sideline__move`}>{moveGroup[0]}</div>
+            <div
+              className={`sideline__move ${
+                isCurrent && moveIndex === sideline.startsAt + i * 2
+                  ? "highlighted"
+                  : ""
+              }`}
+            >
+              {moveGroup[0]}
+            </div>
             {moveGroup.length > 1 && (
-              <div className={`sideline__move`}>{moveGroup[1]}</div>
+              <div
+                className={`sideline__move ${
+                  isCurrent && moveIndex === sideline.startsAt + i * 2 + 1
+                    ? "highlighted"
+                    : ""
+                }`}
+              >
+                {moveGroup[1]}
+              </div>
             )}
           </li>
         ))}

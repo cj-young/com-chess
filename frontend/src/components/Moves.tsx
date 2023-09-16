@@ -54,7 +54,9 @@ export default function Moves({
                   <li className="live-moves__move-group">
                     <div
                       className={`live-moves__move ${
-                        i * 2 === moveIndex ? "highlighted" : ""
+                        !currentSideline && i * 2 === moveIndex
+                          ? "highlighted"
+                          : ""
                       }`}
                       onClick={() => setMoveIndex(i * 2)}
                     >
@@ -75,6 +77,12 @@ export default function Moves({
                       index={j}
                       moves={moves}
                       key={j}
+                      moveIndex={moveIndex}
+                      isCurrent={
+                        !!currentSideline &&
+                        currentSideline[0] === i * 2 &&
+                        currentSideline[1] === j
+                      }
                     />
                   ))}
                   {moveGroup.length > 1 && (
@@ -87,7 +95,9 @@ export default function Moves({
                       </div>
                       <div
                         className={`live-moves__move ${
-                          i * 2 + 1 === moveIndex ? "highlighted" : ""
+                          !currentSideline && i * 2 + 1 === moveIndex
+                            ? "highlighted"
+                            : ""
                         }`}
                         onClick={() => setMoveIndex(i * 2 + 1)}
                       >
@@ -100,7 +110,9 @@ export default function Moves({
                 <li className="live-moves__move-group" key={i}>
                   <div
                     className={`live-moves__move ${
-                      i * 2 === moveIndex ? "highlighted" : ""
+                      !currentSideline && i * 2 === moveIndex
+                        ? "highlighted"
+                        : ""
                     }`}
                     onClick={() => setMoveIndex(i * 2)}
                   >
@@ -109,7 +121,9 @@ export default function Moves({
                   {moveGroup.length > 1 && (
                     <div
                       className={`live-moves__move ${
-                        i * 2 + 1 === moveIndex ? "highlighted" : ""
+                        !currentSideline && i * 2 + 1 === moveIndex
+                          ? "highlighted"
+                          : ""
                       }`}
                       onClick={() => setMoveIndex(i * 2 + 1)}
                     >
@@ -126,6 +140,12 @@ export default function Moves({
                     index={j}
                     moves={moves}
                     key={j}
+                    moveIndex={moveIndex}
+                    isCurrent={
+                      !!currentSideline &&
+                      currentSideline[0] === i * 2 + 1 &&
+                      currentSideline[1] === j
+                    }
                   />
                 ))}
             </React.Fragment>
