@@ -55,7 +55,10 @@ export default function Moves({
             <React.Fragment key={i}>
               {sidelines && setCurrentSideline && sidelines[i * 2] ? (
                 <>
-                  <li className="live-moves__move-group">
+                  <li
+                    className="live-moves__move-group"
+                    data-move-number={i + 1}
+                  >
                     <div
                       className={`live-moves__move ${
                         !currentSideline && i * 2 === moveIndex
@@ -92,7 +95,10 @@ export default function Moves({
                     />
                   ))}
                   {moveGroup.length > 1 && (
-                    <li className="live-moves__move-group">
+                    <li
+                      className="live-moves__move-group"
+                      data-move-number={i + 1}
+                    >
                       <div
                         className={`live-moves__move`}
                         style={{ cursor: "default" }}
@@ -113,7 +119,11 @@ export default function Moves({
                   )}
                 </>
               ) : (
-                <li className="live-moves__move-group" key={i}>
+                <li
+                  className="live-moves__move-group"
+                  data-move-number={i + 1}
+                  key={i}
+                >
                   <div
                     className={`live-moves__move ${
                       !currentSideline && i * 2 === moveIndex
