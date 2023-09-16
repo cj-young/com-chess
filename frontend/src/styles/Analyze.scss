@@ -17,7 +17,7 @@
         "moves eval board blank"
         "moves eval board blank";
       grid-template-columns: 1fr 2rem min(100%, 30rem, 75vh) 1fr;
-      grid-template-rows: min-content min-content 1fr 50%;
+      grid-template-rows: min-content min-content 1fr 40%;
       overflow-y: hidden;
     }
 
@@ -26,8 +26,8 @@
         grid-template-areas:
           "moves eval board topinfo"
           "moves eval board bottominfo"
-          "moves eval board games"
-          "moves eval board games";
+          "moves eval board blank"
+          "games eval board blank";
       }
     }
   }
@@ -67,6 +67,7 @@
 .past-games-container {
   grid-area: games;
   padding: 1rem;
+  padding-top: 0;
   height: 20rem;
   margin-top: 2rem;
 
