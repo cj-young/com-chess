@@ -75,7 +75,7 @@ export default function Analyze() {
       generateStartingPosition(),
       modifiedMoves.slice(0, moveIndex + 1)
     );
-  }, [moves, moveIndex]);
+  }, [modifiedMoves, moveIndex]);
 
   const turn = useMemo(() => {
     return moveIndex % 2 === 0 ? "black" : "white";
