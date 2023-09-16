@@ -64,13 +64,17 @@ export default function Sideline({
             </div>
             <div
               className={`sideline__move ${
-                isCurrent && moveIndex === sideline.startsAt + i * 2
+                isCurrent &&
+                moveIndex ===
+                  sideline.startsAt + i * 2 + (blackStarts && i > 0 ? -1 : 0)
                   ? "highlighted"
                   : ""
               }`}
               onClick={() => {
                 setCurrentSideline([sideline.startsAt, index]);
-                setMoveIndex(sideline.startsAt + i * 2);
+                setMoveIndex(
+                  sideline.startsAt + i * 2 + (blackStarts && i > 0 ? -1 : 0)
+                );
               }}
             >
               {moveGroup[0]}
@@ -78,13 +82,23 @@ export default function Sideline({
             {moveGroup.length > 1 && (
               <div
                 className={`sideline__move ${
-                  isCurrent && moveIndex === sideline.startsAt + i * 2 + 1
+                  isCurrent &&
+                  moveIndex ===
+                    sideline.startsAt +
+                      i * 2 +
+                      1 +
+                      (blackStarts && i > 0 ? -1 : 0)
                     ? "highlighted"
                     : ""
                 }`}
                 onClick={() => {
                   setCurrentSideline([sideline.startsAt, index]);
-                  setMoveIndex(sideline.startsAt + i * 2 + 1);
+                  setMoveIndex(
+                    sideline.startsAt +
+                      i * 2 +
+                      1 +
+                      (blackStarts && i > 0 ? -1 : 0)
+                  );
                 }}
               >
                 {moveGroup[1]}

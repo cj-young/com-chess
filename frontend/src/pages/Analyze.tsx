@@ -95,7 +95,7 @@ export default function Analyze() {
       setSidelines((prevSidelines) => {
         const prevPieces = applyMoves(
           generateStartingPosition(),
-          modifiedMoves
+          modifiedMoves.slice(0, moveIndex + 1)
         );
 
         // Verify legality
