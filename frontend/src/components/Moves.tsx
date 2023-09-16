@@ -65,7 +65,10 @@ export default function Moves({
                           ? "highlighted"
                           : ""
                       }`}
-                      onClick={() => setMoveIndex(i * 2)}
+                      onClick={() => {
+                        setMoveIndex(i * 2);
+                        if (setCurrentSideline) setCurrentSideline(null);
+                      }}
                     >
                       {moveGroup[0]}
                     </div>
@@ -111,7 +114,10 @@ export default function Moves({
                             ? "highlighted"
                             : ""
                         }`}
-                        onClick={() => setMoveIndex(i * 2 + 1)}
+                        onClick={() => {
+                          setMoveIndex(i * 2 + 1);
+                          if (setCurrentSideline) setCurrentSideline(null);
+                        }}
                       >
                         {moveGroup[1]}
                       </div>
@@ -130,7 +136,10 @@ export default function Moves({
                         ? "highlighted"
                         : ""
                     }`}
-                    onClick={() => setMoveIndex(i * 2)}
+                    onClick={() => {
+                      setMoveIndex(i * 2);
+                      if (setCurrentSideline) setCurrentSideline(null);
+                    }}
                   >
                     {moveGroup[0]}
                   </div>
@@ -141,7 +150,10 @@ export default function Moves({
                           ? "highlighted"
                           : ""
                       }`}
-                      onClick={() => setMoveIndex(i * 2 + 1)}
+                      onClick={() => {
+                        setMoveIndex(i * 2 + 1);
+                        if (setCurrentSideline) setCurrentSideline(null);
+                      }}
                     >
                       {moveGroup[1]}
                     </div>
