@@ -103,9 +103,10 @@ router.get("/:gameId", async (req, res, next) => {
       if (!game) {
         return res.status(404).json({ message: "Game not found" });
       }
+      const gameUser = await User.findById(game.user);
 
       return res.json({
-        user: game.user,
+        user: gameUser.username,
         moves: game.moves,
         color: game.color,
         winner: game.winner,
