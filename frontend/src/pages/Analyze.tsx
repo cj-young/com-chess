@@ -77,9 +77,9 @@ export default function Analyze() {
   // Buffer required to ensure all top moves are received before display
   const [bufferMoves, setBufferMoves] = useState<Line[]>([]);
   const isNewMoves = useRef(false);
+  const [sfReady, setSfReady] = useState(false);
 
   const sfRef = useRef<Worker>();
-  const sfReady = useRef(false);
 
   const posEval = useMemo(() => {
     return topMoves.length > 0
@@ -137,7 +137,7 @@ export default function Analyze() {
       const response = e.data;
       if (response === "readyok") {
         console.log("stockfish ready");
-        sfReady.current = true;
+        setSfReady(true);
       }
     };
 
@@ -155,7 +155,8 @@ export default function Analyze() {
   }, []);
 
   useEffect(() => {
-    if (!sfRef.current || !sfReady.current) return;
+    console.log(sfRef.current, sfReady);
+    if (!sfRef.current || !sfReady) return;
 
     const currentId = Date.now().toString();
     const stockfish = sfRef.current;
@@ -196,7 +197,7 @@ export default function Analyze() {
       stockfish.postMessage("stop");
       stockfish.removeEventListener("message", messageCB);
     };
-  }, [modifiedMoves, sfRef.current, sfReady.current, moveIndex]);
+  }, [modifiedMoves, sfRef.current, sfReady, moveIndex]);
 
   useEffect(() => {
     if (bufferMoves[0] && bufferMoves[1] && bufferMoves[2]) {
