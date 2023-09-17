@@ -198,16 +198,18 @@ export default function Analyze() {
         .join(" ")} id ${currentId}`
     );
     stockfish.postMessage(`setoption name MultiPV value ${NUM_TOP_MOVES}`);
-    stockfish.postMessage("go depth 20");
+    stockfish.postMessage("go depth 18");
     isNewMoves.current = true;
 
     const messageCB = (e: MessageEvent) => {
       const response = e.data;
+      const depth = +response.split(" ")[2];
       if (isNewMoves.current) {
-        if (response.split(" ")[2] !== "1") return;
+        if (depth !== 1) return;
         else isNewMoves.current = false;
       }
       if (response.startsWith("info")) {
+        if (depth < 4) return;
         const line = infoToLine(
           response,
           modifiedMoves.slice(0, moveIndex + 1)
