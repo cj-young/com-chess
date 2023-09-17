@@ -87,6 +87,9 @@ export default function Analyze() {
   });
   const [willMove, setWillMove] = useState(false);
 
+  const bufferMovesRef = useRef<Line[]>();
+  bufferMovesRef.current = bufferMoves;
+
   const sfRef = useRef<Worker>();
 
   useEffect(() => {
@@ -203,18 +206,24 @@ export default function Analyze() {
 
     const messageCB = (e: MessageEvent) => {
       const response = e.data;
-      const depth = +response.split(" ")[2];
-      if (isNewMoves.current) {
-        if (depth !== 1) return;
-        else isNewMoves.current = false;
-      }
       if (response.startsWith("info")) {
+        console.log(response);
+        const depth = +response.split(" ")[2];
+        if (isNewMoves.current) {
+          if (depth !== 1) {
+            return;
+          } else isNewMoves.current = false;
+        }
         if (depth < 4) return;
         const line = infoToLine(
           response,
           modifiedMoves.slice(0, moveIndex + 1)
         );
         const lineRank = +response.split(" ")[6] - 1;
+
+        if (lineRank === 1 && bufferMovesRef.current) {
+          setTopMoves([...bufferMovesRef.current]);
+        }
 
         setBufferMoves((prevBufferMoves) => [
           ...prevBufferMoves.slice(0, lineRank),
@@ -232,12 +241,12 @@ export default function Analyze() {
     };
   }, [modifiedMoves, sfRef.current, sfReady, moveIndex]);
 
-  useEffect(() => {
-    if (bufferMoves[0] && bufferMoves[1] && bufferMoves[2]) {
-      setTopMoves([...bufferMoves]);
-      setBufferMoves([]);
-    }
-  }, [bufferMoves]);
+  // useEffect(() => {
+  //   if (bufferMoves[0] && bufferMoves[1] && bufferMoves[2]) {
+  //     setTopMoves([...bufferMoves]);
+  //     setBufferMoves([]);
+  //   }
+  // }, [bufferMoves]);
 
   useLayoutEffect(() => {
     setTopMoves([]);
