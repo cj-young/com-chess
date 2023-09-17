@@ -85,15 +85,9 @@ export default function Analyze() {
     adv: "+0.00",
     isWinning: "white",
   });
+  const [willMove, setWillMove] = useState(false);
 
   const sfRef = useRef<Worker>();
-
-  // const posEval: { adv: string; isWinning: string } = useMemo(() => {
-  //   if (didMate) return { adv: "#", isWinning: didMate };
-  //   return topMoves.length > 0
-  //     ? getEval(topMoves[0])
-  //     : { adv: posEval.adv || "+0.00", isWinning: posEval.adv || "white" };
-  // }, [topMoves, didMate]);
 
   useEffect(() => {
     if (didMate) {
@@ -102,6 +96,13 @@ export default function Analyze() {
       setPosEval(getEval(topMoves[0]));
     }
   }, [topMoves, didMate]);
+
+  useLayoutEffect(() => {
+    if (willMove) {
+      setMoveIndex(modifiedMoves.length - 1);
+      setWillMove(false);
+    }
+  }, [willMove]);
 
   const bestMoveArrow: { to: string; from: string } | null = useMemo(() => {
     if (topMoves.length === 0) return null;
@@ -169,10 +170,6 @@ export default function Analyze() {
       stockfish.postMessage("quit");
     };
   }, []);
-
-  useEffect(() => {
-    console.log(posEval);
-  }, [posEval]);
 
   useEffect(() => {
     if (!sfRef.current || !sfReady) return;
@@ -257,7 +254,6 @@ export default function Analyze() {
   }
 
   function makeMove(move: Move) {
-    let willMove = false;
     if (currentSideline) {
       setSidelines((prevSidelines) => {
         const prevPieces = applyMoves(
@@ -298,7 +294,7 @@ export default function Analyze() {
           ],
         };
 
-        willMove = true;
+        setWillMove(true);
 
         return {
           ...prevSidelines,
@@ -332,7 +328,9 @@ export default function Analyze() {
             }
           }
           if (!moveFound) return prevMoves;
-          willMove = true;
+          setWillMove(true);
+
+          console.log("test is now true");
           return [...prevMoves, move];
         });
       } else {
@@ -343,7 +341,8 @@ export default function Analyze() {
             move.promoteTo === modifiedMoves[moveIndex + 1].promoteTo
           ) {
             // Keep current line if move is the same as next current line move
-            willMove = true;
+            setWillMove(true);
+
             return prevSidelines;
           }
 
@@ -356,7 +355,8 @@ export default function Analyze() {
                 move.from === sideline.moves[0].from &&
                 move.promoteTo === sideline.moves[0].promoteTo
               ) {
-                willMove = true;
+                setWillMove(true);
+
                 setCurrentSideline([moveIndex + 1, i]);
                 return prevSidelines;
               }
@@ -399,7 +399,8 @@ export default function Analyze() {
               : 0,
           ]);
 
-          willMove = true;
+          setWillMove(true);
+
           return {
             ...prevSidelines,
             [moveIndex + 1]: [
@@ -412,8 +413,6 @@ export default function Analyze() {
         });
       }
     }
-
-    if (willMove) setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
   }
 
   useEffect(() => {
