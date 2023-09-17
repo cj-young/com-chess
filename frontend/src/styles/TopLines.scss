@@ -12,7 +12,7 @@
   &__line {
     display: grid;
     grid-template-columns: 7ch 1fr;
-    gap: 0.75rem;
+    column-gap: 0.75rem;
 
     & + & {
       margin-top: 0.5rem;
@@ -39,7 +39,12 @@
       display: flex;
       list-style: none;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      --row-height: 1.25rem;
+      max-height: calc(var(--row-height) * 3);
+      overflow: hidden;
+      * {
+        height: var(--row-height);
+      }
     }
 
     &__move-group {
