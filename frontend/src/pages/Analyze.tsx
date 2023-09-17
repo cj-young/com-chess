@@ -488,7 +488,7 @@ export default function Analyze() {
         ? -50
         : 50
       : -100 / (1 + Math.E ** -(+posEval.adv / 5)) + 50;
-  }, [topMoves, posEval]);
+  }, [posEval]);
 
   return isLoading ? (
     <Loading />
