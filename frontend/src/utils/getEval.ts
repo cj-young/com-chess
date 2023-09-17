@@ -17,20 +17,18 @@ export default function getEval(line: Line): {
 } {
   let res: string;
   let isWinning: "black" | "white";
-  const turn = line.leadingMoves.length % 2 === 0 ? "white" : "black";
-  const notTurn = turn === "white" ? "black" : "white";
   if (line.type === "cp") {
     res = (line.eval / 100).toFixed(2);
     if (line.eval > 0) {
       res = "+" + res;
-      isWinning = turn;
+      isWinning = "white";
     } else {
       res = res.toString();
-      isWinning = notTurn;
+      isWinning = "black";
     }
   } else {
     res = "M" + Math.abs(line.eval);
-    isWinning = line.eval > 0 ? turn : notTurn;
+    isWinning = line.eval > 0 ? "white" : "black";
   }
 
   return { adv: res, isWinning };
