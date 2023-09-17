@@ -90,6 +90,9 @@ export default function Analyze({ setAnalyzeKey }: Props) {
     isWinning: "white",
   });
   const [willMove, setWillMove] = useState(false);
+  const [names, setNames] = useState<{ white: string; black: string } | null>(
+    null
+  );
 
   const bufferMovesRef = useRef<Line[]>();
   bufferMovesRef.current = bufferMoves;
@@ -215,7 +218,6 @@ export default function Analyze({ setAnalyzeKey }: Props) {
     const messageCB = (e: MessageEvent) => {
       const response = e.data;
       if (response.startsWith("info")) {
-        console.log(response);
         const depth = +response.split(" ")[2];
         if (isNewMoves.current) {
           if (depth !== 1) {
@@ -248,13 +250,6 @@ export default function Analyze({ setAnalyzeKey }: Props) {
       stockfish.removeEventListener("message", messageCB);
     };
   }, [modifiedMoves, sfRef.current, sfReady, moveIndex]);
-
-  // useEffect(() => {
-  //   if (bufferMoves[0] && bufferMoves[1] && bufferMoves[2]) {
-  //     setTopMoves([...bufferMoves]);
-  //     setBufferMoves([]);
-  //   }
-  // }, [bufferMoves]);
 
   useLayoutEffect(() => {
     setTopMoves([]);
@@ -440,6 +435,18 @@ export default function Analyze({ setAnalyzeKey }: Props) {
           setIsLoading(false);
           setMoves(data.moves);
           setMoveIndex(data.moves.length - 1);
+          if (data.type === "live") {
+            setNames({ white: data.whitePlayer, black: data.blackPlayer });
+          } else {
+            const botName =
+              data.difficulty[0].toUpperCase() +
+              data.difficulty.slice(1) +
+              " Bot";
+            setNames({
+              white: data.color === "white" ? data.user : botName,
+              black: data.color === "black" ? data.user : botName,
+            });
+          }
           console.log(data);
         } else {
           const response = await fetch(
@@ -534,8 +541,10 @@ export default function Analyze({ setAnalyzeKey }: Props) {
           <PlayerInfo
             pieces={pieces}
             username={
-              isPastGame
-                ? "Temp Top"
+              isPastGame && names
+                ? orientation === "white"
+                  ? names.black
+                  : names.white
                 : orientation === "white"
                 ? "Black"
                 : "White"
@@ -565,8 +574,8 @@ export default function Analyze({ setAnalyzeKey }: Props) {
             <PlayerInfo
               pieces={pieces}
               username={
-                isPastGame
-                  ? "Temp Bottom"
+                isPastGame && names
+                  ? names[orientation]
                   : orientation === "white"
                   ? "White"
                   : "Black"
