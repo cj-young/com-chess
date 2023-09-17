@@ -185,6 +185,8 @@ export default function Analyze() {
       }
     }
 
+    setTopMoves([]);
+    setBufferMoves([]);
     setDidMate(null);
 
     const currentId = Date.now().toString();
