@@ -19,6 +19,7 @@ import Analyze from "./pages/Analyze";
 export default function App() {
   const [initialLoading, setInitialLoading] = useState(true);
   const { user, getUser, setUser } = useAuthContext();
+  const [analyzeKey, setAnalyzeKey] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -44,8 +45,18 @@ export default function App() {
               <Route path="/play" element={<Play />} />
               <Route path="/play/live" element={<LiveGame />} />
               <Route path="/play/bot" element={<BotGame />} />
-              <Route path="/analyze/" element={<Analyze />} />
-              <Route path="/analyze/:gameId" element={<Analyze />} />
+              <Route
+                path="/analyze/"
+                element={
+                  <Analyze setAnalyzeKey={setAnalyzeKey} key={analyzeKey} />
+                }
+              />
+              <Route
+                path="/analyze/:gameId"
+                element={
+                  <Analyze setAnalyzeKey={setAnalyzeKey} key={analyzeKey} />
+                }
+              />
             </>
           ) : (
             <Route path="/*" element={<SetUsername />} />

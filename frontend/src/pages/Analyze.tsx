@@ -63,9 +63,13 @@ type Sideline = {
   moves: Move[];
 };
 
+type Props = {
+  setAnalyzeKey: React.Dispatch<React.SetStateAction<string>>;
+};
+
 const NUM_TOP_MOVES = 3;
 
-export default function Analyze() {
+export default function Analyze({ setAnalyzeKey }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [moves, setMoves] = useState<Move[]>([]);
   const [moveIndex, setMoveIndex] = useState(-1);
@@ -115,6 +119,10 @@ export default function Analyze() {
   }, [topMoves]);
 
   const { gameId } = useParams();
+
+  useLayoutEffect(() => {
+    setAnalyzeKey(gameId || "");
+  }, [gameId]);
 
   const navigate = useNavigate();
 
