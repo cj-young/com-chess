@@ -56,6 +56,7 @@ export default function PlayerInfo({
           src={pieceImages
             .get(type)
             ?.get(color === "white" ? "black" : "white")}
+          key={i}
         />
       );
     }
