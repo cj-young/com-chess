@@ -28,8 +28,10 @@ export default function BoardArrow({ to, from, boardRef, orientation }: Props) {
   const [fromX, fromY] = useMemo(() => getCoords(from), [from, orientation]);
   const [toX, toY] = useMemo(() => getCoords(to), [to, orientation]);
   const position = useMemo(() => {
-    const length = Math.sqrt((toX - fromX) ** 2 + (toY - fromY) ** 2);
-
+    const squareSize = 100 / 8;
+    const modFromY = fromY - squareSize / 3;
+    const length =
+      Math.sqrt((toX - fromX) ** 2 + (toY - fromY) ** 2) - squareSize / 3;
     let angle;
     if (toX - fromX === 0) {
       angle = fromY > toY ? 90 : 270;
@@ -43,13 +45,13 @@ export default function BoardArrow({ to, from, boardRef, orientation }: Props) {
     const headWidth = 7;
 
     const x1 = fromX - width / 2;
-    const y1 = fromY;
+    const y1 = modFromY;
     const x2 = x1;
     const y2 = y1 - length + headLength;
     const x3 = x1 - (headWidth - width) / 2;
     const y3 = y2;
     const x4 = fromX;
-    const y4 = fromY - length;
+    const y4 = modFromY - length;
     const x5 = x3 + headWidth;
     const y5 = y3;
     const x6 = x1 + width;
