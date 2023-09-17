@@ -44,7 +44,7 @@ export default function PlayerInfo({
     return capturedCounts;
   }, [pieces]);
 
-  function capturedPieceToDiv(type: PieceType, number = 0, reactKey: any) {
+  function getPieceImages(type: PieceType, number = 0) {
     const res = [];
     for (let i = 0; i < number; i++) {
       res.push(
@@ -57,11 +57,7 @@ export default function PlayerInfo({
       );
     }
 
-    return (
-      <div className="player-info__piece-group" data-type={type} key={reactKey}>
-        {res}
-      </div>
-    );
+    return res;
   }
 
   const advantage = useMemo(() => {
@@ -85,9 +81,11 @@ export default function PlayerInfo({
         <div className="player-info__username">{username}</div>
         <div className="player-info__bottom">
           <div className="player-info__pieces">
-            {Array.from(capturedPieces).map(([key, value], i) =>
-              capturedPieceToDiv(key, value, i)
-            )}
+            {Array.from(capturedPieces).map(([key, value], i) => (
+              <div className="player-info__piece-group" data-type={key} key={i}>
+                {getPieceImages(key, value)}
+              </div>
+            ))}
           </div>
           {advantage > 0 && <span>+{advantage}</span>}
         </div>
