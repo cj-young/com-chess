@@ -22,6 +22,8 @@ import TopLines from "../components/TopLines";
 import uciToMove from "../utils/uciToMove";
 import moveToUCI from "../utils/moveToUCI";
 import getEval from "../utils/getEval";
+import canMove from "../utils/canMove";
+import isInCheck from "../utils/isInCheck";
 
 type Move = {
   from: string;
@@ -78,14 +80,28 @@ export default function Analyze() {
   const [bufferMoves, setBufferMoves] = useState<Line[]>([]);
   const isNewMoves = useRef(false);
   const [sfReady, setSfReady] = useState(false);
+  const [didMate, setDidMate] = useState<string | null>(null);
+  const [posEval, setPosEval] = useState<{ adv: string; isWinning: string }>({
+    adv: "+0.00",
+    isWinning: "white",
+  });
 
   const sfRef = useRef<Worker>();
 
-  const posEval = useMemo(() => {
-    return topMoves.length > 0
-      ? getEval(topMoves[0])
-      : { adv: "+0.00", isWinning: "white" };
-  }, [topMoves]);
+  // const posEval: { adv: string; isWinning: string } = useMemo(() => {
+  //   if (didMate) return { adv: "#", isWinning: didMate };
+  //   return topMoves.length > 0
+  //     ? getEval(topMoves[0])
+  //     : { adv: posEval.adv || "+0.00", isWinning: posEval.adv || "white" };
+  // }, [topMoves, didMate]);
+
+  useEffect(() => {
+    if (didMate) {
+      setPosEval({ adv: "#", isWinning: didMate });
+    } else if (topMoves.length > 0) {
+      setPosEval(getEval(topMoves[0]));
+    }
+  }, [topMoves, didMate]);
 
   const bestMoveArrow: { to: string; from: string } | null = useMemo(() => {
     if (topMoves.length === 0) return null;
@@ -155,8 +171,24 @@ export default function Analyze() {
   }, []);
 
   useEffect(() => {
-    console.log(sfRef.current, sfReady);
+    console.log(posEval);
+  }, [posEval]);
+
+  useEffect(() => {
     if (!sfRef.current || !sfReady) return;
+
+    if (!canMove(pieces, modifiedMoves)) {
+      if (
+        isInCheck(pieces, modifiedMoves.length % 2 === 0 ? "white" : "black")
+      ) {
+        setDidMate(modifiedMoves.length % 2 === 0 ? "black" : "white");
+        setBufferMoves([]);
+        setTopMoves([]);
+        return;
+      }
+    }
+
+    setDidMate(null);
 
     const currentId = Date.now().toString();
     const stockfish = sfRef.current;
@@ -451,8 +483,8 @@ export default function Analyze() {
   }
 
   const evalBarOffset = useMemo(() => {
-    if (topMoves.length === 0) return;
-    return posEval.adv[0] === "M"
+    if (topMoves.length === 0 && posEval.adv[0] !== "#") return;
+    return posEval.adv[0] === "M" || posEval.adv[0] === "#"
       ? posEval.isWinning === "white"
         ? -50
         : 50
@@ -492,7 +524,7 @@ export default function Analyze() {
                 } as React.CSSProperties
               }
             >
-              {posEval.adv[0] === "M"
+              {posEval.adv[0] === "M" || posEval.adv[0] === "#"
                 ? posEval.adv
                 : Math.abs(+posEval.adv).toFixed(1)}
             </div>
