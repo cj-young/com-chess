@@ -63,7 +63,7 @@ export default function TopLines({ lines, moveIndex }: Props) {
             </div>
             <ul className="top-lines__line__moves">
               {line.algMoves.map((moveGroup, i) => (
-                <li className="top-lines__line__move-group">
+                <li className="top-lines__line__move-group" key={i}>
                   <div className="top-lines__line__move-counter">
                     {i === 0 && blackStarts
                       ? `${i + 2 + Math.floor(moveIndex / 2)}...`
