@@ -102,7 +102,7 @@ export default function Analyze() {
 
   useLayoutEffect(() => {
     if (willMove) {
-      setMoveIndex(modifiedMoves.length - 1);
+      setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
       setWillMove(false);
     }
   }, [willMove]);
@@ -267,20 +267,111 @@ export default function Analyze() {
   }
 
   function makeMove(move: Move) {
+    console.log("makemove");
     if (currentSideline) {
-      setSidelines((prevSidelines) => {
-        const prevPieces = applyMoves(
-          generateStartingPosition(),
-          modifiedMoves.slice(0, moveIndex + 1)
-        );
+      // Verify legality
+      const movedPiece = pieces.filter(
+        (p) => p.square === move.from && p.active
+      )[0];
+      if (!movedPiece) return;
+      const verifiedLegalMoves = generateLegalMoves(
+        pieces,
+        movedPiece,
+        modifiedMoves.slice(0, moveIndex + 1)
+      );
+
+      let moveFound;
+      for (let legalMove of verifiedLegalMoves) {
+        if (legalMove === move.to) {
+          moveFound = true;
+        }
+      }
+      if (!moveFound) return;
+
+      const movesIn =
+        moveIndex - sidelines[currentSideline[0]][currentSideline[1]].startsAt;
+
+      const updatedSideline = {
+        startsAt: currentSideline[0],
+        moves: [
+          ...sidelines[currentSideline[0]][currentSideline[1]].moves.slice(
+            0,
+            movesIn + 1
+          ),
+          move,
+        ],
+      };
+
+      setWillMove(true);
+
+      setSidelines((prevSidelines) => ({
+        ...prevSidelines,
+        [currentSideline[0]]: [
+          ...prevSidelines[currentSideline[0]].slice(0, currentSideline[1]),
+          updatedSideline,
+          ...prevSidelines[currentSideline[0]].slice(currentSideline[1] + 1),
+        ],
+      }));
+    } else {
+      if (moveIndex === moves.length - 1) {
+        const prevPieces = applyMoves(generateStartingPosition(), moves);
 
         // Verify legality
         const movedPiece = pieces.filter(
           (p) => p.square === move.from && p.active
         )[0];
-        if (!movedPiece) return prevSidelines;
+        if (!movedPiece) return;
         const verifiedLegalMoves = generateLegalMoves(
           prevPieces,
+          movedPiece,
+          modifiedMoves
+        );
+
+        let moveFound;
+        for (let legalMove of verifiedLegalMoves) {
+          if (legalMove === move.to) {
+            moveFound = true;
+          }
+        }
+        if (!moveFound) return;
+        setWillMove(true);
+
+        setMoves((prevMoves) => [...prevMoves, move]);
+      } else {
+        if (
+          move.to === modifiedMoves[moveIndex + 1].to &&
+          move.from === modifiedMoves[moveIndex + 1].from &&
+          move.promoteTo === modifiedMoves[moveIndex + 1].promoteTo
+        ) {
+          // Keep current line if move is the same as next current line move
+          setWillMove(true);
+
+          return;
+        }
+
+        // Go to sideline if already exists
+        if (sidelines[moveIndex + 1]) {
+          for (let i = 0; i < sidelines[moveIndex + 1].length; i++) {
+            const sideline = sidelines[moveIndex + 1][i];
+            if (
+              move.to === sideline.moves[0].to &&
+              move.from === sideline.moves[0].from &&
+              move.promoteTo === sideline.moves[0].promoteTo
+            ) {
+              setWillMove(true);
+              setCurrentSideline([moveIndex + 1, i]);
+              return;
+            }
+          }
+        }
+
+        // Verify legality
+        const movedPiece = pieces.filter(
+          (p) => p.square === move.from && p.active
+        )[0];
+        if (!movedPiece) return;
+        const verifiedLegalMoves = generateLegalMoves(
+          pieces,
           movedPiece,
           modifiedMoves.slice(0, moveIndex + 1)
         );
@@ -291,139 +382,29 @@ export default function Analyze() {
             moveFound = true;
           }
         }
-        if (!moveFound) return prevSidelines;
-
-        const movesIn =
-          moveIndex -
-          prevSidelines[currentSideline[0]][currentSideline[1]].startsAt;
+        if (!moveFound) return;
 
         const updatedSideline = {
-          startsAt: currentSideline[0],
-          moves: [
-            ...prevSidelines[currentSideline[0]][
-              currentSideline[1]
-            ].moves.slice(0, movesIn + 1),
-            move,
-          ],
+          startsAt: moveIndex + 1,
+          moves: [move],
         };
+
+        setCurrentSideline([
+          moveIndex + 1,
+          sidelines[moveIndex + 1] ? sidelines[moveIndex + 1].length : 0,
+        ]);
 
         setWillMove(true);
 
-        return {
+        setSidelines((prevSidelines) => ({
           ...prevSidelines,
-          [currentSideline[0]]: [
-            ...prevSidelines[currentSideline[0]].slice(0, currentSideline[1]),
+          [moveIndex + 1]: [
+            ...(prevSidelines[moveIndex + 1]
+              ? prevSidelines[moveIndex + 1]
+              : []),
             updatedSideline,
-            ...prevSidelines[currentSideline[0]].slice(currentSideline[1] + 1),
           ],
-        };
-      });
-    } else {
-      if (moveIndex === moves.length - 1) {
-        setMoves((prevMoves) => {
-          const prevPieces = applyMoves(generateStartingPosition(), prevMoves);
-
-          // Verify legality
-          const movedPiece = pieces.filter(
-            (p) => p.square === move.from && p.active
-          )[0];
-          if (!movedPiece) return prevMoves;
-          const verifiedLegalMoves = generateLegalMoves(
-            prevPieces,
-            movedPiece,
-            modifiedMoves
-          );
-
-          let moveFound;
-          for (let legalMove of verifiedLegalMoves) {
-            if (legalMove === move.to) {
-              moveFound = true;
-            }
-          }
-          if (!moveFound) return prevMoves;
-          setWillMove(true);
-
-          console.log("test is now true");
-          return [...prevMoves, move];
-        });
-      } else {
-        setSidelines((prevSidelines) => {
-          if (
-            move.to === modifiedMoves[moveIndex + 1].to &&
-            move.from === modifiedMoves[moveIndex + 1].from &&
-            move.promoteTo === modifiedMoves[moveIndex + 1].promoteTo
-          ) {
-            // Keep current line if move is the same as next current line move
-            setWillMove(true);
-
-            return prevSidelines;
-          }
-
-          // Go to sideline if already exists
-          if (sidelines[moveIndex + 1]) {
-            for (let i = 0; i < sidelines[moveIndex + 1].length; i++) {
-              const sideline = sidelines[moveIndex + 1][i];
-              if (
-                move.to === sideline.moves[0].to &&
-                move.from === sideline.moves[0].from &&
-                move.promoteTo === sideline.moves[0].promoteTo
-              ) {
-                setWillMove(true);
-
-                setCurrentSideline([moveIndex + 1, i]);
-                return prevSidelines;
-              }
-            }
-          }
-
-          const prevPieces = applyMoves(
-            generateStartingPosition(),
-            modifiedMoves.slice(0, moveIndex + 1)
-          );
-
-          // Verify legality
-          const movedPiece = pieces.filter(
-            (p) => p.square === move.from && p.active
-          )[0];
-          if (!movedPiece) return prevSidelines;
-          const verifiedLegalMoves = generateLegalMoves(
-            prevPieces,
-            movedPiece,
-            modifiedMoves.slice(0, moveIndex + 1)
-          );
-
-          let moveFound;
-          for (let legalMove of verifiedLegalMoves) {
-            if (legalMove === move.to) {
-              moveFound = true;
-            }
-          }
-          if (!moveFound) return prevSidelines;
-
-          const updatedSideline = {
-            startsAt: moveIndex + 1,
-            moves: [move],
-          };
-
-          setCurrentSideline([
-            moveIndex + 1,
-            prevSidelines[moveIndex + 1]
-              ? prevSidelines[moveIndex + 1].length
-              : 0,
-          ]);
-
-          setWillMove(true);
-
-          return {
-            ...prevSidelines,
-            [moveIndex + 1]: [
-              ...(prevSidelines[moveIndex + 1]
-                ? prevSidelines[moveIndex + 1]
-                : []),
-              updatedSideline,
-            ],
-          };
-        });
+        }));
       }
     }
   }
