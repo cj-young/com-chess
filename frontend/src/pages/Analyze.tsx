@@ -437,6 +437,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
           setMoveIndex(data.moves.length - 1);
           if (data.type === "live") {
             setNames({ white: data.whitePlayer, black: data.blackPlayer });
+            if (user?.username === data.blackPlayer) setOrientation("black");
           } else {
             const botName =
               data.difficulty[0].toUpperCase() +
@@ -446,6 +447,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
               white: data.color === "white" ? data.user : botName,
               black: data.color === "black" ? data.user : botName,
             });
+            setOrientation(data.color);
           }
           console.log(data);
         } else {
