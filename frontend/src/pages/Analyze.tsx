@@ -87,6 +87,13 @@ export default function Analyze() {
       : { adv: "+0.00", isWinning: "white" };
   }, [topMoves]);
 
+  const bestMoveArrow: { to: string; from: string } | null = useMemo(() => {
+    if (topMoves.length === 0) return null;
+
+    const move = topMoves[0].moves[0];
+    return { from: move.from, to: move.to };
+  }, [topMoves]);
+
   const { gameId } = useParams();
 
   const navigate = useNavigate();
@@ -518,6 +525,7 @@ export default function Analyze() {
           makeMove={makeMove}
           modal={null}
           canDragCB={canDragCB}
+          arrows={bestMoveArrow ? [bestMoveArrow] : undefined}
         />
         <>
           <div className="player-info-container bottom">
