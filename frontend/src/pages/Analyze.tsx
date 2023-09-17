@@ -267,7 +267,17 @@ export default function Analyze() {
   }
 
   function makeMove(move: Move) {
-    console.log("makemove");
+    if (
+      moveIndex + 1 < modifiedMoves.length &&
+      move.to === modifiedMoves[moveIndex + 1].to &&
+      move.from === modifiedMoves[moveIndex + 1].from &&
+      move.promoteTo === modifiedMoves[moveIndex + 1].promoteTo
+    ) {
+      // Keep current line if move is the same as next current line move
+      setWillMove(true);
+      return;
+    }
+
     if (currentSideline) {
       // Verify legality
       const movedPiece = pieces.filter(
@@ -338,17 +348,6 @@ export default function Analyze() {
 
         setMoves((prevMoves) => [...prevMoves, move]);
       } else {
-        if (
-          move.to === modifiedMoves[moveIndex + 1].to &&
-          move.from === modifiedMoves[moveIndex + 1].from &&
-          move.promoteTo === modifiedMoves[moveIndex + 1].promoteTo
-        ) {
-          // Keep current line if move is the same as next current line move
-          setWillMove(true);
-
-          return;
-        }
-
         // Go to sideline if already exists
         if (sidelines[moveIndex + 1]) {
           for (let i = 0; i < sidelines[moveIndex + 1].length; i++) {
