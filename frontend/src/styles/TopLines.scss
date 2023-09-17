@@ -39,6 +39,7 @@
       display: flex;
       list-style: none;
       flex-wrap: wrap;
+      column-gap: 0.5rem;
       --row-height: 1.25rem;
       max-height: calc(var(--row-height) * 3);
       overflow: hidden;
