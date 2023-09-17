@@ -9,6 +9,7 @@ import { letterSquare } from "../utils/squareConverters";
 import PawnPromoter from "./PawnPromoter";
 import Piece from "../utils/Piece";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
+import BoardArrow from "./BoardArrow";
 
 type Move = {
   to: string;
@@ -29,6 +30,7 @@ type Props = {
   makeMove: (move: Move) => void;
   modal: React.ReactNode;
   canDragCB: (piece: Piece) => boolean;
+  arrows?: { from: string; to: string }[];
 };
 
 export default function Board({
@@ -44,6 +46,7 @@ export default function Board({
   makeMove,
   modal,
   canDragCB,
+  arrows,
 }: Props) {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [hoverSquare, setHoverSquare] = useState<string | null>(null);
@@ -259,6 +262,16 @@ export default function Board({
               />
             )}
             {modal}
+            {arrows &&
+              arrows.map((arrow, i) => (
+                <BoardArrow
+                  from={arrow.from}
+                  to={arrow.to}
+                  boardRef={boardRef}
+                  orientation={orientation}
+                  key={i}
+                />
+              ))}
           </>
         )}
         {pawnPromoter}
