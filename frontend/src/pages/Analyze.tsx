@@ -21,6 +21,7 @@ import Loading from "./Loading";
 import TopLines from "../components/TopLines";
 import uciToMove from "../utils/uciToMove";
 import moveToUCI from "../utils/moveToUCI";
+import getEval from "../utils/getEval";
 
 type Move = {
   from: string;
@@ -79,6 +80,12 @@ export default function Analyze() {
 
   const sfRef = useRef<Worker>();
   const sfReady = useRef(false);
+
+  const posEval = useMemo(() => {
+    return topMoves.length > 0
+      ? getEval(topMoves[0])
+      : { adv: "+0.00", isWinning: "white" };
+  }, [topMoves]);
 
   const { gameId } = useParams();
 
@@ -435,6 +442,15 @@ export default function Analyze() {
     }
   }
 
+  const evalBarOffset = useMemo(() => {
+    if (topMoves.length === 0) return;
+    return posEval.adv[0] === "M"
+      ? posEval.isWinning === "white"
+        ? -50
+        : 50
+      : -100 / (1 + Math.E ** -(+posEval.adv / 5)) + 50;
+  }, [topMoves, posEval]);
+
   return isLoading ? (
     <Loading />
   ) : (
@@ -442,7 +458,37 @@ export default function Analyze() {
       <Navbar />
       <div className={`analyze__container ${isPastGame ? "" : "show-games"}`}>
         <div className="eval-container">
-          <div className="eval"></div>
+          <div className="eval" data-is-winning={posEval.isWinning}>
+            <div
+              className="white-bar"
+              style={
+                {
+                  "--translate": `${orientation === "white" ? "-" : ""}${
+                    (evalBarOffset || 0) + 50
+                  }%`,
+                } as React.CSSProperties
+              }
+            ></div>
+            <div
+              className="eval__number"
+              style={
+                {
+                  "--start":
+                    orientation === posEval.isWinning ? "0.5rem" : "unset",
+                  "--end":
+                    orientation === posEval.isWinning ? "unset" : "0.5rem",
+                  color:
+                    posEval.isWinning === "white"
+                      ? "var(--clr-bg-200)"
+                      : "var(--clr-neutral-100)",
+                } as React.CSSProperties
+              }
+            >
+              {posEval.adv[0] === "M"
+                ? posEval.adv
+                : Math.abs(+posEval.adv).toFixed(1)}
+            </div>
+          </div>
         </div>
         <div className="player-info-container top">
           <PlayerInfo

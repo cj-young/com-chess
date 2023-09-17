@@ -96,14 +96,48 @@
   }
 
   .eval {
-    background-color: white;
+    background-color: var(--clr-bg-200);
     height: 1.5rem;
     border-radius: var(--br-primary);
     width: min(100%, 30rem, 60vh);
+    position: relative;
+    overflow: hidden;
+    position: relative;
 
     @include game-screen {
       height: 100%;
       width: 100%;
+    }
+
+    .white-bar {
+      inset: 0;
+      position: absolute;
+      background-color: var(--clr-neutral-100);
+      translate: var(--translate) 0;
+      transition: translate 250ms;
+
+      @include game-screen {
+        translate: 0 calc(-1 * var(--translate));
+      }
+    }
+
+    &__number {
+      position: absolute;
+      left: var(--start);
+      right: var(--end);
+      top: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+
+      @include game-screen {
+        left: 0;
+        right: 0;
+        top: var(--end);
+        bottom: var(--start);
+      }
     }
   }
 }
