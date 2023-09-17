@@ -259,7 +259,7 @@ export default function LiveGame() {
       <div className="game__container">
         {gameState === "playing" && (
           <div className="clock-container top">
-            <Clock player="top" />
+            <Clock player="top" isLink={true} />
           </div>
         )}
 
@@ -288,7 +288,7 @@ export default function LiveGame() {
         {gameState === "playing" && (
           <>
             <div className="clock-container bottom">
-              <Clock player="bottom" />
+              <Clock player="bottom" isLink={true} />
             </div>
             <div className="draw-resign-container">
               <div className="draw-resign">

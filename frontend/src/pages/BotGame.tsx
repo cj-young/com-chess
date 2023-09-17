@@ -222,6 +222,7 @@ export default function BotGame() {
               }
               orientation={orientation}
               color={orientation === "white" ? "black" : "white"}
+              isLink={color !== orientation}
             />
           </div>
         )}
@@ -263,6 +264,7 @@ export default function BotGame() {
                   }
                   orientation={orientation}
                   color={orientation === "black" ? "black" : "white"}
+                  isLink={color === orientation}
                 />
               </div>
             )}

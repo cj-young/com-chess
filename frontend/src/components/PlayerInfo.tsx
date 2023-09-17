@@ -1,12 +1,14 @@
 import { useMemo } from "react";
 import Piece, { PieceType, pieceImages, pieceValues } from "../utils/Piece";
 import "../styles/PlayerInfo.scss";
+import { Link } from "react-router-dom";
 
 type Props = {
   pieces: Piece[];
   username: string;
   orientation: "black" | "white";
   color: "black" | "white";
+  isLink: boolean;
 };
 
 export default function PlayerInfo({
@@ -14,6 +16,7 @@ export default function PlayerInfo({
   username,
   orientation,
   color,
+  isLink,
 }: Props) {
   const capturedPieces = useMemo(() => {
     const capturedCounts = new Map<PieceType, number>();
@@ -78,7 +81,14 @@ export default function PlayerInfo({
   return (
     <div className={`player-info ${orientation === color ? "bottom" : "top"}`}>
       <div className="player-info__left">
-        <div className="player-info__username">{username}</div>
+        {isLink ? (
+          <Link to={`/user/${username}`}>
+            <div className="player-info__username">{username}</div>
+          </Link>
+        ) : (
+          <div className="player-info__username">{username}</div>
+        )}
+
         <div className="player-info__bottom">
           <div className="player-info__pieces">
             {Array.from(capturedPieces).map(([key, value], i) => (

@@ -2,12 +2,14 @@ import { useMemo } from "react";
 import "../styles/Clock.scss";
 import { useLiveGameContext } from "../contexts/LiveGameContext";
 import { PieceType, pieceImages, pieceValues } from "../utils/Piece";
+import { Link } from "react-router-dom";
 
 type Props = {
   player: "top" | "bottom";
+  isLink: boolean;
 };
 
-export default function Clock({ player }: Props) {
+export default function Clock({ player, isLink }: Props) {
   const {
     orientation,
     gameInfo,
@@ -18,7 +20,7 @@ export default function Clock({ player }: Props) {
     maxBlackTime,
     justMoved,
     turn,
-    gameOver
+    gameOver,
   } = useLiveGameContext();
 
   const clockColor = useMemo(() => {
@@ -33,7 +35,7 @@ export default function Clock({ player }: Props) {
     const seconds = totalSeconds % 60;
     return {
       minutes,
-      seconds
+      seconds,
     };
   }, [blackTime, whiteTime, clockColor]);
 
@@ -117,11 +119,27 @@ export default function Clock({ player }: Props) {
       style={{ "--time-percent": timePercent } as React.CSSProperties}
     >
       <div className="clock__left">
-        <div className="clock__username">
-          {clockColor === "white"
-            ? gameInfo.blackUsername
-            : gameInfo.whiteUsername}
-        </div>
+        {isLink ? (
+          <Link
+            to={`/user/${
+              clockColor === "white"
+                ? gameInfo.blackUsername
+                : gameInfo.whiteUsername
+            }`}
+          >
+            <div className="clock__username">
+              {clockColor === "white"
+                ? gameInfo.blackUsername
+                : gameInfo.whiteUsername}
+            </div>
+          </Link>
+        ) : (
+          <div className="clock__username">
+            {clockColor === "white"
+              ? gameInfo.blackUsername
+              : gameInfo.whiteUsername}
+          </div>
+        )}
 
         <div className="clock__bottom">
           <div className="clock__pieces">

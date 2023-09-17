@@ -97,6 +97,8 @@ export default function Analyze({ setAnalyzeKey }: Props) {
   const bufferMovesRef = useRef<Line[]>();
   bufferMovesRef.current = bufferMoves;
 
+  const color = useRef<null | "white" | "black">(null);
+
   const sfRef = useRef<Worker>();
 
   useEffect(() => {
@@ -448,6 +450,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
               black: data.color === "black" ? data.user : botName,
             });
             setOrientation(data.color);
+            color.current = data.color;
           }
           console.log(data);
         } else {
@@ -551,6 +554,9 @@ export default function Analyze({ setAnalyzeKey }: Props) {
                 ? "Black"
                 : "White"
             }
+            isLink={
+              isPastGame && (!color.current || color.current !== orientation)
+            }
             orientation={orientation}
             color={orientation === "white" ? "black" : "white"}
           />
@@ -584,6 +590,9 @@ export default function Analyze({ setAnalyzeKey }: Props) {
               }
               orientation={orientation}
               color={orientation === "white" ? "white" : "black"}
+              isLink={
+                isPastGame && (!color.current || color.current === orientation)
+              }
             />
           </div>
           <div className="top-lines-container">
