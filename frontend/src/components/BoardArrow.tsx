@@ -13,7 +13,6 @@ export default function BoardArrow({ to, from, boardRef, orientation }: Props) {
     if (boardRef.current) {
       const squareSize = 100 / 8;
       const convertedSquare = numSquare(square);
-      console.log(convertedSquare);
 
       let x = squareSize * convertedSquare[1] + squareSize / 2;
       if (orientation === "black") x = 100 - x;
@@ -39,8 +38,6 @@ export default function BoardArrow({ to, from, boardRef, orientation }: Props) {
     }
 
     if (toX < fromX) angle += 180;
-    console.log(fromY - toY, toX - fromX);
-    console.log(angle);
     const width = 3.5;
     const headLength = 5;
     const headWidth = 7;
@@ -69,7 +66,12 @@ export default function BoardArrow({ to, from, boardRef, orientation }: Props) {
     <svg
       className="arrow"
       viewBox="0 0 100 100"
-      style={{ position: "absolute", zIndex: 1000, inset: 0 }}
+      style={{
+        position: "absolute",
+        zIndex: 1000,
+        inset: 0,
+        pointerEvents: "none",
+      }}
     >
       <polygon
         points={position.points}
@@ -78,6 +80,7 @@ export default function BoardArrow({ to, from, boardRef, orientation }: Props) {
         } ${fromX} ${fromY})`}
         style={{
           opacity: 0.75,
+          pointerEvents: "none",
           fill: "var(--clr-accent)",
         }}
       />
