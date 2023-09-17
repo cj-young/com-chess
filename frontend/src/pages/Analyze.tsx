@@ -89,7 +89,6 @@ export default function Analyze({ setAnalyzeKey }: Props) {
     adv: "+0.00",
     isWinning: "white",
   });
-  const [willMove, setWillMove] = useState(false);
   const [names, setNames] = useState<{ white: string; black: string } | null>(
     null
   );
@@ -108,13 +107,6 @@ export default function Analyze({ setAnalyzeKey }: Props) {
       setPosEval(getEval(topMoves[0]));
     }
   }, [topMoves, didMate]);
-
-  useLayoutEffect(() => {
-    if (willMove) {
-      setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
-      setWillMove(false);
-    }
-  }, [willMove]);
 
   const bestMoveArrow: { to: string; from: string } | null = useMemo(() => {
     if (topMoves.length === 0) return null;
@@ -220,6 +212,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
     const messageCB = (e: MessageEvent) => {
       const response = e.data;
       if (response.startsWith("info")) {
+        console.log(response);
         const depth = +response.split(" ")[2];
         if (isNewMoves.current) {
           if (depth !== 1) {
@@ -279,7 +272,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
       move.promoteTo === modifiedMoves[moveIndex + 1].promoteTo
     ) {
       // Keep current line if move is the same as next current line move
-      setWillMove(true);
+      setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
       return;
     }
 
@@ -317,7 +310,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
         ],
       };
 
-      setWillMove(true);
+      setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
 
       setSidelines((prevSidelines) => ({
         ...prevSidelines,
@@ -349,7 +342,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
           }
         }
         if (!moveFound) return;
-        setWillMove(true);
+        setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
 
         setMoves((prevMoves) => [...prevMoves, move]);
       } else {
@@ -362,7 +355,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
               move.from === sideline.moves[0].from &&
               move.promoteTo === sideline.moves[0].promoteTo
             ) {
-              setWillMove(true);
+              setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
               setCurrentSideline([moveIndex + 1, i]);
               return;
             }
@@ -398,7 +391,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
           sidelines[moveIndex + 1] ? sidelines[moveIndex + 1].length : 0,
         ]);
 
-        setWillMove(true);
+        setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
 
         setSidelines((prevSidelines) => ({
           ...prevSidelines,
