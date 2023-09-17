@@ -29,7 +29,7 @@ export default function TopLines({ lines, moveIndex }: Props) {
     const res = [];
 
     for (let line of lines) {
-      const subRes: string[][] = blackStarts ? [[]] : [];
+      const subRes: string[][] = line.leadingMoves.length % 2 !== 0 ? [[]] : [];
       const ungroupedMoves = movesToAlgebraic([
         ...line.leadingMoves,
         ...line.moves,
