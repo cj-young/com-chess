@@ -42,6 +42,45 @@ module.exports = (server, sessionMiddleware, passport) => {
 
     connectedUsers.set(userId, socket.id);
 
+    socket.on("friendRemove", async (username) => {
+      try {
+        const user = await User.findById(userId);
+        if (username === user.username)
+          throw new Error("You cannot remove yourself as a friend");
+        const receiver = await User.findOne({ username: username });
+        if (!receiver) {
+          throw new Error("User does not exist");
+        }
+
+        if (
+          !receiver.friends.includes(user.id) &&
+          !user.friends.includes(receiver.id)
+        ) {
+          throw new Error("You are not friends with this person");
+        }
+        user.friends = user.friends.filter(
+          (friendId) => friendId.toString() !== receiver.id
+        );
+        receiver.friends = receiver.friends.filter(
+          (friendId) => friendId.toString() !== user.id
+        );
+
+        await Promise.all([user.save(), receiver.save()]);
+
+        receiver.sendNotification(io, connectedUsers, {
+          type: "friendRemove",
+          from: user.username,
+        });
+
+        user.sendNotification(io, connectedUsers, {
+          type: "friendRemoveSuccess",
+          from: receiver.username,
+        });
+      } catch (error) {
+        socket.emit("error", error.message);
+      }
+    });
+
     socket.on("friendRequest", async (username) => {
       try {
         const user = await User.findById(userId);
@@ -66,7 +105,7 @@ module.exports = (server, sessionMiddleware, passport) => {
 
         socket.emit("friendRequestSuccess", username);
       } catch (error) {
-        socket.emit("friendRequestFailure", error.message);
+        socket.emit("error", error.message);
       }
     });
 

@@ -15,7 +15,9 @@ type Notification =
         | "friendAccept"
         | "friendWasDeclined"
         | "friendDidDecline"
-        | "gameDeclined";
+        | "gameDeclined"
+        | "friendRemove"
+        | "friendRemoveSuccess";
       from: string;
     }
   | { type: "gameRequest"; from: string; minutes: number; increment: number }
@@ -39,8 +41,8 @@ export default function Notifications() {
       credentials: "include",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     });
   }
 
@@ -110,9 +112,38 @@ export default function Notifications() {
             remove={removeNotification}
             key={notificationQueue.last ? notificationQueue.last.id : -1}
           >
-            <b>{notification.from}</b> declined your game invite
+            <span>
+              <b>{notification.from}</b> declined your game invite
+            </span>
           </MessageNotification>
         );
+        break;
+      case "friendRemove":
+        notificationComponent = (
+          <MessageNotification
+            remove={removeNotification}
+            key={notificationQueue.last ? notificationQueue.last.id : -1}
+          >
+            <span>
+              <b>{notification.from}</b> removed you as a friend
+            </span>
+          </MessageNotification>
+        );
+        updateFriends();
+        break;
+      case "friendRemoveSuccess":
+        console.log("FRIEND REMOVE SUCCESS!!!!!!!!!!!!!!!");
+        notificationComponent = (
+          <MessageNotification
+            remove={removeNotification}
+            key={notificationQueue.last ? notificationQueue.last.id : -1}
+          >
+            <span>
+              <b>{notification.from}</b> is no longer your friend
+            </span>
+          </MessageNotification>
+        );
+        updateFriends();
         break;
       case "error":
         notificationComponent = (
@@ -152,8 +183,8 @@ export default function Notifications() {
             credentials: "include",
             headers: {
               Accept: "application/json",
-              "Content-Type": "application/json"
-            }
+              "Content-Type": "application/json",
+            },
           }
         );
         const data = await response.json();
