@@ -20,6 +20,7 @@ export default function App() {
   const [initialLoading, setInitialLoading] = useState(true);
   const { user, getUser, setUser } = useAuthContext();
   const [analyzeKey, setAnalyzeKey] = useState("");
+  const [profileKey, setProfileKey] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -41,7 +42,12 @@ export default function App() {
           {user?.username ? (
             <>
               <Route path="/" element={<Home />} />
-              <Route path="/user/:username" element={<Profile />} />
+              <Route
+                path="/user/:username"
+                element={
+                  <Profile key={profileKey} setProfileKey={setProfileKey} />
+                }
+              />
               <Route path="/play" element={<Play />} />
               <Route path="/play/live" element={<LiveGame />} />
               <Route path="/play/bot" element={<BotGame />} />
