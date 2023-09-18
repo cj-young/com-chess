@@ -132,7 +132,6 @@ export default function Notifications() {
         updateFriends();
         break;
       case "friendRemoveSuccess":
-        console.log("FRIEND REMOVE SUCCESS!!!!!!!!!!!!!!!");
         notificationComponent = (
           <MessageNotification
             remove={removeNotification}
