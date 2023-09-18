@@ -612,7 +612,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
                               ? game.difficulty[0].toUpperCase() +
                                 game.difficulty.slice(1) +
                                 " Bot"
-                              : game.color === "white"
+                              : game.color === "black"
                               ? game.whiteUsername
                               : game.blackUsername}
                           </span>
