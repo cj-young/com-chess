@@ -5,6 +5,7 @@ import { useUserContext } from "../contexts/UserContext";
 import { useAuthContext } from "../contexts/AuthContext";
 import "../styles/Profile.scss";
 import Loading from "./Loading";
+import { socket } from "../config/socket";
 
 type Props = {
   setProfileKey: React.Dispatch<React.SetStateAction<string>>;
@@ -36,9 +37,31 @@ export default function Profile({ setProfileKey }: Props) {
   const [isSelf, setIsSelf] = useState(false);
   const [pastGames, setPastGames] = useState<PastGame[]>();
   const [username, setUsername] = useState<string>();
+  const [friendRequestSent, setFriendRequestSent] = useState(false);
 
   const { username: usernameParam } = useParams();
   const { friends } = useUserContext();
+
+  function handleRemoveFriend() {
+    socket.emit("friendRemove", username);
+  }
+
+  function handleAddFriend() {
+    socket.emit("friendRequest", username);
+    setFriendRequestSent(true);
+  }
+
+  useEffect(() => {
+    socket.on("notification", (notification) => {
+      if (
+        notification.type === "friendAccept" ||
+        notification.type === "friendDidDecline" ||
+        notification.type === "friendWasDeclined"
+      ) {
+        setFriendRequestSent(false);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -60,8 +83,6 @@ export default function Profile({ setProfileKey }: Props) {
       setIsLoading(false);
       setUsername(data.username);
       setPastGames(data.pastGames);
-      console.log(data);
-      console.log(typeof data.joinedAt);
     })();
   }, [usernameParam]);
 
@@ -77,11 +98,23 @@ export default function Profile({ setProfileKey }: Props) {
               <h2>{username}</h2>
               {!isSelf && (
                 <div className="profile__buttons">
-                  {username && !friends.includes(username) ? (
-                    <button className="profile__add-friend">Add Friend</button>
-                  ) : (
-                    <button className="profile__remove-friend">
+                  {username && friends.includes(username) ? (
+                    <button
+                      className="profile__remove-friend"
+                      onClick={handleRemoveFriend}
+                    >
                       Remove Friend
+                    </button>
+                  ) : friendRequestSent ? (
+                    <div className="profile__friend-request-sent">
+                      Friend Request Sent
+                    </div>
+                  ) : (
+                    <button
+                      className="profile__add-friend"
+                      onClick={handleAddFriend}
+                    >
+                      Add Friend
                     </button>
                   )}
                   <button className="profile__play">Play</button>

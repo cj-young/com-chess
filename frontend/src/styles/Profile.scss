@@ -45,6 +45,15 @@
     .profile__remove-friend {
       background-color: var(--clr-error);
     }
+
+    .profile__friend-request-sent {
+      border-radius: var(--br-primary);
+      background-color: var(--clr-bg-300);
+      padding: 0.5rem 0.75rem;
+      font-weight: bold;
+      color: var(--clr-text-primary);
+      border: none;
+    }
   }
 
   &__past-games {
