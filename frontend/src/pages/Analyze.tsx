@@ -161,7 +161,6 @@ export default function Analyze({ setAnalyzeKey }: Props) {
     const messageCB = (e: MessageEvent) => {
       const response = e.data;
       if (response === "readyok") {
-        console.log("stockfish ready");
         setSfReady(true);
       }
     };
@@ -212,7 +211,6 @@ export default function Analyze({ setAnalyzeKey }: Props) {
     const messageCB = (e: MessageEvent) => {
       const response = e.data;
       if (response.startsWith("info")) {
-        console.log(response);
         const depth = +response.split(" ")[2];
         if (isNewMoves.current) {
           if (depth !== 1) {
@@ -445,7 +443,6 @@ export default function Analyze({ setAnalyzeKey }: Props) {
             setOrientation(data.color);
             color.current = data.color;
           }
-          console.log(data);
         } else {
           const response = await fetch(
             `${import.meta.env.VITE_BACKEND_URL}/games/list`,
@@ -461,7 +458,6 @@ export default function Analyze({ setAnalyzeKey }: Props) {
           const data = await response.json();
           setPastGames(data.games);
           setIsLoading(false);
-          console.log(data);
         }
       } catch (error) {
         console.error(error);
