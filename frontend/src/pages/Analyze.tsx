@@ -24,14 +24,7 @@ import moveToUCI from "../utils/moveToUCI";
 import getEval from "../utils/getEval";
 import canMove from "../utils/canMove";
 import isInCheck from "../utils/isInCheck";
-import { Color, Move } from "../types";
-
-type Line = {
-  eval: number;
-  moves: Move[];
-  leadingMoves: Move[];
-  type: "mate" | "cp";
-};
+import { Color, Move, Line } from "../types";
 
 type PastGame =
   | {

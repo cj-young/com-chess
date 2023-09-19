@@ -2,14 +2,7 @@ import { useMemo } from "react";
 import movesToAlgebraic from "../utils/movesToAlgebraic";
 import "../styles/TopLines.scss";
 import getEval from "../utils/getEval";
-import { Move } from "../types";
-
-type Line = {
-  eval: number;
-  moves: Move[];
-  leadingMoves: Move[];
-  type: "mate" | "cp";
-};
+import { Move, Line } from "../types";
 
 type Props = {
   lines: Line[];
