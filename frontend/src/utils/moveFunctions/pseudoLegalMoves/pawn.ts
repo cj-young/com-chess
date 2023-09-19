@@ -1,15 +1,5 @@
 import { fileA, fileH, rank2, rank7 } from "../bitboardMasks";
-
-type Position = {
-  whitePieces: bigint;
-  blackPieces: bigint;
-  pawns: bigint;
-  knights: bigint;
-  bishops: bigint;
-  rooks: bigint;
-  queens: bigint;
-  kings: bigint;
-};
+import { Position } from "../../../types";
 
 export default function generatePseudoLegalPawnMoves(
   position: Position,

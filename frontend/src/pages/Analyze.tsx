@@ -24,12 +24,7 @@ import moveToUCI from "../utils/moveToUCI";
 import getEval from "../utils/getEval";
 import canMove from "../utils/canMove";
 import isInCheck from "../utils/isInCheck";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
+import { Move } from "../types";
 
 type Line = {
   eval: number;

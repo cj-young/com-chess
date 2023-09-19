@@ -1,12 +1,6 @@
 import applyMoves from "./applyMoves";
 import generateStartingPosition from "./generateStartingPosition";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
-
+import { Move } from "../types";
 export default function isInsufficientMaterial(
   moves: Move[],
   color: "white" | "black"

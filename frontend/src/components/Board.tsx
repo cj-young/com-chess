@@ -10,12 +10,7 @@ import PawnPromoter from "./PawnPromoter";
 import Piece from "../utils/Piece";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
 import BoardArrow from "./BoardArrow";
-
-type Move = {
-  to: string;
-  from: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
+import { Move } from "../types";
 
 type Props = {
   pieces: Piece[];

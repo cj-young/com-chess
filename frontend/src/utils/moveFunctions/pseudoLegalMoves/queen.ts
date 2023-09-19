@@ -1,16 +1,6 @@
 import generatePseudoLegalBishopMoves from "./bishop";
 import generatePseudoLegalRookMoves from "./rook";
-
-type Position = {
-  whitePieces: bigint;
-  blackPieces: bigint;
-  pawns: bigint;
-  knights: bigint;
-  bishops: bigint;
-  rooks: bigint;
-  queens: bigint;
-  kings: bigint;
-};
+import { Position } from "../../../types";
 
 export default function generatePseudoLegalQueenMoves(
   position: Position,

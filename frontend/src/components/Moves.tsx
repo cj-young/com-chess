@@ -2,23 +2,13 @@ import React, { useMemo } from "react";
 import "../styles/Moves.scss";
 import movesToAlgebraic from "../utils/movesToAlgebraic";
 import Sideline from "./Sideline";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
-
-type Sideline = {
-  startsAt: number;
-  moves: Move[];
-};
+import { Move, Sideline as SidelineType } from "../types";
 
 type Props = {
   moves: Move[];
   moveIndex: number;
   setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
-  sidelines?: { [key: number]: Sideline[] };
+  sidelines?: { [key: number]: SidelineType[] };
   currentSideline?: [number, number] | null;
   setCurrentSideline?: React.Dispatch<
     React.SetStateAction<[number, number] | null>

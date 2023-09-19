@@ -6,19 +6,9 @@ import {
   rank1,
   rank2,
   rank7,
-  rank8
+  rank8,
 } from "../bitboardMasks";
-
-type Position = {
-  whitePieces: bigint;
-  blackPieces: bigint;
-  pawns: bigint;
-  knights: bigint;
-  bishops: bigint;
-  rooks: bigint;
-  queens: bigint;
-  kings: bigint;
-};
+import { Position } from "../../../types";
 
 export default function generateKnightAttackBitboard(
   position: Position,

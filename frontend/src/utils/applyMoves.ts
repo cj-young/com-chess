@@ -1,13 +1,6 @@
 import Piece from "./Piece";
 import { numRank, numFile } from "./squareConverters";
-
-type Promotable = "knight" | "bishop" | "rook" | "queen";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: Promotable;
-};
+import { Move } from "../types";
 
 export default function applyMoves(pieces: Piece[], moves: Move[]) {
   const board: (null | Piece)[][] = Array.from({ length: 8 }, () =>

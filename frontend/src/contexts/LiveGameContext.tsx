@@ -4,24 +4,17 @@ import {
   useState,
   useMemo,
   useLayoutEffect,
-  useRef
+  useRef,
 } from "react";
 import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
 import Piece from "../utils/Piece";
 import { socket } from "../config/socket";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
+import { Move } from "../types";
 
 type Props = {
   children: React.ReactNode;
-};
-
-type Promotable = "knight" | "bishop" | "rook" | "queen";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: Promotable;
 };
 
 type GameInfo = {
@@ -92,7 +85,7 @@ export function LiveGameContextProvider({ children }: Props) {
     minutes: 0,
     increment: 0,
     blackTime: 0,
-    whiteTime: 0
+    whiteTime: 0,
   });
   const [color, setColor] = useState<"white" | "black">("white");
   const [orientation, setOrientation] = useState<"white" | "black">("white");
@@ -156,7 +149,7 @@ export function LiveGameContextProvider({ children }: Props) {
       minutes: 0,
       increment: 0,
       blackTime: 0,
-      whiteTime: 0
+      whiteTime: 0,
     });
     setOrientation("white");
     setWhiteTime(0);
@@ -203,7 +196,7 @@ export function LiveGameContextProvider({ children }: Props) {
         maxWhiteTime,
         maxBlackTime,
         setMaxWhiteTime,
-        setMaxBlackTime
+        setMaxBlackTime,
       }}
     >
       {children}

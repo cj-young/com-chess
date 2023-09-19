@@ -2,12 +2,7 @@ import { useMemo } from "react";
 import movesToAlgebraic from "../utils/movesToAlgebraic";
 import "../styles/TopLines.scss";
 import getEval from "../utils/getEval";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
+import { Move } from "../types";
 
 type Line = {
   eval: number;

@@ -1,8 +1,4 @@
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
+import { Move } from "../types";
 
 const promotableSuffixes = new Map([
   ["knight", "n"],

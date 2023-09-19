@@ -1,20 +1,10 @@
 import { useMemo } from "react";
 import movesToAlgebraic from "../utils/movesToAlgebraic";
 import "../styles/Sideline.scss";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
-
-type Sideline = {
-  startsAt: number;
-  moves: Move[];
-};
+import { Move, Sideline as SidelineType } from "../types";
 
 type Props = {
-  sideline: Sideline;
+  sideline: SidelineType;
   index: number;
   moves: Move[];
   isCurrent: boolean;

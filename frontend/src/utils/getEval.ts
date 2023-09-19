@@ -1,15 +1,4 @@
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
-
-type Line = {
-  eval: number;
-  moves: Move[];
-  leadingMoves: Move[];
-  type: "mate" | "cp";
-};
+import { Line } from "../types";
 
 export default function getEval(line: Line): {
   adv: string;

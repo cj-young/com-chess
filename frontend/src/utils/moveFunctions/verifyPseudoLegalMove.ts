@@ -4,17 +4,7 @@ import generateKnightAttackBitboard from "./attackBitboards/knight";
 import generatePawnAttackBitboard from "./attackBitboards/pawn";
 import generateQueenAttackBitboard from "./attackBitboards/queen";
 import generateRookAttackBitboard from "./attackBitboards/rook";
-
-type Position = {
-  whitePieces: bigint;
-  blackPieces: bigint;
-  pawns: bigint;
-  knights: bigint;
-  bishops: bigint;
-  rooks: bigint;
-  queens: bigint;
-  kings: bigint;
-};
+import { Position } from "../../types";
 
 export default function verifyPseudoLegalMove(
   position: Position,
@@ -40,7 +30,7 @@ export default function verifyPseudoLegalMove(
     bishops: position.bishops & ~(fromBitboard | toBitboard),
     rooks: position.rooks & ~(fromBitboard | toBitboard),
     queens: position.queens & ~(fromBitboard | toBitboard),
-    kings: position.kings & ~(fromBitboard | toBitboard)
+    kings: position.kings & ~(fromBitboard | toBitboard),
   };
 
   // Add moved piece
@@ -48,31 +38,31 @@ export default function verifyPseudoLegalMove(
     case "pawn":
       newPosition = {
         ...newPosition,
-        pawns: (position.pawns & ~fromBitboard) | toBitboard
+        pawns: (position.pawns & ~fromBitboard) | toBitboard,
       };
       break;
     case "knight":
       newPosition = {
         ...newPosition,
-        knights: (position.knights & ~fromBitboard) | toBitboard
+        knights: (position.knights & ~fromBitboard) | toBitboard,
       };
       break;
     case "bishop":
       newPosition = {
         ...newPosition,
-        bishops: (position.bishops & ~fromBitboard) | toBitboard
+        bishops: (position.bishops & ~fromBitboard) | toBitboard,
       };
       break;
     case "rook":
       newPosition = {
         ...newPosition,
-        rooks: (position.rooks & ~fromBitboard) | toBitboard
+        rooks: (position.rooks & ~fromBitboard) | toBitboard,
       };
       break;
     case "queen":
       newPosition = {
         ...newPosition,
-        queens: (position.queens & ~fromBitboard) | toBitboard
+        queens: (position.queens & ~fromBitboard) | toBitboard,
       };
       break;
     case "king":
@@ -117,7 +107,7 @@ export default function verifyPseudoLegalMove(
       }
       newPosition = {
         ...newPosition,
-        kings: (position.kings & ~fromBitboard) | toBitboard
+        kings: (position.kings & ~fromBitboard) | toBitboard,
       };
       break;
   }

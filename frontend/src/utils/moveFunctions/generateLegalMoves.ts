@@ -8,23 +8,7 @@ import generatePseudoLegalQueenMoves from "./pseudoLegalMoves/queen";
 import generatePseudoLegalRookMoves from "./pseudoLegalMoves/rook";
 import squareToIndex from "./squareToIndex";
 import indexToSquare from "./indexToSquare";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "queen" | "rook" | "bishop" | "knight";
-};
-
-type Position = {
-  whitePieces: bigint;
-  blackPieces: bigint;
-  pawns: bigint;
-  knights: bigint;
-  bishops: bigint;
-  rooks: bigint;
-  queens: bigint;
-  kings: bigint;
-};
+import { Position, Move } from "../../types";
 
 export default function generateLegalMoves(
   pieces: Piece[],
@@ -44,7 +28,7 @@ export default function generateLegalMoves(
     bishops: 0n,
     rooks: 0n,
     queens: 0n,
-    kings: 0n
+    kings: 0n,
   };
 
   // Add pieces to bitboards
@@ -84,7 +68,7 @@ export default function generateLegalMoves(
 
   const canCastle = {
     kingSide: true,
-    queenSide: true
+    queenSide: true,
   };
 
   const aRook = `a${turn === "white" ? 1 : 8}`;

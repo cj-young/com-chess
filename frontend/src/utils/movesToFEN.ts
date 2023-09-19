@@ -3,6 +3,7 @@ import generateStartingPosition from "./generateStartingPosition";
 import squareToIndex from "./squareToIndex";
 import { numSquare } from "./squareConverters";
 import Piece from "./Piece";
+import { Move } from "../types";
 
 const pieceToLetter = new Map([
   [
@@ -28,12 +29,6 @@ const pieceToLetter = new Map([
     ]),
   ],
 ]);
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
 
 export default function movesToFEN(moves: Move[]) {
   const pieces = applyMoves(generateStartingPosition(), moves);

@@ -9,17 +9,10 @@ import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
 import Piece from "../utils/Piece";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
+import { Move } from "../types";
 
 type Props = {
   children: React.ReactNode;
-};
-
-type Promotable = "knight" | "bishop" | "rook" | "queen";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: Promotable;
 };
 
 type TGameState = "creating" | "playing";

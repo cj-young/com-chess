@@ -1,12 +1,7 @@
 import { pieceImages } from "../utils/Piece";
 import "../styles/PawnPromoter.scss";
 import { numFile } from "../utils/squareConverters";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
+import { Move } from "../types";
 
 type Props = {
   from: string;

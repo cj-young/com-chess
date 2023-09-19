@@ -1,11 +1,6 @@
 import uciToMove from "./uciToMove";
 import moveToUCI from "./moveToUCI";
-
-type Move = {
-  from: string;
-  to: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
+import { Move } from "../types";
 
 export function findBestMove(
   moves: Move[],

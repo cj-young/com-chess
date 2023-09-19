@@ -2,12 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Piece from "../utils/Piece";
 import { letterSquare } from "../utils/squareConverters";
 import PawnPromoter from "./PawnPromoter";
-
-type Move = {
-  to: string;
-  from: string;
-  promoteTo?: "knight" | "bishop" | "rook" | "queen";
-};
+import { Move } from "../types";
 
 type Props = {
   piece: Piece;
