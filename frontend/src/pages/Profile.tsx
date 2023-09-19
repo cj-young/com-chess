@@ -99,7 +99,7 @@ export default function Profile({ setProfileKey }: Props) {
               <h2>{username}</h2>
               {!isSelf && (
                 <div className="profile__buttons">
-                  {username && friends.includes(username) ? (
+                  {friends && username && friends.includes(username) ? (
                     <button
                       className="profile__remove-friend"
                       onClick={handleRemoveFriend}
