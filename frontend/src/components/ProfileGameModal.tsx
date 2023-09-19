@@ -1,11 +1,13 @@
 import { useState, useMemo } from "react";
 import "../styles/ProfileGameModal.scss";
+import { socket } from "../config/socket";
 
 type Props = {
   close: () => void;
+  username: string;
 };
 
-export default function ProfileGameModal({ close }: Props) {
+export default function ProfileGameModal({ close, username }: Props) {
   const [minutes, setMinutes] = useState("10");
   const [increment, setIncrement] = useState("0");
 
@@ -34,6 +36,13 @@ export default function ProfileGameModal({ close }: Props) {
 
   function handleIncrementBlur() {
     if (+increment > 30) setIncrement("30");
+  }
+
+  function handleCreate() {
+    if (canCreate) {
+      socket.emit("gameRequest", { username, minutes, increment });
+      close();
+    }
   }
 
   return (
@@ -68,7 +77,7 @@ export default function ProfileGameModal({ close }: Props) {
           />
           <label htmlFor="increment">Increment</label>
         </div>
-        <button>Create</button>
+        <button onClick={handleCreate}>Create</button>
       </div>
     </div>
   );

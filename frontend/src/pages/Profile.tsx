@@ -193,7 +193,12 @@ export default function Profile({ setProfileKey }: Props) {
           </div>
         )}
       </div>
-      {showModal && <ProfileGameModal close={() => setShowModal(false)} />}
+      {showModal && username && (
+        <ProfileGameModal
+          close={() => setShowModal(false)}
+          username={username}
+        />
+      )}
     </div>
   );
 }
