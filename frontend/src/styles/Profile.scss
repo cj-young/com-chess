@@ -3,11 +3,13 @@
 .profile {
   &__container {
     color: var(--clr-text-primary);
-    padding-inline: 8rem;
+    padding-inline: 1rem;
     display: grid;
+    position: relative;
 
     @include large-screen {
       grid-template-columns: 1fr 10rem;
+      padding-inline: 8rem;
     }
 
     h2 {

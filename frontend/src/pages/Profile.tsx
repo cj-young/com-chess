@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useUserContext } from "../contexts/UserContext";
-import { useAuthContext } from "../contexts/AuthContext";
 import "../styles/Profile.scss";
 import Loading from "./Loading";
 import { socket } from "../config/socket";
+import ProfileGameModal from "../components/ProfileGameModal";
 
 type Props = {
   setProfileKey: React.Dispatch<React.SetStateAction<string>>;
@@ -38,6 +38,7 @@ export default function Profile({ setProfileKey }: Props) {
   const [pastGames, setPastGames] = useState<PastGame[]>();
   const [username, setUsername] = useState<string>();
   const [friendRequestSent, setFriendRequestSent] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const { username: usernameParam } = useParams();
   const { friends } = useUserContext();
@@ -117,7 +118,12 @@ export default function Profile({ setProfileKey }: Props) {
                       Add Friend
                     </button>
                   )}
-                  <button className="profile__play">Play</button>
+                  <button
+                    className="profile__play"
+                    onClick={() => setShowModal(true)}
+                  >
+                    Play
+                  </button>
                 </div>
               )}
             </div>
@@ -187,6 +193,7 @@ export default function Profile({ setProfileKey }: Props) {
           </div>
         )}
       </div>
+      {showModal && <ProfileGameModal close={() => setShowModal(false)} />}
     </div>
   );
 }
