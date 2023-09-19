@@ -11,7 +11,7 @@ import generateStartingPosition from "../utils/generateStartingPosition";
 import Piece from "../utils/Piece";
 import { socket } from "../config/socket";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
-import { Move } from "../types";
+import { Color, Move } from "../types";
 
 type Props = {
   children: React.ReactNode;
@@ -37,10 +37,10 @@ type TLiveGameContext = {
   makeMove: (move: Move) => void;
   gameInfo: GameInfo;
   setGameInfo: React.Dispatch<React.SetStateAction<GameInfo>>;
-  color: "white" | "black";
-  setColor: React.Dispatch<React.SetStateAction<"white" | "black">>;
-  orientation: "white" | "black";
-  setOrientation: React.Dispatch<React.SetStateAction<"white" | "black">>;
+  color: Color;
+  setColor: React.Dispatch<React.SetStateAction<Color>>;
+  orientation: Color;
+  setOrientation: React.Dispatch<React.SetStateAction<Color>>;
   whiteTime: number;
   setWhiteTime: React.Dispatch<React.SetStateAction<number>>;
   blackTime: number;
@@ -48,7 +48,7 @@ type TLiveGameContext = {
   selectedPiece: Piece | null;
   setSelectedPiece: React.Dispatch<React.SetStateAction<Piece | null>>;
   legalMoves: string[];
-  turn: "white" | "black";
+  turn: Color;
   moveIndex: number;
   setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
   moveStartTime: React.MutableRefObject<number>;
@@ -87,8 +87,8 @@ export function LiveGameContextProvider({ children }: Props) {
     blackTime: 0,
     whiteTime: 0,
   });
-  const [color, setColor] = useState<"white" | "black">("white");
-  const [orientation, setOrientation] = useState<"white" | "black">("white");
+  const [color, setColor] = useState<Color>("white");
+  const [orientation, setOrientation] = useState<Color>("white");
   const [whiteTime, setWhiteTime] = useState(0);
   const [blackTime, setBlackTime] = useState(0);
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);

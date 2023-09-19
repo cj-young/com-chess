@@ -1,5 +1,7 @@
 export type Promotable = "knight" | "bishop" | "rook" | "queen";
 
+export type Color = "white" | "black";
+
 export type Move = {
   to: string;
   from: string;

@@ -8,12 +8,12 @@ import {
   rank7,
   rank8,
 } from "../bitboardMasks";
-import { Position } from "../../../types";
+import { Color, Position } from "../../../types";
 
 export default function generatePseudoLegalKnightMoves(
   position: Position,
   square: bigint,
-  turn: "white" | "black"
+  turn: Color
 ): bigint[] {
   const res: bigint[] = [];
 

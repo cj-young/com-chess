@@ -1,10 +1,10 @@
 import { fileA, fileH, rank1, rank8 } from "../bitboardMasks";
-import { Position } from "../../../types";
+import { Color, Position } from "../../../types";
 
 export default function generatePseudoLegalKingMoves(
   position: Position,
   square: bigint,
-  turn: "white" | "black",
+  turn: Color,
   canCastle: {
     kingSide: boolean;
     queenSide: boolean;

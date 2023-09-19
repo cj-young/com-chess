@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import { numSquare } from "../utils/squareConverters";
+import { Color } from "../types";
 
 type Props = {
   to: string;
   from: string;
   boardRef: React.MutableRefObject<HTMLDivElement | null>;
-  orientation: "white" | "black";
+  orientation: Color;
 };
 
 export default function BoardArrow({ to, from, boardRef, orientation }: Props) {

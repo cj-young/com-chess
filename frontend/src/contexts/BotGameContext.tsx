@@ -9,7 +9,7 @@ import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
 import Piece from "../utils/Piece";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
-import { Move } from "../types";
+import { Color, Move } from "../types";
 
 type Props = {
   children: React.ReactNode;
@@ -24,14 +24,14 @@ type TBotGameContext = {
   setMoves: React.Dispatch<React.SetStateAction<Move[]>>;
   pieces: Piece[];
   makeMove: (move: Move) => void;
-  color: "white" | "black";
-  setColor: React.Dispatch<React.SetStateAction<"white" | "black">>;
-  orientation: "white" | "black";
-  setOrientation: React.Dispatch<React.SetStateAction<"white" | "black">>;
+  color: Color;
+  setColor: React.Dispatch<React.SetStateAction<Color>>;
+  orientation: Color;
+  setOrientation: React.Dispatch<React.SetStateAction<Color>>;
   selectedPiece: Piece | null;
   setSelectedPiece: React.Dispatch<React.SetStateAction<Piece | null>>;
   legalMoves: string[];
-  turn: "white" | "black";
+  turn: Color;
   moveIndex: number;
   setMoveIndex: React.Dispatch<React.SetStateAction<number>>;
   resetBotGameContext: () => void;
@@ -64,8 +64,8 @@ export function BotGameContextProvider({ children }: Props) {
   const [difficulty, setDifficulty] = useState<
     "easy" | "medium" | "hard" | "impossible"
   >("impossible");
-  const [color, setColor] = useState<"white" | "black">("white");
-  const [orientation, setOrientation] = useState<"white" | "black">("white");
+  const [color, setColor] = useState<Color>("white");
+  const [orientation, setOrientation] = useState<Color>("white");
   const [selectedPiece, setSelectedPiece] = useState<Piece | null>(null);
   const [gameOver, setGameOver] = useState(false);
 

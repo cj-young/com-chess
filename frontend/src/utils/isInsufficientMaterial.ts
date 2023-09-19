@@ -1,10 +1,7 @@
 import applyMoves from "./applyMoves";
 import generateStartingPosition from "./generateStartingPosition";
-import { Move } from "../types";
-export default function isInsufficientMaterial(
-  moves: Move[],
-  color: "white" | "black"
-) {
+import { Color, Move } from "../types";
+export default function isInsufficientMaterial(moves: Move[], color: Color) {
   const pieces = applyMoves(generateStartingPosition(), moves);
 
   const cache = new Map([

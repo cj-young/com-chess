@@ -4,11 +4,11 @@ import generateKnightAttackBitboard from "./attackBitboards/knight";
 import generatePawnAttackBitboard from "./attackBitboards/pawn";
 import generateQueenAttackBitboard from "./attackBitboards/queen";
 import generateRookAttackBitboard from "./attackBitboards/rook";
-import { Position } from "../../types";
+import { Color, Position } from "../../types";
 
 export default function verifyPseudoLegalMove(
   position: Position,
-  turn: "white" | "black",
+  turn: Color,
   move: { from: bigint; to: bigint },
   type: "pawn" | "knight" | "bishop" | "rook" | "queen" | "king"
 ): boolean {

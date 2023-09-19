@@ -6,8 +6,9 @@ import generatePawnAttackBitboard from "./moveFunctions/attackBitboards/pawn";
 import generateQueenAttackBitboard from "./moveFunctions/attackBitboards/queen";
 import generateRookAttackBitboard from "./moveFunctions/attackBitboards/rook";
 import Piece from "./Piece";
+import { Color } from "../types";
 
-export default function isInCheck(pieces: Piece[], color: "white" | "black") {
+export default function isInCheck(pieces: Piece[], color: Color) {
   const position = {
     whitePieces: 0n,
     blackPieces: 0n,
@@ -16,7 +17,7 @@ export default function isInCheck(pieces: Piece[], color: "white" | "black") {
     bishops: 0n,
     rooks: 0n,
     queens: 0n,
-    kings: 0n
+    kings: 0n,
   };
 
   // Add pieces to bitboards

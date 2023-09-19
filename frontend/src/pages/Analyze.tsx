@@ -24,7 +24,7 @@ import moveToUCI from "../utils/moveToUCI";
 import getEval from "../utils/getEval";
 import canMove from "../utils/canMove";
 import isInCheck from "../utils/isInCheck";
-import { Move } from "../types";
+import { Color, Move } from "../types";
 
 type Line = {
   eval: number;
@@ -68,7 +68,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [moves, setMoves] = useState<Move[]>([]);
   const [moveIndex, setMoveIndex] = useState(-1);
-  const [orientation, setOrientation] = useState<"white" | "black">("white");
+  const [orientation, setOrientation] = useState<Color>("white");
   const [pastGames, setPastGames] = useState<PastGame[]>([]);
   const [sidelines, setSidelines] = useState<{ [key: number]: Sideline[] }>({});
   const [currentSideline, setCurrentSideline] = useState<
@@ -91,7 +91,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
   const bufferMovesRef = useRef<Line[]>();
   bufferMovesRef.current = bufferMoves;
 
-  const color = useRef<null | "white" | "black">(null);
+  const color = useRef<null | Color>(null);
 
   const sfRef = useRef<Worker>();
 

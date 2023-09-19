@@ -1,10 +1,10 @@
+import { Color } from "../types";
 import Piece from "./Piece";
 
 const files = "abcdefgh";
 
 export default function generateStartingPosition(): Piece[] {
   const res = [];
-  type Color = "white" | "black";
   const colors: Color[] = ["white", "black"];
 
   for (let color of colors) {

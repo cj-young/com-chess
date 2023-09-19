@@ -1,9 +1,9 @@
 import { fileA, fileH, rank1, rank8 } from "../bitboardMasks";
-import { Position } from "../../../types";
+import { Color, Position } from "../../../types";
 
 export default function generateQueenAttackBitboard(
   position: Position,
-  color: "white" | "black"
+  color: Color
 ): bigint {
   const friendlyPieces =
     color === "white" ? position.whitePieces : position.blackPieces;

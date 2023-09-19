@@ -1,15 +1,15 @@
 import { pieceImages } from "../utils/Piece";
 import "../styles/PawnPromoter.scss";
 import { numFile } from "../utils/squareConverters";
-import { Move } from "../types";
+import { Color, Move } from "../types";
 
 type Props = {
   from: string;
   to: string;
-  color: "white" | "black";
+  color: Color;
   close: () => void;
   makeMove: (move: Move) => void;
-  orientation: "white" | "black";
+  orientation: Color;
 };
 
 export default function PawnPromoter({

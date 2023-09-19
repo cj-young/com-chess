@@ -1,11 +1,11 @@
-import { Line } from "../types";
+import { Color, Line } from "../types";
 
 export default function getEval(line: Line): {
   adv: string;
-  isWinning: "black" | "white";
+  isWinning: Color;
 } {
   let res: string;
-  let isWinning: "black" | "white";
+  let isWinning: Color;
   if (line.type === "cp") {
     res = (line.eval / 100).toFixed(2);
     if (line.eval > 0) {

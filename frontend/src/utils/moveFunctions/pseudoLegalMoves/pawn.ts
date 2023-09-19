@@ -1,10 +1,10 @@
 import { fileA, fileH, rank2, rank7 } from "../bitboardMasks";
-import { Position } from "../../../types";
+import { Color, Position } from "../../../types";
 
 export default function generatePseudoLegalPawnMoves(
   position: Position,
   square: bigint,
-  turn: "white" | "black",
+  turn: Color,
   enPassantSquare: null | bigint
 ): bigint[] {
   const squareBitboard = 1n << square;

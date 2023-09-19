@@ -2,11 +2,12 @@ import { numFile, numRank } from "../utils/squareConverters";
 import "../styles/SquareHighlight.scss";
 import { useMemo } from "react";
 import Piece from "../utils/Piece";
+import { Color } from "../types";
 
 type Props = {
   square: string;
   type: "previousMove" | "selectedPiece" | "legalMove" | "hoverSquare";
-  orientation: "white" | "black";
+  orientation: Color;
   pieces: Piece[];
 };
 

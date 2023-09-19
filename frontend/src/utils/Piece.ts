@@ -10,6 +10,7 @@ import queenWhite from "../assets/chess-pieces/queen-white.svg";
 import queenBlack from "../assets/chess-pieces/queen-black.svg";
 import kingWhite from "../assets/chess-pieces/king-white.svg";
 import kingBlack from "../assets/chess-pieces/king-black.svg";
+import { Color } from "../types";
 
 export type PieceType =
   | "pawn"
@@ -18,12 +19,11 @@ export type PieceType =
   | "rook"
   | "queen"
   | "king";
-type Color = "white" | "black";
 
 function makePieceColorMap(whitePiece: string, blackPiece: string) {
   return new Map<Color, string>([
     ["white", whitePiece],
-    ["black", blackPiece]
+    ["black", blackPiece],
   ]);
 }
 
@@ -33,7 +33,7 @@ export const pieceImages = new Map<PieceType, Map<Color, string>>([
   ["bishop", makePieceColorMap(bishopWhite, bishopBlack)],
   ["rook", makePieceColorMap(rookWhite, rookBlack)],
   ["queen", makePieceColorMap(queenWhite, queenBlack)],
-  ["king", makePieceColorMap(kingWhite, kingBlack)]
+  ["king", makePieceColorMap(kingWhite, kingBlack)],
 ]);
 
 export const pieceValues = new Map<PieceType, number>([
@@ -42,7 +42,7 @@ export const pieceValues = new Map<PieceType, number>([
   ["bishop", 3],
   ["rook", 5],
   ["queen", 9],
-  ["king", Infinity]
+  ["king", Infinity],
 ]);
 
 export default class Piece {

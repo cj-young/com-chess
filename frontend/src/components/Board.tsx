@@ -10,13 +10,13 @@ import PawnPromoter from "./PawnPromoter";
 import Piece from "../utils/Piece";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
 import BoardArrow from "./BoardArrow";
-import { Move } from "../types";
+import { Color, Move } from "../types";
 
 type Props = {
   pieces: Piece[];
   moves: Move[];
-  orientation: "white" | "black";
-  setOrientation: React.Dispatch<React.SetStateAction<"white" | "black">>;
+  orientation: Color;
+  setOrientation: React.Dispatch<React.SetStateAction<Color>>;
   prevMove: () => void;
   nextMove: () => void;
   moveIndex: number;

@@ -2,12 +2,13 @@ import { useMemo } from "react";
 import Piece, { PieceType, pieceImages, pieceValues } from "../utils/Piece";
 import "../styles/PlayerInfo.scss";
 import { Link } from "react-router-dom";
+import { Color } from "../types";
 
 type Props = {
   pieces: Piece[];
   username: string;
-  orientation: "black" | "white";
-  color: "black" | "white";
+  orientation: Color;
+  color: Color;
   isLink: boolean;
 };
 

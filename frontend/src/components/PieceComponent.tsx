@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Piece from "../utils/Piece";
 import { letterSquare } from "../utils/squareConverters";
 import PawnPromoter from "./PawnPromoter";
-import { Move } from "../types";
+import { Color, Move } from "../types";
 
 type Props = {
   piece: Piece;
@@ -12,7 +12,7 @@ type Props = {
   selectedPiece: Piece | null;
   setSelectedPiece: React.Dispatch<React.SetStateAction<Piece | null>>;
   legalMoves: string[];
-  orientation: "white" | "black";
+  orientation: Color;
   makeMove: (move: Move) => void;
   canDrag: boolean;
 };

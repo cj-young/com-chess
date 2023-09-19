@@ -1,9 +1,9 @@
 import { fileA, fileH, rank8 } from "../bitboardMasks";
-import { Position } from "../../../types";
+import { Color, Position } from "../../../types";
 
 export default function generatePawnAttackBitboard(
   position: Position,
-  color: "white" | "black"
+  color: Color
 ) {
   const friendlyPieces =
     color === "white" ? position.whitePieces : position.blackPieces;
