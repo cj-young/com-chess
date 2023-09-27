@@ -8,7 +8,7 @@ This is a full-stack chess application built with the MERN stack (MongoDB, Expre
 - Engine analysis using Stockfish
 - Friend system
 
-## Setup
+## Getting Started
 
 ### Installation
 1. Clone the repository
