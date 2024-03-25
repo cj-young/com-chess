@@ -12,17 +12,10 @@ require("dotenv").config();
 const app = express();
 const httpServer = createServer(app);
 
-const originRegex = /^(http|https):\/\/localhost:4000($|\/.*$)/;
 app.use(
   cors({
     credentials: true,
-    origin: (origin, callback) => {
-      if (!origin || originRegex.test(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    }
+    origin: process.env.CLIENT_URL
   })
 );
 
