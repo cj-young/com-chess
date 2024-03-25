@@ -1,3 +1,4 @@
+import { Color, Position } from "../../../types";
 import {
   fileA,
   fileB,
@@ -6,9 +7,8 @@ import {
   rank1,
   rank2,
   rank7,
-  rank8,
+  rank8
 } from "../bitboardMasks";
-import { Color, Position } from "../../../types";
 
 export default function generatePseudoLegalKnightMoves(
   position: Position,
@@ -17,8 +17,6 @@ export default function generatePseudoLegalKnightMoves(
 ): bigint[] {
   const res: bigint[] = [];
 
-  const enemyPieces =
-    turn === "white" ? position.blackPieces : position.whitePieces;
   const friendlyPieces =
     turn === "white" ? position.whitePieces : position.blackPieces;
 
