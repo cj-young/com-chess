@@ -1,15 +1,17 @@
-import { FormEvent, useState } from "react";
-import { useAuthContext } from "../contexts/AuthContext";
-import { Link, useParams } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import "../styles/Login.scss";
+import { FormEvent, useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import googleLogo from "../assets/google-icon.svg";
 import logo from "../assets/logo-light.svg";
 import ErrorPopup from "../components/ErrorPopup";
+import LoginDemoNotification from "../components/LoginDemoNotification";
 import Spinner from "../components/Spinner";
+import { useAuthContext } from "../contexts/AuthContext";
+import "../styles/Login.scss";
 
 export default function Login() {
   const { error: paramsError } = useParams();
+  const [searchParams, _setSearchParams] = useSearchParams();
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -19,13 +21,28 @@ export default function Login() {
   const [errorKey, setErrorKey] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  const [wasDemoNotificationClosed, setWasDemoNotificationClosed] =
+    useState(false);
+
+  const isDemoNotificationOpen =
+    !wasDemoNotificationClosed &&
+    searchParams.get("demoIdentifier") &&
+    searchParams.get("demoPassword");
+
   const { logInLocal, logInGoogle } = useAuthContext();
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function handleSubmit(e?: FormEvent<HTMLFormElement>) {
+    if (e) e.preventDefault();
+    submitLoginData(identifier, password);
+  }
+
+  async function submitLoginData(
+    identifierToSend: string,
+    passwordToSend: string
+  ) {
     setLoading(true);
     try {
-      await logInLocal(identifier, password);
+      await logInLocal(identifierToSend, passwordToSend);
     } catch (error) {
       const newErrorMessage: string =
         error instanceof Error ? error.message : String(error);
@@ -36,6 +53,17 @@ export default function Login() {
     }
   }
 
+  function handleApplyDemo() {
+    const demoIdentifier = searchParams.get("demoIdentifier");
+    const demoPassword = searchParams.get("demoPassword");
+    setWasDemoNotificationClosed(true);
+    if (!demoIdentifier || !demoPassword) return;
+    setIdentifier(demoIdentifier);
+    setPassword(demoPassword);
+    submitLoginData(demoIdentifier, demoPassword);
+    handleSubmit();
+  }
+
   function handleGoogleLogin() {
     logInGoogle();
   }
@@ -44,6 +72,11 @@ export default function Login() {
     <div className="login">
       <AnimatePresence initial={false} mode="wait">
         {errorMessage && <ErrorPopup message={errorMessage} key={errorKey} />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isDemoNotificationOpen && (
+          <LoginDemoNotification onApply={handleApplyDemo} />
+        )}
       </AnimatePresence>
       <img src={logo} alt="Com.chess" className="logo" />
       <div className="login-container">
