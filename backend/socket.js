@@ -13,7 +13,7 @@ const isInsufficientMaterial = require("./utils/isInsufficientMaterial");
 module.exports = (server, sessionMiddleware, passport) => {
   const io = new Server(server, {
     cors: {
-      origin: process.env.BACKEND_URL,
+      origin: process.env.CLIENT_URL,
       credentials: true
     }
   });
