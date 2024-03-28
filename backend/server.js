@@ -37,7 +37,8 @@ const sessionMiddleware = session({
   cookie: {
     maxAge: 1000 * 60 * 60 * 24,
     secure: true,
-    sameSite: "none"
+    sameSite: "none",
+    domain: "onrender.com"
   }
 });
 app.use(sessionMiddleware);
