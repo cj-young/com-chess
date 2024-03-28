@@ -61,10 +61,12 @@ module.exports = (passport) => {
   );
 
   passport.serializeUser((user, done) => {
+    console.log("serializeUser running");
     done(null, user.id);
   });
 
   passport.deserializeUser((id, done) => {
+    console.log("deserializeUser running");
     User.findById(id)
       .then((user) => {
         done(null, user);
