@@ -21,7 +21,6 @@ app.use(
 
 initializePassport(passport);
 
-app.set("trust proxy", 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -36,12 +35,15 @@ const sessionMiddleware = session({
   saveUninitialized: false,
   store: MongoStore.create(mongoStoreOptions),
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24,
-    secure: true,
-    sameSite: "none"
+    maxAge: 1000 * 60 * 60 * 24
   }
 });
 app.use(sessionMiddleware);
+
+app.use((req, res, next) => {
+  console.log("cookies: ", req.headers.cookie);
+  next();
+});
 
 app.use(passport.initialize());
 app.use(passport.session());
