@@ -39,7 +39,7 @@ const sessionMiddleware = session({
     maxAge: 1000 * 60 * 60 * 24,
     secure: true,
     sameSite: "none",
-    domain: "onrender.com"
+    domain: ".onrender.com"
   }
 });
 app.use(sessionMiddleware);
