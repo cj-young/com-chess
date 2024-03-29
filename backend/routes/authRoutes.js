@@ -35,7 +35,6 @@ router.get(
 );
 router.get("/google/callback", (req, res, next) => {
   console.log("Google callback");
-  console.log(req);
   passport.authenticate("google", {
     // successRedirect: process.env.CLIENT_URL,
     successRedirect: `${process.env.CLIENT_URL}/login/redirect`,
