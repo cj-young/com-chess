@@ -35,7 +35,9 @@ const sessionMiddleware = session({
   saveUninitialized: false,
   store: MongoStore.create(mongoStoreOptions),
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24
+    maxAge: 1000 * 60 * 60 * 24,
+    secure: true,
+    sameSite: "none"
   }
 });
 app.use(sessionMiddleware);
