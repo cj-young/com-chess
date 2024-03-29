@@ -1,18 +1,27 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { useAuthContext } from "../contexts/AuthContext";
-import { Navigate } from "react-router-dom";
+
+const REDIRECT_ERROR_MESSAGE =
+  "OAuth login failed, make sure third party (cross-origin) cookies are enabled.";
 
 export default function Redirect() {
   const { getUser } = useAuthContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
       try {
         await getUser();
-        return <Navigate to="/" />;
+        navigate("/");
       } catch (error) {
-        return <Navigate to="/login" />;
+        const queryParams = new URLSearchParams();
+        queryParams.set("error", REDIRECT_ERROR_MESSAGE);
+        navigate({
+          pathname: "/login",
+          search: `?${queryParams.toString()}`
+        });
       }
     })();
   }, []);

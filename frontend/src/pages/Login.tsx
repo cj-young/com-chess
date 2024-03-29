@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 import { FormEvent, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import googleLogo from "../assets/google-icon.svg";
 import logo from "../assets/logo-light.svg";
 import ErrorPopup from "../components/ErrorPopup";
@@ -10,13 +10,12 @@ import { useAuthContext } from "../contexts/AuthContext";
 import "../styles/Login.scss";
 
 export default function Login() {
-  const { error: paramsError } = useParams();
   const [searchParams, _setSearchParams] = useSearchParams();
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(
-    paramsError ? "Login unsuccessful" : ""
+    searchParams.get("error") ?? ""
   );
   const [errorKey, setErrorKey] = useState(0);
   const [loading, setLoading] = useState(false);
