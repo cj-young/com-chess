@@ -2,8 +2,8 @@ import {
   Dispatch,
   SetStateAction,
   createContext,
-  useState,
   useContext,
+  useState
 } from "react";
 import validator from "validator";
 
@@ -46,9 +46,9 @@ export function AuthContextProvider({ children }: Props) {
           credentials: "include",
           headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify({ identifier, password }),
+          body: JSON.stringify({ identifier, password })
         }
       );
 
@@ -68,7 +68,7 @@ export function AuthContextProvider({ children }: Props) {
       console.log(data);
       const user: User = {
         id: data.id,
-        username: data.username,
+        username: data.username
       };
 
       setUser(user);
@@ -96,8 +96,8 @@ export function AuthContextProvider({ children }: Props) {
       {
         credentials: "include",
         headers: {
-          Accept: "application/json",
-        },
+          Accept: "application/json"
+        }
       }
     );
 
@@ -153,9 +153,9 @@ export function AuthContextProvider({ children }: Props) {
         credentials: "include",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ username, email, password, confirmPassword }),
+        body: JSON.stringify({ username, email, password, confirmPassword })
       }
     );
 
@@ -174,7 +174,7 @@ export function AuthContextProvider({ children }: Props) {
     const data = await response.json();
     const user: User = {
       id: data.id,
-      username: data.username,
+      username: data.username
     };
     setUser(user);
   }
@@ -184,10 +184,11 @@ export function AuthContextProvider({ children }: Props) {
       `${import.meta.env.VITE_BACKEND_URL}/auth/user`,
       {
         credentials: "include",
+        mode: "cors",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (!response.ok) throw new Error("Invalid authentication");
@@ -213,9 +214,9 @@ export function AuthContextProvider({ children }: Props) {
         credentials: "include",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ username }),
+        body: JSON.stringify({ username })
       }
     );
 
@@ -234,7 +235,7 @@ export function AuthContextProvider({ children }: Props) {
     const data = await response.json();
     const user: User = {
       id: data.id,
-      username: data.username,
+      username: data.username
     };
     setUser(user);
   }
@@ -255,7 +256,7 @@ export function AuthContextProvider({ children }: Props) {
         signUpLocal,
         getUser,
         updateUsername,
-        logInGoogle,
+        logInGoogle
       }}
     >
       {children}
