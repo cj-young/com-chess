@@ -29,6 +29,7 @@ const mongoStoreOptions = {
   collectionName: "sessions"
 };
 
+app.set("trust proxy", 1);
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET,
   resave: false,
