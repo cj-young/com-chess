@@ -4,7 +4,7 @@ import Spinner from "../components/Spinner";
 import { useAuthContext } from "../contexts/AuthContext";
 
 const REDIRECT_ERROR_MESSAGE =
-  "OAuth login failed, make sure third party (cross-origin) cookies are enabled.";
+  "OAuth login failed, make sure third party (cross-origin) cookies are enabled and not isolated.";
 
 export default function Redirect() {
   const { getUser } = useAuthContext();
