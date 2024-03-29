@@ -34,7 +34,6 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 router.get("/google/callback", (req, res, next) => {
-  console.log("Google callback");
   passport.authenticate("google", {
     // successRedirect: process.env.CLIENT_URL,
     successRedirect: `${process.env.CLIENT_URL}/login/redirect`,
