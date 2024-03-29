@@ -70,7 +70,9 @@ const UserSchema = new Schema(
     },
     googleId: {
       type: String,
-      unique: true
+      unique: true,
+      allowNull: true,
+      sparse: true
     },
     friends: {
       type: [Schema.Types.ObjectId],
