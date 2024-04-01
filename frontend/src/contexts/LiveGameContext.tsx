@@ -1,17 +1,17 @@
 import {
   createContext,
   useContext,
-  useState,
-  useMemo,
   useLayoutEffect,
+  useMemo,
   useRef,
+  useState
 } from "react";
+import { socket } from "../config/socket";
+import { Color, Move } from "../types";
+import Piece from "../utils/Piece";
 import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
-import Piece from "../utils/Piece";
-import { socket } from "../config/socket";
 import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
-import { Color, Move } from "../types";
 
 type Props = {
   children: React.ReactNode;
@@ -73,10 +73,11 @@ export function LiveGameContextProvider({ children }: Props) {
     setMoveIndex(moves.length - 1);
   }, [moves]);
   const pieces = useMemo(() => {
-    return applyMoves(
+    const { pieces: newPieces, error: moveError } = applyMoves(
       generateStartingPosition(),
       moves.slice(0, moveIndex + 1)
     );
+    return moveError ? [] : newPieces;
   }, [moves, moveIndex]);
 
   const [gameInfo, setGameInfo] = useState<GameInfo>({
@@ -85,7 +86,7 @@ export function LiveGameContextProvider({ children }: Props) {
     minutes: 0,
     increment: 0,
     blackTime: 0,
-    whiteTime: 0,
+    whiteTime: 0
   });
   const [color, setColor] = useState<Color>("white");
   const [orientation, setOrientation] = useState<Color>("white");
@@ -149,7 +150,7 @@ export function LiveGameContextProvider({ children }: Props) {
       minutes: 0,
       increment: 0,
       blackTime: 0,
-      whiteTime: 0,
+      whiteTime: 0
     });
     setOrientation("white");
     setWhiteTime(0);
@@ -196,7 +197,7 @@ export function LiveGameContextProvider({ children }: Props) {
         maxWhiteTime,
         maxBlackTime,
         setMaxWhiteTime,
-        setMaxBlackTime,
+        setMaxBlackTime
       }}
     >
       {children}

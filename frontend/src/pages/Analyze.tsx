@@ -1,30 +1,30 @@
 import {
-  useState,
   useCallback,
-  useMemo,
   useEffect,
-  useRef,
   useLayoutEffect,
+  useMemo,
+  useRef,
+  useState
 } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useAuthContext } from "../contexts/AuthContext";
-import Piece from "../utils/Piece";
-import Navbar from "../components/Navbar";
-import PlayerInfo from "../components/PlayerInfo";
-import applyMoves from "../utils/applyMoves";
-import generateStartingPosition from "../utils/generateStartingPosition";
 import Board from "../components/Board";
 import Moves from "../components/Moves";
-import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
-import "../styles/Analyze.scss";
-import Loading from "./Loading";
+import Navbar from "../components/Navbar";
+import PlayerInfo from "../components/PlayerInfo";
 import TopLines from "../components/TopLines";
-import uciToMove from "../utils/uciToMove";
-import moveToUCI from "../utils/moveToUCI";
-import getEval from "../utils/getEval";
+import { useAuthContext } from "../contexts/AuthContext";
+import "../styles/Analyze.scss";
+import { Color, Line, Move } from "../types";
+import Piece from "../utils/Piece";
+import applyMoves from "../utils/applyMoves";
 import canMove from "../utils/canMove";
+import generateStartingPosition from "../utils/generateStartingPosition";
+import getEval from "../utils/getEval";
 import isInCheck from "../utils/isInCheck";
-import { Color, Move, Line } from "../types";
+import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
+import moveToUCI from "../utils/moveToUCI";
+import uciToMove from "../utils/uciToMove";
+import Loading from "./Loading";
 
 type PastGame =
   | {
@@ -75,7 +75,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
   const [didMate, setDidMate] = useState<string | null>(null);
   const [posEval, setPosEval] = useState<{ adv: string; isWinning: string }>({
     adv: "+0.00",
-    isWinning: "white",
+    isWinning: "white"
   });
   const [names, setNames] = useState<{ white: string; black: string } | null>(
     null
@@ -119,15 +119,16 @@ export default function Analyze({ setAnalyzeKey }: Props) {
       sidelines[currentSideline[0]][currentSideline[1]];
     return [
       ...moves.slice(0, currentSidelineArr.startsAt),
-      ...currentSidelineArr.moves,
+      ...currentSidelineArr.moves
     ];
   }, [moves, sidelines, currentSideline]);
 
   const pieces = useMemo(() => {
-    return applyMoves(
+    const { pieces: newPieces, error: moveError } = applyMoves(
       generateStartingPosition(),
       modifiedMoves.slice(0, moveIndex + 1)
     );
+    return moveError ? [] : newPieces;
   }, [modifiedMoves, moveIndex]);
 
   const turn = useMemo(() => {
@@ -219,7 +220,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
         setBufferMoves((prevBufferMoves) => [
           ...prevBufferMoves.slice(0, lineRank),
           line,
-          ...prevBufferMoves.slice(lineRank + 1),
+          ...prevBufferMoves.slice(lineRank + 1)
         ]);
       }
     };
@@ -246,7 +247,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
         .slice(firstMoveIndex, Math.min(firstMoveIndex + 10, parts.length - 2))
         .map(uciToMove),
       leadingMoves,
-      type: parts[8] === "mate" ? "mate" : "cp",
+      type: parts[8] === "mate" ? "mate" : "cp"
     };
   }
 
@@ -292,8 +293,8 @@ export default function Analyze({ setAnalyzeKey }: Props) {
             0,
             movesIn + 1
           ),
-          move,
-        ],
+          move
+        ]
       };
 
       setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
@@ -303,12 +304,16 @@ export default function Analyze({ setAnalyzeKey }: Props) {
         [currentSideline[0]]: [
           ...prevSidelines[currentSideline[0]].slice(0, currentSideline[1]),
           updatedSideline,
-          ...prevSidelines[currentSideline[0]].slice(currentSideline[1] + 1),
-        ],
+          ...prevSidelines[currentSideline[0]].slice(currentSideline[1] + 1)
+        ]
       }));
     } else {
       if (moveIndex === moves.length - 1) {
-        const prevPieces = applyMoves(generateStartingPosition(), moves);
+        const { pieces: prevPieces, error: moveError } = applyMoves(
+          generateStartingPosition(),
+          moves
+        );
+        if (moveError) return;
 
         // Verify legality
         const movedPiece = pieces.filter(
@@ -369,12 +374,12 @@ export default function Analyze({ setAnalyzeKey }: Props) {
 
         const updatedSideline = {
           startsAt: moveIndex + 1,
-          moves: [move],
+          moves: [move]
         };
 
         setCurrentSideline([
           moveIndex + 1,
-          sidelines[moveIndex + 1] ? sidelines[moveIndex + 1].length : 0,
+          sidelines[moveIndex + 1] ? sidelines[moveIndex + 1].length : 0
         ]);
 
         setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
@@ -385,8 +390,8 @@ export default function Analyze({ setAnalyzeKey }: Props) {
             ...(prevSidelines[moveIndex + 1]
               ? prevSidelines[moveIndex + 1]
               : []),
-            updatedSideline,
-          ],
+            updatedSideline
+          ]
         }));
       }
     }
@@ -403,8 +408,8 @@ export default function Analyze({ setAnalyzeKey }: Props) {
               credentials: "include",
               headers: {
                 Accept: "application/json",
-                "Content-Type": "application/json",
-              },
+                "Content-Type": "application/json"
+              }
             }
           );
 
@@ -426,7 +431,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
               " Bot";
             setNames({
               white: data.color === "white" ? data.user : botName,
-              black: data.color === "black" ? data.user : botName,
+              black: data.color === "black" ? data.user : botName
             });
             setOrientation(data.color);
             color.current = data.color;
@@ -439,8 +444,8 @@ export default function Analyze({ setAnalyzeKey }: Props) {
               credentials: "include",
               headers: {
                 Accept: "application/json",
-                "Content-Type": "application/json",
-              },
+                "Content-Type": "application/json"
+              }
             }
           );
           const data = await response.json();
@@ -494,7 +499,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
                 {
                   "--translate": `${orientation === "white" ? "-" : ""}${
                     (evalBarOffset || 0) + 50
-                  }%`,
+                  }%`
                 } as React.CSSProperties
               }
             ></div>
@@ -509,7 +514,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
                   color:
                     posEval.isWinning === "white"
                       ? "var(--clr-bg-200)"
-                      : "var(--clr-neutral-100)",
+                      : "var(--clr-neutral-100)"
                 } as React.CSSProperties
               }
             >

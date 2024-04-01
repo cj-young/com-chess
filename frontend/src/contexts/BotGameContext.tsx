@@ -56,10 +56,11 @@ export function BotGameContextProvider({ children }: Props) {
     setMoveIndex(moves.length - 1);
   }, [moves]);
   const pieces = useMemo(() => {
-    return applyMoves(
+    const { pieces, error: moveError } = applyMoves(
       generateStartingPosition(),
       moves.slice(0, moveIndex + 1)
     );
+    return moveError ? [] : pieces;
   }, [moves, moveIndex]);
 
   const [difficulty, setDifficulty] = useState<
@@ -103,7 +104,11 @@ export function BotGameContextProvider({ children }: Props) {
       }
     } catch (error) {}
     setMoves([...updatedMoves]);
-    const prevPieces = applyMoves(generateStartingPosition(), updatedMoves);
+    const { pieces: prevPieces, error: moveError } = applyMoves(
+      generateStartingPosition(),
+      updatedMoves
+    );
+    if (moveError) return;
     // Verify legality
     const movedPiece = prevPieces.filter(
       (p) => p.square === move.from && p.active

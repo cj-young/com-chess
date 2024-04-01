@@ -1,8 +1,15 @@
+import { Color, Move } from "../types";
 import applyMoves from "./applyMoves";
 import generateStartingPosition from "./generateStartingPosition";
-import { Color, Move } from "../types";
 export default function isInsufficientMaterial(moves: Move[], color: Color) {
-  const pieces = applyMoves(generateStartingPosition(), moves);
+  const { pieces, error: moveError } = applyMoves(
+    generateStartingPosition(),
+    moves
+  );
+  if (moveError) {
+    console.error(moveError);
+    return false;
+  }
 
   const cache = new Map([
     ["pawn", 0],
@@ -10,7 +17,7 @@ export default function isInsufficientMaterial(moves: Move[], color: Color) {
     ["bishop", 0],
     ["rook", 0],
     ["queen", 0],
-    ["king", 0],
+    ["king", 0]
   ]);
 
   const firstPieceIndex = color === "white" ? 0 : 16;

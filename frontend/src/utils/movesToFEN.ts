@@ -1,9 +1,9 @@
+import { Move } from "../types";
+import Piece from "./Piece";
 import applyMoves from "./applyMoves";
 import generateStartingPosition from "./generateStartingPosition";
-import squareToIndex from "./squareToIndex";
 import { numSquare } from "./squareConverters";
-import Piece from "./Piece";
-import { Move } from "../types";
+import squareToIndex from "./squareToIndex";
 
 const pieceToLetter = new Map([
   [
@@ -14,8 +14,8 @@ const pieceToLetter = new Map([
       ["bishop", "B"],
       ["rook", "R"],
       ["queen", "Q"],
-      ["king", "K"],
-    ]),
+      ["king", "K"]
+    ])
   ],
   [
     "black",
@@ -25,21 +25,28 @@ const pieceToLetter = new Map([
       ["bishop", "b"],
       ["rook", "r"],
       ["queen", "q"],
-      ["king", "k"],
-    ]),
-  ],
+      ["king", "k"]
+    ])
+  ]
 ]);
 
 export default function movesToFEN(moves: Move[]) {
-  const pieces = applyMoves(generateStartingPosition(), moves);
+  const { pieces, error: moveError } = applyMoves(
+    generateStartingPosition(),
+    moves
+  );
+  if (moveError) {
+    console.error(moveError);
+    return "";
+  }
 
   const whiteCanCastle = {
     kingSide: true,
-    queenSide: true,
+    queenSide: true
   };
   const blackCanCastle = {
     kingSide: true,
-    queenSide: true,
+    queenSide: true
   };
 
   const aRookWhite = "a1";
@@ -166,12 +173,12 @@ function findLastCapture(moves: Move[]) {
     ...piece,
     square: Number(squareToIndex(piece.square)),
     numFile: undefined,
-    numRank: undefined,
+    numRank: undefined
   }));
   const indexMoves = moves.map((move) => ({
     ...move,
     from: Number(squareToIndex(move.from)),
-    to: Number(squareToIndex(move.to)),
+    to: Number(squareToIndex(move.to))
   }));
 
   for (let piece of pieces) {

@@ -2,7 +2,10 @@ import { Move } from "../types";
 import Piece from "./Piece";
 import { numFile, numRank } from "./squareConverters";
 
-export default function applyMoves(pieces: Piece[], moves: Move[]) {
+export default function applyMoves(
+  pieces: Piece[],
+  moves: Move[]
+): { pieces: Piece[]; error: string | null } {
   const board: (null | Piece)[][] = Array.from({ length: 8 }, () =>
     Array.from({ length: 8 }, () => null)
   );
@@ -24,7 +27,7 @@ export default function applyMoves(pieces: Piece[], moves: Move[]) {
     board[fromRow][fromCol] = null;
 
     if (!piece) {
-      throw new Error("No piece there");
+      return { pieces, error: "No piece there" };
     }
 
     if (piece.type === "pawn") {
@@ -44,7 +47,7 @@ export default function applyMoves(pieces: Piece[], moves: Move[]) {
 
       if (move.to[1] === "1" || move.to[1] === "8") {
         if (!move.promoteTo) {
-          throw new Error("Pawn didn't promote");
+          return { pieces, error: "No piece there" };
         }
 
         piece.type = move.promoteTo;
@@ -91,5 +94,5 @@ export default function applyMoves(pieces: Piece[], moves: Move[]) {
     if (!enPassantWasSet) enPassantSquare = null;
   }
 
-  return pieces;
+  return { pieces, error: null };
 }

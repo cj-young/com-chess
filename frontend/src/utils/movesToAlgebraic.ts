@@ -12,7 +12,7 @@ const pieceSymbols = {
   bishop: "B",
   rook: "R",
   queen: "Q",
-  king: "K",
+  king: "K"
 };
 
 export default function movesToAlgebraic(
@@ -51,7 +51,14 @@ export default function movesToAlgebraic(
       }
 
       if (castleRes.length > 0) {
-        pieces = applyMoves(pieces, [move]);
+        const { pieces: newPieces, error: moveError } = applyMoves(pieces, [
+          move
+        ]);
+        if (moveError) {
+          console.error(moveError);
+          return [];
+        }
+        pieces = newPieces;
         const isCheck = isInCheck(
           pieces,
           (i + 1) % 2 === 0 ? "white" : "black"
@@ -117,7 +124,12 @@ export default function movesToAlgebraic(
     }
 
     const captureString = piece.type === "pawn" ? `${piece.square[0]}x` : "x";
-    pieces = applyMoves(pieces, [move]);
+    const { pieces: newPieces, error: moveError } = applyMoves(pieces, [move]);
+    if (moveError) {
+      console.error(moveError);
+      return [];
+    }
+    pieces = newPieces;
 
     const isCheck = isInCheck(pieces, (i + 1) % 2 === 0 ? "white" : "black");
     const opponentCanMove = canMove(pieces, currentMoves);

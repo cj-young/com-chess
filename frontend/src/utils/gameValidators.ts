@@ -29,13 +29,8 @@ export function areMovesValid(moves: unknown): boolean {
   if (moves === undefined || !Array.isArray(moves)) return false;
   if (!isObjArrayMovesArray(moves)) return false;
   const pieces = generateStartingPosition();
-  try {
-    applyMoves(pieces, moves);
-    // return true;
-  } catch (error) {
-    return false;
-  }
-  return true;
+  const { error } = applyMoves(pieces, moves);
+  return !error;
 }
 
 function isObjArrayMovesArray(objArr: any[]): objArr is Move[] {
