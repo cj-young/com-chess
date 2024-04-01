@@ -1,6 +1,6 @@
-import Piece from "./Piece";
-import { numRank, numFile } from "./squareConverters";
 import { Move } from "../types";
+import Piece from "./Piece";
+import { numFile, numRank } from "./squareConverters";
 
 export default function applyMoves(pieces: Piece[], moves: Move[]) {
   const board: (null | Piece)[][] = Array.from({ length: 8 }, () =>
@@ -24,8 +24,7 @@ export default function applyMoves(pieces: Piece[], moves: Move[]) {
     board[fromRow][fromCol] = null;
 
     if (!piece) {
-      console.error("No piece there");
-      continue;
+      throw new Error("No piece there");
     }
 
     if (piece.type === "pawn") {
@@ -45,8 +44,7 @@ export default function applyMoves(pieces: Piece[], moves: Move[]) {
 
       if (move.to[1] === "1" || move.to[1] === "8") {
         if (!move.promoteTo) {
-          console.error("Pawn didn't promote");
-          continue;
+          throw new Error("Pawn didn't promote");
         }
 
         piece.type = move.promoteTo;

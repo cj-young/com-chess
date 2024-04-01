@@ -1,26 +1,27 @@
 import {
   useCallback,
-  useRef,
-  useState,
-  useLayoutEffect,
   useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
 } from "react";
-import Piece from "../utils/Piece";
-import Navbar from "../components/Navbar";
-import Board from "../components/Board";
-import { useBotGameContext } from "../contexts/BotGameContext";
 import flagIcon from "../assets/flag-solid.svg";
-import "../styles/BotGame.scss";
+import Board from "../components/Board";
 import ChooseBot from "../components/ChooseBot";
-import Moves from "../components/Moves";
-import PlayerInfo from "../components/PlayerInfo";
-import { findBestMove, stockfishLevels } from "../utils/stockfish";
-import { useAuthContext } from "../contexts/AuthContext";
-import canMove from "../utils/canMove";
-import isInCheck from "../utils/isInCheck";
-import movesToFEN from "../utils/movesToFEN";
-import isInsufficientMaterial from "../utils/isInsufficientMaterial";
 import GameOver from "../components/GameOver";
+import Moves from "../components/Moves";
+import Navbar from "../components/Navbar";
+import PlayerInfo from "../components/PlayerInfo";
+import { useAuthContext } from "../contexts/AuthContext";
+import { useBotGameContext } from "../contexts/BotGameContext";
+import "../styles/BotGame.scss";
+import Piece from "../utils/Piece";
+import canMove from "../utils/canMove";
+import { isLocalStorageGameValid } from "../utils/gameValidators";
+import isInCheck from "../utils/isInCheck";
+import isInsufficientMaterial from "../utils/isInsufficientMaterial";
+import movesToFEN from "../utils/movesToFEN";
+import { findBestMove, stockfishLevels } from "../utils/stockfish";
 
 export default function BotGame() {
   const [gameOverModal, setGameOverModal] = useState<React.ReactNode>(null);
@@ -48,7 +49,7 @@ export default function BotGame() {
     setGameState,
     setSelectedPiece,
     setGameOver,
-    difficulty,
+    difficulty
   } = useBotGameContext();
 
   const { user } = useAuthContext();
@@ -103,9 +104,9 @@ export default function BotGame() {
           credentials: "include",
           headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify({ moves, color, difficulty, result: winStatus }),
+          body: JSON.stringify({ moves, color, difficulty, result: winStatus })
         }
       );
       const data = await response.json();
@@ -132,11 +133,12 @@ export default function BotGame() {
   }
 
   useLayoutEffect(() => {
-    const currentGame = localStorage.getItem("botGame");
-    if (currentGame) {
-      const data = JSON.parse(currentGame);
+    const currentGame = localStorage.getItem("botGame") ?? "{}";
+    const data = JSON.parse(currentGame);
+    if (currentGame && isLocalStorageGameValid(data)) {
       setColor(data.color);
       setDifficulty(data.difficulty);
+      console.log("SETTINGS MOVES: ", data.moves);
       setMoves(data.moves);
       setMoveIndex(data.moves.length - 1);
       setGameState("playing");

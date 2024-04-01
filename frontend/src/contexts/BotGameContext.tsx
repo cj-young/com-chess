@@ -1,15 +1,16 @@
 import {
   createContext,
   useContext,
-  useState,
-  useMemo,
   useLayoutEffect,
+  useMemo,
+  useState
 } from "react";
-import applyMoves from "../utils/applyMoves";
-import generateStartingPosition from "../utils/generateStartingPosition";
-import Piece from "../utils/Piece";
-import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
 import { Color, Move } from "../types";
+import Piece from "../utils/Piece";
+import applyMoves from "../utils/applyMoves";
+import { isLocalStorageGameValid } from "../utils/gameValidators";
+import generateStartingPosition from "../utils/generateStartingPosition";
+import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
 
 type Props = {
   children: React.ReactNode;
@@ -87,43 +88,51 @@ export function BotGameContextProvider({ children }: Props) {
       JSON.stringify({
         color,
         difficulty,
-        moves,
+        moves
       })
     );
   }
 
   function makeMove(move: Move) {
-    setMoves((prevMoves) => {
-      const prevPieces = applyMoves(generateStartingPosition(), prevMoves);
-      // Verify legality
-      const movedPiece = pieces.filter(
-        (p) => p.square === move.from && p.active
-      )[0];
-      if (!movedPiece) return prevMoves;
-      const verifiedLegalMoves = generateLegalMoves(
-        prevPieces,
-        movedPiece,
-        moves
-      );
-      console.log(movedPiece);
-      console.log(verifiedLegalMoves);
-      let moveFound;
-      for (let legalMove of verifiedLegalMoves) {
-        if (legalMove === move.to) {
-          moveFound = true;
-        }
+    let storedGame;
+    let updatedMoves = moves;
+    try {
+      storedGame = JSON.parse(localStorage.getItem("botGame") ?? "");
+      if (isLocalStorageGameValid(storedGame)) {
+        updatedMoves = storedGame.moves;
       }
-      if (!moveFound) return prevMoves;
-
-      const currentGame = localStorage.getItem("botGame");
-      if (currentGame) {
-        const data = JSON.parse(currentGame);
-        data.moves.push(move);
-        localStorage.setItem("botGame", JSON.stringify(data));
+    } catch (error) {}
+    setMoves([...updatedMoves]);
+    const prevPieces = applyMoves(generateStartingPosition(), updatedMoves);
+    // Verify legality
+    const movedPiece = prevPieces.filter(
+      (p) => p.square === move.from && p.active
+    )[0];
+    if (!movedPiece) return;
+    const verifiedLegalMoves = generateLegalMoves(
+      prevPieces,
+      movedPiece,
+      updatedMoves
+    );
+    let moveFound;
+    for (let legalMove of verifiedLegalMoves) {
+      if (legalMove === move.to) {
+        moveFound = true;
       }
+    }
+    if (!moveFound) return;
 
-      return [...prevMoves, move];
-    });
+    updatedMoves.push(move);
+    localStorage.setItem(
+      "botGame",
+      JSON.stringify({
+        color,
+        difficulty,
+        moves: updatedMoves
+      })
+    );
+
+    setMoves([...updatedMoves]);
   }
 
   function resetBotGameContext() {
@@ -169,7 +178,7 @@ export function BotGameContextProvider({ children }: Props) {
       JSON.stringify({
         color: playerColor,
         difficulty,
-        moves: [],
+        moves: []
       })
     );
   }
@@ -199,7 +208,7 @@ export function BotGameContextProvider({ children }: Props) {
         updateLocalStorage,
         difficulty,
         setDifficulty,
-        startGame,
+        startGame
       }}
     >
       {children}
