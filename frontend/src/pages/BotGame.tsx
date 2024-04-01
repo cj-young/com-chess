@@ -71,13 +71,11 @@ export default function BotGame() {
   useEffect(() => {
     if (turn !== color) {
       if (sfRef.current) {
-        console.log(difficulty);
         findBestMove(
           moves,
           sfRef.current,
           stockfishLevels.get(difficulty) as number
         ).then((newMove) => {
-          console.log(newMove);
           makeMove(newMove);
         });
       }
@@ -138,7 +136,6 @@ export default function BotGame() {
     if (currentGame && isLocalStorageGameValid(data)) {
       setColor(data.color);
       setDifficulty(data.difficulty);
-      console.log("SETTINGS MOVES: ", data.moves);
       setMoves(data.moves);
       setMoveIndex(data.moves.length - 1);
       setGameState("playing");
@@ -179,10 +176,8 @@ export default function BotGame() {
       // Check for checkmate and stalemate
       if (isInCheck(pieces, turn === "white" ? "white" : "black")) {
         const winStatus = turn === color ? "lost" : "won";
-        console.log("checkmate!");
         endGame("checkmate", winStatus);
       } else {
-        console.log("stalemate!");
         endGame("stalemate", "drawn");
       }
     } else {
