@@ -1,0 +1,110 @@
+@import "/src/styles/mixins";
+
+.sign-up {
+  @include centered-children(column);
+
+  .logo {
+    width: min(75%, 10rem);
+  }
+
+  .sign-up-container {
+    background-color: var(--clr-bg-200);
+    border-radius: var(--br-primary);
+    padding: 2rem;
+    margin-top: 1rem;
+
+    display: flex;
+    gap: 2rem;
+  }
+
+  .local-sign-up {
+    .input-wrapper {
+      @include input-wrapper();
+    }
+
+    & > * + * {
+      margin-top: 1rem;
+    }
+
+    button {
+      @include button(var(--fs-400));
+      width: 100%;
+      border: none;
+      background-color: var(--clr-primary);
+      color: var(--clr-text-primary);
+    }
+  }
+
+  hr {
+    border: none;
+    width: 1px;
+    background-color: var(--clr-neutral-100);
+    position: relative;
+    overflow: visible;
+    border: none;
+
+    &::after {
+      content: "OR";
+      position: absolute;
+      background-color: var(--clr-bg-200);
+      padding: 0.5rem;
+      color: var(--clr-text-primary);
+      font-weight: bold;
+      top: 50%;
+      left: 50%;
+      translate: -50% -50%;
+    }
+  }
+
+  .provider-sign-ups {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    & > * + * {
+      margin-top: 1rem;
+    }
+
+    button {
+      border: none;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      border-radius: var(--br-primary);
+      font-weight: bold;
+      padding: 0 var(--fs-400);
+
+      img {
+        height: 1.25rem;
+      }
+
+      span {
+        padding: calc(var(--fs-400) * 3 / 4) 0;
+      }
+    }
+
+    &--google {
+      background-color: rgb(255, 255, 255);
+      color: rgb(0, 0, 0);
+    }
+
+    &--github {
+      background-color: rgb(36, 41, 47);
+      color: rgb(255, 255, 255);
+    }
+  }
+
+  .log-in-msg {
+    margin-top: 1rem;
+    color: var(--clr-text-primary);
+
+    a {
+      text-decoration: none;
+      color: var(--clr-primary);
+    }
+  }
+}

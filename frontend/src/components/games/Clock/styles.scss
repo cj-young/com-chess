@@ -1,0 +1,113 @@
+@import "/src/styles/mixins";
+.clock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: min(100%, 30rem, 60vh);
+  padding: 1rem;
+  margin-top: 1rem;
+  margin-inline: auto;
+  background-color: var(--clr-bg-200);
+  color: var(--clr-text-primary);
+  font-weight: bold;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--br-primary);
+  --time-percent: 0;
+  --bar-color: var(--clr-neutral-600);
+  --time-color: var(--clr-neutral-400);
+  color: var(--clr-text-primary);
+
+  @include game-screen {
+    width: 100%;
+  }
+
+  &.top {
+    @include game-screen {
+      border-radius: var(--br-primary);
+    }
+  }
+
+  &.bottom {
+    @include game-screen {
+      border-radius: var(--br-primary) var(--br-primary);
+    }
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 6px;
+    background-color: var(--clr-bg-300);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: calc(100% - (var(--time-percent) * 100%));
+    top: 0;
+    height: 6px;
+    background-color: var(--bar-color);
+    transition: right 250ms linear;
+  }
+  a {
+    text-decoration: none;
+    color: var(--clr-text-primary);
+  }
+  &__time {
+    display: flex;
+    font-size: 2rem;
+    color: var(--time-color);
+
+    &__minutes {
+      width: 2ch;
+      text-align: right;
+    }
+
+    &__seconds {
+      width: 2ch;
+    }
+  }
+
+  &__left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  &__bottom {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  &__pieces {
+    height: 1.5rem;
+    display: flex;
+  }
+
+  &__piece-group {
+    display: flex;
+    align-items: center;
+    & + & {
+      margin-left: -0.25rem;
+    }
+  }
+
+  &__piece {
+    height: 1.5rem;
+
+    & + & {
+      margin-left: -1rem;
+    }
+  }
+
+  &.active {
+    --bar-color: var(--clr-primary);
+    --time-color: var(--clr-text-primary);
+  }
+}

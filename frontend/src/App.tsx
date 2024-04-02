@@ -1,20 +1,20 @@
-import { Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import ProtectedRoutes from "./utils/ProtectedRoutes";
-import NotFound from "./pages/NotFound";
-import SignUp from "./pages/SignUp";
-import { useAuthContext } from "./contexts/AuthContext";
-import SetUsername from "./pages/SetUsername";
 import { useEffect, useState } from "react";
-import Loading from "./pages/Loading";
-import Redirect from "./pages/Redirect";
-import Profile from "./pages/Profile";
-import Play from "./pages/Play";
-import Notifications from "./components/Notifications";
-import LiveGame from "./pages/LiveGame";
-import BotGame from "./pages/BotGame";
+import { Route, Routes } from "react-router-dom";
+import Notifications from "./components/notifications/Notifications";
+import { useAuthContext } from "./contexts/AuthContext";
 import Analyze from "./pages/Analyze";
+import Home from "./pages/Home/Home";
+import Play from "./pages/Home/Play";
+import Loading from "./pages/Loading";
+import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
+import Login from "./pages/auth/Login";
+import Redirect from "./pages/auth/Redirect";
+import SetUsername from "./pages/auth/SetUsername";
+import SignUp from "./pages/auth/SignUp";
+import BotGame from "./pages/games/BotGame";
+import LiveGame from "./pages/games/LiveGame";
+import ProtectedRoutes from "./utils/ProtectedRoutes";
 
 export default function App() {
   const [initialLoading, setInitialLoading] = useState(true);

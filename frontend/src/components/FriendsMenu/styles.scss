@@ -1,0 +1,91 @@
+@import "/src/styles/mixins";
+.friends-menu {
+  position: static;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: min(100%, 18rem);
+  margin-inline: auto;
+  z-index: 1000;
+
+  color: var(--clr-text-primary);
+  text-align: center;
+  margin-top: 4rem;
+
+  @include large-screen {
+    visibility: hidden;
+    position: absolute;
+    translate: -50% 0;
+    width: 10rem;
+    padding: 1rem;
+    border-radius: var(--br-primary);
+    background-color: var(--clr-bg-200);
+    top: 2.5rem;
+    left: 50%;
+    margin-top: 0;
+  }
+
+  .friends-list {
+    margin-top: 0.5rem;
+    overflow-y: auto;
+    max-height: 15rem;
+    width: 100%;
+  }
+
+  .friends-list li {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--br-primary);
+
+    a {
+      text-decoration: none;
+      color: var(--clr-text-primary);
+      padding: 0.5rem;
+      width: 100%;
+    }
+
+    &:hover {
+      background-color: var(--clr-bg-300);
+    }
+  }
+
+  form {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  &__input-wrapper {
+    @include input-wrapper();
+  }
+
+  button {
+    margin-top: 0.5rem;
+    @include button(var(--fs-400));
+    border: none;
+    width: 100%;
+    background-color: var(--clr-primary);
+    color: var(--clr-text-primary);
+  }
+
+  .friends-menu__error {
+    color: var(--clr-error);
+    margin-top: 0.5rem;
+  }
+
+  @include large-screen {
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      translate: -50% -50%;
+      width: 2rem;
+      height: 1rem;
+      border-radius: var(--br-primary);
+      background-color: var(--clr-bg-200);
+    }
+  }
+}
