@@ -10,7 +10,7 @@ import Piece from "../utils/Piece";
 import applyMoves from "../utils/applyMoves";
 import { isLocalStorageGameValid } from "../utils/gameValidators";
 import generateStartingPosition from "../utils/generateStartingPosition";
-import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
+import generateLegalMoves from "../utils/move-functions/generateLegalMoves";
 
 type Props = {
   children: React.ReactNode;

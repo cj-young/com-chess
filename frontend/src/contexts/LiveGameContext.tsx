@@ -11,7 +11,7 @@ import { Color, Move } from "../types";
 import Piece from "../utils/Piece";
 import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
-import generateLegalMoves from "../utils/moveFunctions/generateLegalMoves";
+import generateLegalMoves from "../utils/move-functions/generateLegalMoves";
 
 type Props = {
   children: React.ReactNode;

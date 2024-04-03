@@ -20,7 +20,7 @@ import canMove from "../../utils/canMove";
 import generateStartingPosition from "../../utils/generateStartingPosition";
 import getEval from "../../utils/getEval";
 import isInCheck from "../../utils/isInCheck";
-import generateLegalMoves from "../../utils/moveFunctions/generateLegalMoves";
+import generateLegalMoves from "../../utils/move-functions/generateLegalMoves";
 import moveToUCI from "../../utils/moveToUCI";
 import uciToMove from "../../utils/uciToMove";
 import Loading from "../Loading";

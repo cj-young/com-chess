@@ -1,7 +1,7 @@
 const { default: isURL } = require("validator/lib/isURL");
 const applyMoves = require("./applyMoves");
 const generateStartingPosition = require("./generateStartingPosition");
-const squareToIndex = require("./moveVerification/squareToIndex");
+const squareToIndex = require("./move-verification/squareToIndex");
 const { numSquare } = require("./squareConverters");
 
 const pieceToLetter = new Map([
@@ -13,8 +13,8 @@ const pieceToLetter = new Map([
       ["bishop", "B"],
       ["rook", "R"],
       ["queen", "Q"],
-      ["king", "K"],
-    ]),
+      ["king", "K"]
+    ])
   ],
   [
     "black",
@@ -24,9 +24,9 @@ const pieceToLetter = new Map([
       ["bishop", "b"],
       ["rook", "r"],
       ["queen", "q"],
-      ["king", "k"],
-    ]),
-  ],
+      ["king", "k"]
+    ])
+  ]
 ]);
 
 module.exports = (moves) => {
@@ -34,11 +34,11 @@ module.exports = (moves) => {
 
   const whiteCanCastle = {
     kingSide: true,
-    queenSide: true,
+    queenSide: true
   };
   const blackCanCastle = {
     kingSide: true,
-    queenSide: true,
+    queenSide: true
   };
 
   const aRookWhite = "a1";
@@ -163,12 +163,12 @@ function findLastCapture(moves) {
     ...piece,
     square: Number(squareToIndex(piece.square)),
     numFile: undefined,
-    numRank: undefined,
+    numRank: undefined
   }));
   moves = moves.map((move) => ({
     ...move,
     from: Number(squareToIndex(move.from)),
-    to: Number(squareToIndex(move.to)),
+    to: Number(squareToIndex(move.to))
   }));
 
   for (let piece of pieces) {

@@ -1,10 +1,10 @@
 const squareToIndex = require("./squareToIndex");
-const generateBishopAttackBitboard = require("./attackBitboards/bishop");
-const generateKingAttackBitboard = require("./attackBitboards/king");
-const generateKnightAttackBitboard = require("./attackBitboards/knight");
-const generatePawnAttackBitboard = require("./attackBitboards/pawn");
-const generateQueenAttackBitboard = require("./attackBitboards/queen");
-const generateRookAttackBitboard = require("./attackBitboards/rook");
+const generateBishopAttackBitboard = require("./attack-bitboards/bishop");
+const generateKingAttackBitboard = require("./attack-bitboards/king");
+const generateKnightAttackBitboard = require("./attack-bitboards/knight");
+const generatePawnAttackBitboard = require("./attack-bitboards/pawn");
+const generateQueenAttackBitboard = require("./attack-bitboards/queen");
+const generateRookAttackBitboard = require("./attack-bitboards/rook");
 
 module.exports = (pieces, color) => {
   const position = {

@@ -1,12 +1,12 @@
-import squareToIndex from "./moveFunctions/squareToIndex";
-import generateBishopAttackBitboard from "./moveFunctions/attackBitboards/bishop";
-import generateKingAttackBitboard from "./moveFunctions/attackBitboards/king";
-import generateKnightAttackBitboard from "./moveFunctions/attackBitboards/knight";
-import generatePawnAttackBitboard from "./moveFunctions/attackBitboards/pawn";
-import generateQueenAttackBitboard from "./moveFunctions/attackBitboards/queen";
-import generateRookAttackBitboard from "./moveFunctions/attackBitboards/rook";
-import Piece from "./Piece";
 import { Color } from "../types";
+import Piece from "./Piece";
+import generateBishopAttackBitboard from "./move-functions/attack-bitboards/bishop";
+import generateKingAttackBitboard from "./move-functions/attack-bitboards/king";
+import generateKnightAttackBitboard from "./move-functions/attack-bitboards/knight";
+import generatePawnAttackBitboard from "./move-functions/attack-bitboards/pawn";
+import generateQueenAttackBitboard from "./move-functions/attack-bitboards/queen";
+import generateRookAttackBitboard from "./move-functions/attack-bitboards/rook";
+import squareToIndex from "./move-functions/squareToIndex";
 
 export default function isInCheck(pieces: Piece[], color: Color) {
   const position = {
@@ -17,7 +17,7 @@ export default function isInCheck(pieces: Piece[], color: Color) {
     bishops: 0n,
     rooks: 0n,
     queens: 0n,
-    kings: 0n,
+    kings: 0n
   };
 
   // Add pieces to bitboards

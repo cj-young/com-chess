@@ -1,5 +1,5 @@
 import Piece from "./Piece";
-import generateLegalMoves from "./moveFunctions/generateLegalMoves";
+import generateLegalMoves from "./move-functions/generateLegalMoves";
 
 export default function canMove(
   pieces: Piece[],

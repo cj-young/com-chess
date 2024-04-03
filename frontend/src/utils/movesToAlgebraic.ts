@@ -2,7 +2,7 @@ import applyMoves from "./applyMoves";
 import canMove from "./canMove";
 import generateStartingPosition from "./generateStartingPosition";
 import isInCheck from "./isInCheck";
-import generateLegalMoves from "./moveFunctions/generateLegalMoves";
+import generateLegalMoves from "./move-functions/generateLegalMoves";
 import Piece from "./Piece";
 import { numFile, numRank } from "./squareConverters";
 

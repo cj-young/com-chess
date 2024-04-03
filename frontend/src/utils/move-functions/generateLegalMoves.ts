@@ -1,14 +1,14 @@
+import { Move, Position } from "../../types";
 import Piece from "../Piece";
-import verifyPseudoLegalMove from "./verifyPseudoLegalMove";
-import generatePseudoLegalBishopMoves from "./pseudoLegalMoves/bishop";
-import generatePseudoLegalKingMoves from "./pseudoLegalMoves/king";
-import generatePseudoLegalKnightMoves from "./pseudoLegalMoves/knight";
-import generatePseudoLegalPawnMoves from "./pseudoLegalMoves/pawn";
-import generatePseudoLegalQueenMoves from "./pseudoLegalMoves/queen";
-import generatePseudoLegalRookMoves from "./pseudoLegalMoves/rook";
-import squareToIndex from "./squareToIndex";
 import indexToSquare from "./indexToSquare";
-import { Position, Move } from "../../types";
+import generatePseudoLegalBishopMoves from "./pseudo-legal-moves/bishop";
+import generatePseudoLegalKingMoves from "./pseudo-legal-moves/king";
+import generatePseudoLegalKnightMoves from "./pseudo-legal-moves/knight";
+import generatePseudoLegalPawnMoves from "./pseudo-legal-moves/pawn";
+import generatePseudoLegalQueenMoves from "./pseudo-legal-moves/queen";
+import generatePseudoLegalRookMoves from "./pseudo-legal-moves/rook";
+import squareToIndex from "./squareToIndex";
+import verifyPseudoLegalMove from "./verifyPseudoLegalMove";
 
 export default function generateLegalMoves(
   pieces: Piece[],
@@ -28,7 +28,7 @@ export default function generateLegalMoves(
     bishops: 0n,
     rooks: 0n,
     queens: 0n,
-    kings: 0n,
+    kings: 0n
   };
 
   // Add pieces to bitboards
@@ -68,7 +68,7 @@ export default function generateLegalMoves(
 
   const canCastle = {
     kingSide: true,
-    queenSide: true,
+    queenSide: true
   };
 
   const aRook = `a${turn === "white" ? 1 : 8}`;

@@ -4,7 +4,7 @@ import rightIcon from "../../../assets/angle-right-solid.svg";
 import flipIcon from "../../../assets/repeat-solid.svg";
 import { Color, Move } from "../../../types";
 import Piece from "../../../utils/Piece";
-import generateLegalMoves from "../../../utils/moveFunctions/generateLegalMoves";
+import generateLegalMoves from "../../../utils/move-functions/generateLegalMoves";
 import { letterSquare } from "../../../utils/squareConverters";
 import BoardArrow from "../BoardArrow";
 import PawnPromoter from "../PawnPromoter";

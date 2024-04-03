@@ -1,11 +1,11 @@
 const Piece = require("../Piece");
 const verifyPseudoLegalMove = require("./verifyPseudoLegalMove");
-const generatePseudoLegalBishopMoves = require("./pseudoLegalMoves/bishop");
-const generatePseudoLegalKingMoves = require("./pseudoLegalMoves/king");
-const generatePseudoLegalKnightMoves = require("./pseudoLegalMoves/knight");
-const generatePseudoLegalPawnMoves = require("./pseudoLegalMoves/pawn");
-const generatePseudoLegalQueenMoves = require("./pseudoLegalMoves/queen");
-const generatePseudoLegalRookMoves = require("./pseudoLegalMoves/rook");
+const generatePseudoLegalBishopMoves = require("./pseudo-legal-moves/bishop");
+const generatePseudoLegalKingMoves = require("./pseudo-legal-moves/king");
+const generatePseudoLegalKnightMoves = require("./pseudo-legal-moves/knight");
+const generatePseudoLegalPawnMoves = require("./pseudo-legal-moves/pawn");
+const generatePseudoLegalQueenMoves = require("./pseudo-legal-moves/queen");
+const generatePseudoLegalRookMoves = require("./pseudo-legal-moves/rook");
 const squareToIndex = require("./squareToIndex");
 const indexToSquare = require("./indexToSquare");
 
