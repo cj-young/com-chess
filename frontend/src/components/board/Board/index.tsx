@@ -4,6 +4,7 @@ import rightIcon from "../../../assets/angle-right-solid.svg";
 import flipIcon from "../../../assets/repeat-solid.svg";
 import { Color, Move } from "../../../types";
 import Piece from "../../../utils/Piece";
+import { getSquareAt } from "../../../utils/board";
 import generateLegalMoves from "../../../utils/move-functions/generateLegalMoves";
 import { letterSquare } from "../../../utils/squareConverters";
 import BoardArrow from "../BoardArrow";
@@ -80,14 +81,12 @@ export default function Board({
   function handleCursorStart(x: number, y: number) {
     if (!selectedPiece) return;
     if (boardRef.current) {
-      const squareSize = boardRef.current.offsetWidth / 8;
-      const boardRect = boardRef.current.getBoundingClientRect();
-      let newFile = Math.floor((x - boardRect.left) / squareSize);
-      let newRank = Math.floor((y - boardRect.top) / squareSize);
-      if (orientation === "black") {
-        newFile = 7 - newFile;
-        newRank = 7 - newRank;
-      }
+      const [newRank, newFile] = getSquareAt(
+        boardRef.current,
+        x,
+        y,
+        orientation
+      );
       if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
         const newSquare = letterSquare(newRank, newFile);
         if (newSquare === selectedPiece.square) return;
