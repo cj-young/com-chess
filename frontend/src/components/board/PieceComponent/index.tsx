@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Color, Move } from "../../../types";
 import Piece from "../../../utils/Piece";
+import { getSquareAt } from "../../../utils/board";
 import { letterSquare } from "../../../utils/squareConverters";
 import PawnPromoter from "../PawnPromoter";
 
@@ -75,34 +76,59 @@ export default function PieceComponent({
   function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
     if (canDrag) e.stopPropagation();
     e.preventDefault();
+    handleInteractionStart(e.clientX, e.clientY, "mouse");
+  }
+
+  function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
+    if (canDrag) e.stopPropagation();
+    const touch = e.touches[0];
+    handleInteractionStart(touch.clientX, touch.clientY, "touch");
+  }
+
+  function handleInteractionStart(
+    x: number,
+    y: number,
+    type: "mouse" | "touch"
+  ) {
     setPawnPromoter(null);
     if (!canDrag) return;
     setIsDragging(true);
     const upWillDeselect = selectedPieceRef.current?.square === piece.square;
     setSelectedPiece(piece);
-    setMousePosition({ x: e.clientX, y: e.clientY });
+    setMousePosition({ x, y });
 
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    if (type === "mouse") {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    } else {
+      document.addEventListener("touchmove", handleTouchMove);
+      document.addEventListener("touchend", handleTouchEnd);
+    }
 
     function handleMouseMove(e: MouseEvent) {
       e.preventDefault();
+      handleInteractionMove(e.clientX, e.clientY);
+    }
+
+    function handleTouchMove(e: TouchEvent) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      handleInteractionMove(touch.clientX, touch.clientY);
+    }
+
+    function handleInteractionMove(x: number, y: number) {
       if (!canDrag) {
         setIsDragging(false);
         return;
       }
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      setMousePosition({ x, y });
       if (boardRef.current && pieceRef.current && legalMovesRef.current) {
-        const squareSize = boardRef.current.offsetWidth / 8;
-        const boardRect = boardRef.current.getBoundingClientRect();
-
-        let newFile = Math.floor((e.clientX - boardRect.left) / squareSize);
-        let newRank = Math.floor((e.clientY - boardRect.top) / squareSize);
-
-        if (orientation === "black") {
-          newFile = 7 - newFile;
-          newRank = 7 - newRank;
-        }
+        const [newRank, newFile] = getSquareAt(
+          boardRef.current,
+          x,
+          y,
+          orientation
+        );
 
         if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
           const newSquare = letterSquare(newRank, newFile);
@@ -120,125 +146,32 @@ export default function PieceComponent({
     function handleMouseUp(e: MouseEvent) {
       e.preventDefault();
       e.stopPropagation();
-      setHoverSquare(null);
-      if (!canDrag) {
-        setIsDragging(false);
-        return;
-      }
-      if (boardRef.current && pieceRef.current && legalMovesRef.current) {
-        const squareSize = boardRef.current.offsetWidth / 8;
-        const boardRect = boardRef.current.getBoundingClientRect();
-
-        let newFile = Math.floor((e.clientX - boardRect.left) / squareSize);
-        let newRank = Math.floor((e.clientY - boardRect.top) / squareSize);
-
-        if (orientation === "black") {
-          newFile = 7 - newFile;
-          newRank = 7 - newRank;
-        }
-
-        if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
-          const newSquare = letterSquare(newRank, newFile);
-          if (newSquare === piece.square) {
-            if (upWillDeselect) setSelectedPiece(null);
-          } else {
-            if (legalMovesRef.current.includes(newSquare)) {
-              if (
-                piece.type === "pawn" &&
-                ((piece.color === "white" && newSquare[1] === "8") ||
-                  (piece.color === "black" && newSquare[1] === "1"))
-              ) {
-                setPawnPromoter(
-                  <PawnPromoter
-                    from={piece.square}
-                    to={newSquare}
-                    color={piece.color}
-                    close={() => setPawnPromoter(null)}
-                    makeMove={makeMove}
-                    orientation={orientation}
-                  />
-                );
-              } else {
-                makeMove({ to: newSquare, from: piece.square });
-              }
-            }
-            setSelectedPiece(null);
-          }
-        }
-      }
-      setIsDragging(false);
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    }
-  }
-
-  function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
-    if (canDrag) e.stopPropagation();
-    setPawnPromoter(null);
-    if (!canDrag) return;
-    setIsDragging(true);
-    const touch = e.touches[0];
-    const upWillDeselect = selectedPieceRef.current?.square === piece.square;
-    setSelectedPiece(piece);
-    setMousePosition({ x: touch.clientX, y: touch.clientY });
-
-    document.addEventListener("touchmove", handleTouchMove, { passive: false });
-    document.addEventListener("touchend", handleTouchEnd, { passive: false });
-
-    function handleTouchMove(e: TouchEvent) {
-      e.preventDefault();
-      if (!canDrag) {
-        setIsDragging(false);
-        return;
-      }
-      const touch = e.touches[0];
-      setMousePosition({ x: touch.clientX, y: touch.clientY });
-
-      if (boardRef.current && pieceRef.current && legalMovesRef.current) {
-        const squareSize = boardRef.current.offsetWidth / 8;
-        const boardRect = boardRef.current.getBoundingClientRect();
-
-        let newFile = Math.floor((touch.clientX - boardRect.left) / squareSize);
-        let newRank = Math.floor((touch.clientY - boardRect.top) / squareSize);
-
-        if (orientation === "black") {
-          newFile = 7 - newFile;
-          newRank = 7 - newRank;
-        }
-
-        if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
-          const newSquare = letterSquare(newRank, newFile);
-          if (newSquare === piece.square) {
-            setHoverSquare(null);
-          } else {
-            if (legalMovesRef.current.includes(newSquare)) {
-              setHoverSquare(newSquare);
-            }
-          }
-        }
-      }
+      handleInteractionEnd(e.clientX, e.clientY, "mouse");
     }
 
     function handleTouchEnd(e: TouchEvent) {
       e.preventDefault();
+      const touch = e.changedTouches[0];
+      handleInteractionEnd(touch.clientX, touch.clientY, "touch");
+    }
+
+    function handleInteractionEnd(
+      x: number,
+      y: number,
+      type: "mouse" | "touch"
+    ) {
       setHoverSquare(null);
       if (!canDrag) {
         setIsDragging(false);
         return;
       }
-      const touch = e.changedTouches[0];
       if (boardRef.current && pieceRef.current && legalMovesRef.current) {
-        const squareSize = boardRef.current.offsetWidth / 8;
-        const boardRect = boardRef.current.getBoundingClientRect();
-
-        let newFile = Math.floor((touch.clientX - boardRect.left) / squareSize);
-        let newRank = Math.floor((touch.clientY - boardRect.top) / squareSize);
-
-        if (orientation === "black") {
-          newFile = 7 - newFile;
-          newRank = 7 - newRank;
-        }
-
+        const [newRank, newFile] = getSquareAt(
+          boardRef.current,
+          x,
+          y,
+          orientation
+        );
         if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
           const newSquare = letterSquare(newRank, newFile);
           if (newSquare === piece.square) {
@@ -269,8 +202,13 @@ export default function PieceComponent({
         }
       }
       setIsDragging(false);
-      document.removeEventListener("touchmove", handleTouchMove);
-      document.removeEventListener("touchend", handleTouchEnd);
+      if (type === "mouse") {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      } else if (type === "touch") {
+        document.removeEventListener("touchmove", handleTouchMove);
+        document.removeEventListener("touchend", handleTouchEnd);
+      }
     }
   }
 
