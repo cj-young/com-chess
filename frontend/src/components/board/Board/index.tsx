@@ -67,54 +67,23 @@ export default function Board({
   function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault();
     setPawnPromoter(null);
-    if (!selectedPiece) return;
-    if (boardRef.current) {
-      const squareSize = boardRef.current.offsetWidth / 8;
-      const boardRect = boardRef.current.getBoundingClientRect();
-      let newFile = Math.floor((e.clientX - boardRect.left) / squareSize);
-      let newRank = Math.floor((e.clientY - boardRect.top) / squareSize);
-      if (orientation === "black") {
-        newFile = 7 - newFile;
-        newRank = 7 - newRank;
-      }
-      if (newRank < 8 && newFile < 8 && newRank >= 0 && newFile >= 0) {
-        const newSquare = letterSquare(newRank, newFile);
-        if (newSquare === selectedPiece.square) return;
-        if (legalMoves.includes(newSquare)) {
-          if (
-            selectedPiece.type === "pawn" &&
-            ((selectedPiece.color === "white" && newSquare[1] === "8") ||
-              (selectedPiece.color === "black" && newSquare[1] === "1"))
-          ) {
-            setPawnPromoter(
-              <PawnPromoter
-                from={selectedPiece.square}
-                to={newSquare}
-                color={selectedPiece.color}
-                close={() => setPawnPromoter(null)}
-                makeMove={makeMove}
-                orientation={orientation}
-              />
-            );
-          } else {
-            makeMove({ to: newSquare, from: selectedPiece.square });
-          }
-        }
-        setSelectedPiece(null);
-      }
-    }
+    handleCursorStart(e.clientX, e.clientY);
   }
 
   function handleTouchStart(e: React.TouchEvent<HTMLDivElement>) {
     e.preventDefault();
     setPawnPromoter(null);
     const touch = e.touches[0];
+    handleCursorStart(touch.clientX, touch.clientY);
+  }
+
+  function handleCursorStart(x: number, y: number) {
     if (!selectedPiece) return;
     if (boardRef.current) {
       const squareSize = boardRef.current.offsetWidth / 8;
       const boardRect = boardRef.current.getBoundingClientRect();
-      let newFile = Math.floor((touch.clientX - boardRect.left) / squareSize);
-      let newRank = Math.floor((touch.clientY - boardRect.top) / squareSize);
+      let newFile = Math.floor((x - boardRect.left) / squareSize);
+      let newRank = Math.floor((y - boardRect.top) / squareSize);
       if (orientation === "black") {
         newFile = 7 - newFile;
         newRank = 7 - newRank;
