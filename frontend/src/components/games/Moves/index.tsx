@@ -40,7 +40,7 @@ export default function Moves({
     <div className="live-moves">
       <h2>Moves</h2>
       <div className="moves-wrapper">
-        <ul>
+        <ul className="live-moves__moves-list">
           {algebraicMoves.map((moveGroup, i) => (
             <React.Fragment key={i}>
               {sidelines && setCurrentSideline && sidelines[i * 2] ? (

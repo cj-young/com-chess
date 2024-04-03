@@ -21,7 +21,7 @@
     overflow-y: auto;
   }
 
-  ul {
+  &__moves-list {
     position: absolute;
     inset: 0;
     display: flex;
