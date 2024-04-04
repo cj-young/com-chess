@@ -30,3 +30,23 @@ export type Position = {
   queens: bigint;
   kings: bigint;
 };
+
+export type PastGame =
+  | {
+      type: "live";
+      opponent: string;
+      minutes: number;
+      increment: number;
+      whiteUsername: string;
+      blackUsername: string;
+      color: string;
+      readonly _id: string;
+      winner: string;
+    }
+  | {
+      type: "bot";
+      difficulty: string;
+      color: string;
+      readonly _id: string;
+      winner: string;
+    };
