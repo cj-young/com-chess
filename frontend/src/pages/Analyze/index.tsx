@@ -6,8 +6,9 @@ import {
   useRef,
   useState
 } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import PastGames from "../../components/PastGames";
 import Board from "../../components/board/Board";
 import Moves from "../../components/games/Moves";
 import PlayerInfo from "../../components/games/PlayerInfo";
@@ -15,31 +16,11 @@ import TopLines from "../../components/games/TopLines";
 import { useAuthContext } from "../../contexts/AuthContext";
 import useMoves from "../../hooks/useMoves";
 import useStockfish from "../../hooks/useStockfish";
-import { Color } from "../../types";
+import { Color, PastGame } from "../../types";
 import Piece from "../../utils/Piece";
 import { getPastGame, getPastGameList } from "../../utils/analysis";
 import Loading from "../Loading";
 import "./styles.scss";
-
-type PastGame =
-  | {
-      type: "live";
-      opponent: string;
-      minutes: number;
-      increment: number;
-      whiteUsername: string;
-      blackUsername: string;
-      color: string;
-      readonly _id: string;
-      winner: string;
-    }
-  | {
-      type: "bot";
-      difficulty: string;
-      color: string;
-      readonly _id: string;
-      winner: string;
-    };
 
 type Props = {
   setAnalyzeKey: React.Dispatch<React.SetStateAction<string>>;
@@ -74,8 +55,12 @@ export default function Analyze({ setAnalyzeKey }: Props) {
   const [names, setNames] = useState<{ white: string; black: string } | null>(
     null
   );
-
   const color = useRef<null | Color>(null);
+  const navigate = useNavigate();
+  const { user } = useAuthContext();
+
+  const { gameId } = useParams();
+  const isPastGame = gameId !== undefined;
 
   const bestMoveArrow: { to: string; from: string } | null = useMemo(() => {
     if (topMoves.length === 0) return null;
@@ -84,17 +69,9 @@ export default function Analyze({ setAnalyzeKey }: Props) {
     return { from: move.from, to: move.to };
   }, [topMoves]);
 
-  const { gameId } = useParams();
-
   useLayoutEffect(() => {
     setAnalyzeKey(gameId || "");
   }, [gameId]);
-
-  const navigate = useNavigate();
-
-  const isPastGame = gameId !== undefined;
-
-  const { user } = useAuthContext();
 
   const canDragCB = useCallback(
     (piece: Piece) => {
@@ -252,52 +229,7 @@ export default function Analyze({ setAnalyzeKey }: Props) {
               moves={modifiedMoves}
             />
           </div>
-          {!isPastGame && (
-            <div className="past-games-container">
-              <div className="past-games">
-                {pastGames.length > 0 ? (
-                  <ul className="past-games-list">
-                    {pastGames.map((game, i) => (
-                      <li className="past-game" key={i}>
-                        <Link
-                          to={`/analyze/${game.type === "bot" ? "1" : "0"}${
-                            game._id
-                          }`}
-                        >
-                          <span className="name">
-                            {game.type === "bot"
-                              ? game.difficulty[0].toUpperCase() +
-                                game.difficulty.slice(1) +
-                                " Bot"
-                              : game.color === "black"
-                              ? game.whiteUsername
-                              : game.blackUsername}
-                          </span>
-                          <span
-                            className={`${
-                              game.winner === null
-                                ? "draw"
-                                : game.winner === game.color
-                                ? "win"
-                                : "loss"
-                            }`}
-                          >
-                            {game.winner === null
-                              ? "Draw"
-                              : game.winner === game.color
-                              ? "Win"
-                              : "Loss"}
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="no-games">Past games will appear here</div>
-                )}
-              </div>
-            </div>
-          )}
+          {!isPastGame && <PastGames games={pastGames} />}
           <div className="analyze-moves-container">
             <Moves
               moves={moves}
