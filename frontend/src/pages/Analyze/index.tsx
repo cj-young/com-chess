@@ -13,14 +13,13 @@ import Moves from "../../components/games/Moves";
 import PlayerInfo from "../../components/games/PlayerInfo";
 import TopLines from "../../components/games/TopLines";
 import { useAuthContext } from "../../contexts/AuthContext";
+import useMoves from "../../hooks/useMoves";
 import { Color, Line, Move } from "../../types";
 import Piece from "../../utils/Piece";
-import applyMoves from "../../utils/applyMoves";
+import { getPastGame, getPastGameList } from "../../utils/analysis";
 import canMove from "../../utils/canMove";
-import generateStartingPosition from "../../utils/generateStartingPosition";
 import getEval from "../../utils/getEval";
 import isInCheck from "../../utils/isInCheck";
-import generateLegalMoves from "../../utils/move-functions/generateLegalMoves";
 import moveToUCI from "../../utils/moveToUCI";
 import uciToMove from "../../utils/uciToMove";
 import Loading from "../Loading";
@@ -46,11 +45,6 @@ type PastGame =
       winner: string;
     };
 
-type Sideline = {
-  startsAt: number;
-  moves: Move[];
-};
-
 type Props = {
   setAnalyzeKey: React.Dispatch<React.SetStateAction<string>>;
 };
@@ -59,14 +53,25 @@ const NUM_TOP_MOVES = 3;
 
 export default function Analyze({ setAnalyzeKey }: Props) {
   const [isLoading, setIsLoading] = useState(true);
-  const [moves, setMoves] = useState<Move[]>([]);
-  const [moveIndex, setMoveIndex] = useState(-1);
+  const {
+    moves,
+    moveIndex,
+    sidelines,
+    currentSideline,
+    modifiedMoves,
+    turn,
+    pieces,
+    nextMove,
+    prevMove,
+    setMoveIndex,
+    setCurrentSideline,
+    makeMove,
+    setMoves
+  } = useMoves({
+    allowSidelines: true
+  });
   const [orientation, setOrientation] = useState<Color>("white");
   const [pastGames, setPastGames] = useState<PastGame[]>([]);
-  const [sidelines, setSidelines] = useState<{ [key: number]: Sideline[] }>({});
-  const [currentSideline, setCurrentSideline] = useState<
-    [number, number] | null
-  >(null);
   const [topMoves, setTopMoves] = useState<Line[]>([]);
   // Buffer required to ensure all top moves are received before display
   const [bufferMoves, setBufferMoves] = useState<Line[]>([]);
@@ -112,28 +117,6 @@ export default function Analyze({ setAnalyzeKey }: Props) {
   const navigate = useNavigate();
 
   const isPastGame = gameId !== undefined;
-
-  const modifiedMoves = useMemo(() => {
-    if (!currentSideline) return moves;
-    const currentSidelineArr =
-      sidelines[currentSideline[0]][currentSideline[1]];
-    return [
-      ...moves.slice(0, currentSidelineArr.startsAt),
-      ...currentSidelineArr.moves
-    ];
-  }, [moves, sidelines, currentSideline]);
-
-  const pieces = useMemo(() => {
-    const { pieces: newPieces, error: moveError } = applyMoves(
-      generateStartingPosition(),
-      modifiedMoves.slice(0, moveIndex + 1)
-    );
-    return moveError ? [] : newPieces;
-  }, [modifiedMoves, moveIndex]);
-
-  const turn = useMemo(() => {
-    return moveIndex % 2 === 0 ? "black" : "white";
-  }, [moveIndex]);
 
   const { user } = useAuthContext();
 
@@ -251,205 +234,39 @@ export default function Analyze({ setAnalyzeKey }: Props) {
     };
   }
 
-  function makeMove(move: Move) {
-    if (
-      moveIndex + 1 < modifiedMoves.length &&
-      move.to === modifiedMoves[moveIndex + 1].to &&
-      move.from === modifiedMoves[moveIndex + 1].from &&
-      move.promoteTo === modifiedMoves[moveIndex + 1].promoteTo
-    ) {
-      // Keep current line if move is the same as next current line move
-      setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
-      return;
-    }
-
-    if (currentSideline) {
-      // Verify legality
-      const movedPiece = pieces.filter(
-        (p) => p.square === move.from && p.active
-      )[0];
-      if (!movedPiece) return;
-      const verifiedLegalMoves = generateLegalMoves(
-        pieces,
-        movedPiece,
-        modifiedMoves.slice(0, moveIndex + 1)
-      );
-
-      let moveFound;
-      for (let legalMove of verifiedLegalMoves) {
-        if (legalMove === move.to) {
-          moveFound = true;
-        }
-      }
-      if (!moveFound) return;
-
-      const movesIn =
-        moveIndex - sidelines[currentSideline[0]][currentSideline[1]].startsAt;
-
-      const updatedSideline = {
-        startsAt: currentSideline[0],
-        moves: [
-          ...sidelines[currentSideline[0]][currentSideline[1]].moves.slice(
-            0,
-            movesIn + 1
-          ),
-          move
-        ]
-      };
-
-      setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
-
-      setSidelines((prevSidelines) => ({
-        ...prevSidelines,
-        [currentSideline[0]]: [
-          ...prevSidelines[currentSideline[0]].slice(0, currentSideline[1]),
-          updatedSideline,
-          ...prevSidelines[currentSideline[0]].slice(currentSideline[1] + 1)
-        ]
-      }));
-    } else {
-      if (moveIndex === moves.length - 1) {
-        const { pieces: prevPieces, error: moveError } = applyMoves(
-          generateStartingPosition(),
-          moves
-        );
-        if (moveError) return;
-
-        // Verify legality
-        const movedPiece = pieces.filter(
-          (p) => p.square === move.from && p.active
-        )[0];
-        if (!movedPiece) return;
-        const verifiedLegalMoves = generateLegalMoves(
-          prevPieces,
-          movedPiece,
-          modifiedMoves
-        );
-
-        let moveFound;
-        for (let legalMove of verifiedLegalMoves) {
-          if (legalMove === move.to) {
-            moveFound = true;
-          }
-        }
-        if (!moveFound) return;
-        setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
-
-        setMoves((prevMoves) => [...prevMoves, move]);
-      } else {
-        // Go to sideline if already exists
-        if (sidelines[moveIndex + 1]) {
-          for (let i = 0; i < sidelines[moveIndex + 1].length; i++) {
-            const sideline = sidelines[moveIndex + 1][i];
-            if (
-              move.to === sideline.moves[0].to &&
-              move.from === sideline.moves[0].from &&
-              move.promoteTo === sideline.moves[0].promoteTo
-            ) {
-              setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
-              setCurrentSideline([moveIndex + 1, i]);
-              return;
-            }
-          }
-        }
-
-        // Verify legality
-        const movedPiece = pieces.filter(
-          (p) => p.square === move.from && p.active
-        )[0];
-        if (!movedPiece) return;
-        const verifiedLegalMoves = generateLegalMoves(
-          pieces,
-          movedPiece,
-          modifiedMoves.slice(0, moveIndex + 1)
-        );
-
-        let moveFound;
-        for (let legalMove of verifiedLegalMoves) {
-          if (legalMove === move.to) {
-            moveFound = true;
-          }
-        }
-        if (!moveFound) return;
-
-        const updatedSideline = {
-          startsAt: moveIndex + 1,
-          moves: [move]
-        };
-
-        setCurrentSideline([
-          moveIndex + 1,
-          sidelines[moveIndex + 1] ? sidelines[moveIndex + 1].length : 0
-        ]);
-
-        setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
-
-        setSidelines((prevSidelines) => ({
-          ...prevSidelines,
-          [moveIndex + 1]: [
-            ...(prevSidelines[moveIndex + 1]
-              ? prevSidelines[moveIndex + 1]
-              : []),
-            updatedSideline
-          ]
-        }));
-      }
-    }
-  }
-
   useEffect(() => {
     (async () => {
       try {
         if (isPastGame) {
-          const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/games/${gameId}`,
-            {
-              method: "GET",
-              credentials: "include",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-              }
-            }
-          );
-
-          if (!response.ok) {
+          const pastGame = await getPastGame(gameId);
+          if (!pastGame) {
             return navigate("/analyze");
           }
-
-          const data = await response.json();
           setIsLoading(false);
-          setMoves(data.moves);
-          setMoveIndex(data.moves.length - 1);
-          if (data.type === "live") {
-            setNames({ white: data.whitePlayer, black: data.blackPlayer });
-            if (user?.username === data.blackPlayer) setOrientation("black");
+          setMoves(pastGame.moves);
+          setMoveIndex(pastGame.moves.length - 1);
+          if (pastGame.type === "live") {
+            setNames({
+              white: pastGame.whitePlayer,
+              black: pastGame.blackPlayer
+            });
+            if (user?.username === pastGame.blackPlayer)
+              setOrientation("black");
           } else {
             const botName =
-              data.difficulty[0].toUpperCase() +
-              data.difficulty.slice(1) +
+              pastGame.difficulty[0].toUpperCase() +
+              pastGame.difficulty.slice(1) +
               " Bot";
             setNames({
-              white: data.color === "white" ? data.user : botName,
-              black: data.color === "black" ? data.user : botName
+              white: pastGame.color === "white" ? pastGame.user : botName,
+              black: pastGame.color === "black" ? pastGame.user : botName
             });
-            setOrientation(data.color);
-            color.current = data.color;
+            setOrientation(pastGame.color);
+            color.current = pastGame.color;
           }
         } else {
-          const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/games/list`,
-            {
-              method: "GET",
-              credentials: "include",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-              }
-            }
-          );
-          const data = await response.json();
-          setPastGames(data.games);
+          const pastGames = await getPastGameList();
+          if (pastGames) setPastGames(pastGames.games);
           setIsLoading(false);
         }
       } catch (error) {
@@ -457,24 +274,6 @@ export default function Analyze({ setAnalyzeKey }: Props) {
       }
     })();
   }, []);
-
-  function nextMove() {
-    if (moveIndex < modifiedMoves.length - 1) {
-      setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
-    }
-  }
-
-  function prevMove() {
-    if (moveIndex >= 0) {
-      if (
-        currentSideline &&
-        sidelines[currentSideline[0]][currentSideline[1]].startsAt >= moveIndex
-      ) {
-        setCurrentSideline(null);
-      }
-      setMoveIndex((prevMoveIndex) => prevMoveIndex - 1);
-    }
-  }
 
   const evalBarOffset = useMemo(() => {
     if (topMoves.length === 0 && posEval.adv[0] !== "#") return;
