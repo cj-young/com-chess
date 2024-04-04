@@ -37,16 +37,17 @@ Create a .env file in the backend and frontend and add each of the following var
 
 #### Frontend Variables
 
-- VITE_BACKEND_URL: the base url of your backend server
+- `VITE_BACKEND_URL`: the base url of your backend server
 
 #### Backend Variables
 
-- DB_URI: the uri of your mongodb cluster
-- BACKEND_URL: the base url of your backend server
-- SESSION_SECRET: any secure hexidecimal key used for express session storage
-- GOOGLE_CLIENT_ID: client id for Google Passport authentication [Learn More](https://www.passportjs.org/tutorials/google/register/)
-- GOOGLE_CLIENT_SECRET: clicent secret for Google Passport authentication [Learn More](https://www.passportjs.org/tutorials/google/register/)
-- CLIENT_URL: the base url of your frontend server
+- `DB_URI`: the uri of your mongodb cluster
+- `BACKEND_URL`: the base url of your backend server
+- `SESSION_SECRET`: any secure hexidecimal key used for express session storage
+- `GOOGLE_CLIENT_ID`: client id for Google Passport authentication [Learn More](https://www.passportjs.org/tutorials/google/register/)
+- `GOOGLE_CLIENT_SECRET`: clicent secret for Google Passport authentication [Learn More](https://www.passportjs.org/tutorials/google/register/)
+- `CLIENT_URL`: the base url of your frontend server
+- `NODE_ENV`: the environment of your backend server, set to "development" on localhost.
 
 ### Running the servers
 
