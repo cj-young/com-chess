@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Move, Sideline } from "../types";
+import { Color, Move, Sideline } from "../types";
 import applyMoves from "../utils/applyMoves";
 import generateStartingPosition from "../utils/generateStartingPosition";
 import generateLegalMoves from "../utils/move-functions/generateLegalMoves";
@@ -26,7 +26,7 @@ export default function useMoves({ allowSidelines = false }: Options = {}) {
     ];
   }, [moves, sidelines, currentSideline]);
 
-  const turn = moveIndex % 2 === 0 ? "black" : "white";
+  const turn: Color = moveIndex % 2 === 0 ? "black" : "white";
 
   const pieces = useMemo(() => {
     const { pieces: newPieces, error: moveError } = applyMoves(
@@ -114,13 +114,13 @@ export default function useMoves({ allowSidelines = false }: Options = {}) {
           generateStartingPosition(),
           moves
         );
-        if (moveError) return;
+        if (moveError) return { error: moveError };
 
         // Verify legality
         const movedPiece = pieces.filter(
           (p) => p.square === move.from && p.active
         )[0];
-        if (!movedPiece) return;
+        if (!movedPiece) return { error: "No piece there" };
         const verifiedLegalMoves = generateLegalMoves(
           prevPieces,
           movedPiece,
@@ -133,7 +133,7 @@ export default function useMoves({ allowSidelines = false }: Options = {}) {
             moveFound = true;
           }
         }
-        if (!moveFound) return;
+        if (!moveFound) return { error: "Illegal move attempted" };
         setMoveIndex((prevMoveIndex) => prevMoveIndex + 1);
 
         setMoves((prevMoves) => [...prevMoves, move]);
@@ -171,7 +171,7 @@ export default function useMoves({ allowSidelines = false }: Options = {}) {
             moveFound = true;
           }
         }
-        if (!moveFound) return;
+        if (!moveFound) return { error: "Illegal move attempted" };
 
         const updatedSideline = {
           startsAt: moveIndex + 1,
