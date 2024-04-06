@@ -1,0 +1,16 @@
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  flex-direction: column;
+  gap: 1rem;
+
+  &__message {
+    text-align: center;
+    color: var(--clr-text-primary);
+    font-size: var(--fs-500);
+    max-width: 50ch;
+    text-wrap: balance;
+  }
+}

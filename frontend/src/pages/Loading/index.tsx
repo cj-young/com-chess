@@ -1,5 +1,6 @@
-import { CSSProperties, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Spinner from "../../components/Spinner";
+import "./styles.scss";
 
 const MESSAGE_DELAY = 2500;
 const MESSAGE =
@@ -19,32 +20,8 @@ export default function Loading() {
   }, []);
 
   return (
-    <div
-      className="callback"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100%",
-        flexDirection: "column",
-        gap: "1rem"
-      }}
-    >
-      {showMessage && (
-        <div
-          style={
-            {
-              textAlign: "center",
-              color: "var(--clr-text-primary)",
-              fontSize: "var(--fs-500)",
-              maxWidth: "50ch",
-              textWrap: "balance"
-            } as CSSProperties
-          }
-        >
-          {MESSAGE}
-        </div>
-      )}
+    <div className="loading">
+      {showMessage && <div className="loading__message">{MESSAGE}</div>}
       <Spinner size="2rem" />
     </div>
   );
