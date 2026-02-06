@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import ProfileGameModal from "../../components/ProfileGameModal";
 import { socket } from "../../config/socket";
@@ -43,6 +43,8 @@ export default function Profile({ setProfileKey }: Props) {
   const { username: usernameParam } = useParams();
   const { friends } = useUserContext();
 
+  const navigate = useNavigate();
+
   function handleRemoveFriend() {
     socket.emit("friendRemove", username);
   }
@@ -67,138 +69,143 @@ export default function Profile({ setProfileKey }: Props) {
   useEffect(() => {
     (async () => {
       setProfileKey(usernameParam || "");
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/user/${usernameParam}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          }
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/user/${usernameParam}`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.message ?? "User profile information fetch failed",
+          );
         }
-      );
-      const data = await response.json();
-      setJoinedAt(new Date(data.joinedAt));
-      setIsSelf(data.isSelf);
-      setIsLoading(false);
-      setUsername(data.username);
-      setPastGames(data.pastGames);
+
+        setJoinedAt(new Date(data.joinedAt));
+        setIsSelf(data.isSelf);
+        setIsLoading(false);
+        setUsername(data.username);
+        setPastGames(data.pastGames);
+      } catch {
+        navigate("/profile-not-found", { replace: true });
+      }
     })();
   }, [usernameParam]);
 
-  return isLoading ? (
-    <Loading />
-  ) : (
-    <div className="profile">
-      <Navbar />
-      <div className="profile__container">
-        <div className="profile__left">
-          <div className="profile__name">
-            <div className="profile__name__top">
-              <h2>{username}</h2>
-              {!isSelf && (
-                <div className="profile__buttons">
-                  {friends && username && friends.includes(username) ? (
+  return isLoading ?
+      <Loading />
+    : <div className="profile">
+        <Navbar />
+        <div className="profile__container">
+          <div className="profile__left">
+            <div className="profile__name">
+              <div className="profile__name__top">
+                <h2>{username}</h2>
+                {!isSelf && (
+                  <div className="profile__buttons">
+                    {friends && username && friends.includes(username) ?
+                      <button
+                        className="profile__remove-friend"
+                        onClick={handleRemoveFriend}
+                      >
+                        Remove Friend
+                      </button>
+                    : friendRequestSent ?
+                      <div className="profile__friend-request-sent">
+                        Friend Request Sent
+                      </div>
+                    : <button
+                        className="profile__add-friend"
+                        onClick={handleAddFriend}
+                      >
+                        Add Friend
+                      </button>
+                    }
                     <button
-                      className="profile__remove-friend"
-                      onClick={handleRemoveFriend}
+                      className="profile__play"
+                      onClick={() => setShowModal(true)}
                     >
-                      Remove Friend
+                      Play
                     </button>
-                  ) : friendRequestSent ? (
-                    <div className="profile__friend-request-sent">
-                      Friend Request Sent
-                    </div>
-                  ) : (
-                    <button
-                      className="profile__add-friend"
-                      onClick={handleAddFriend}
-                    >
-                      Add Friend
-                    </button>
-                  )}
-                  <button
-                    className="profile__play"
-                    onClick={() => setShowModal(true)}
-                  >
-                    Play
-                  </button>
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
+              <div className="joined-at">
+                Joined{" "}
+                {joinedAt?.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  timeZone: "EST",
+                })}
+              </div>
             </div>
-            <div className="joined-at">
-              Joined{" "}
-              {joinedAt?.toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                timeZone: "EST"
-              })}
-            </div>
-          </div>
-          <h3>Past Games</h3>
-          <ul className="profile__past-games">
-            {pastGames && pastGames.length ? (
-              pastGames.map((game, i) => (
-                <li className="past-game" key={i}>
-                  <Link
-                    to={`/analyze/${game.type === "bot" ? "1" : "0"}${
-                      game._id
-                    }`}
-                  >
-                    <span className="name">
-                      {game.type === "bot"
-                        ? game.difficulty[0].toUpperCase() +
-                          game.difficulty.slice(1) +
-                          " Bot"
-                        : game.color === "black"
-                        ? game.whiteUsername
-                        : game.blackUsername}
-                    </span>
-                    <span
-                      className={`${
-                        game.winner === null
-                          ? "draw"
-                          : game.winner === game.color
-                          ? "win"
-                          : "loss"
+            <h3>Past Games</h3>
+            <ul className="profile__past-games">
+              {pastGames && pastGames.length ?
+                pastGames.map((game, i) => (
+                  <li className="past-game" key={i}>
+                    <Link
+                      to={`/analyze/${game.type === "bot" ? "1" : "0"}${
+                        game._id
                       }`}
                     >
-                      {game.winner === null
-                        ? "Draw"
-                        : game.winner === game.color
-                        ? "Win"
+                      <span className="name">
+                        {game.type === "bot" ?
+                          game.difficulty[0].toUpperCase() +
+                          game.difficulty.slice(1) +
+                          " Bot"
+                        : game.color === "black" ?
+                          game.whiteUsername
+                        : game.blackUsername}
+                      </span>
+                      <span
+                        className={`${
+                          game.winner === null ? "draw"
+                          : game.winner === game.color ? "win"
+                          : "loss"
+                        }`}
+                      >
+                        {game.winner === null ?
+                          "Draw"
+                        : game.winner === game.color ?
+                          "Win"
                         : "Loss"}
-                    </span>
-                  </Link>
-                </li>
-              ))
-            ) : (
-              <div className="no-games">Past games will appear here</div>
-            )}
-          </ul>
-        </div>
-
-        {isSelf && (
-          <div className="profile__friends">
-            <h3>Friends</h3>
-            <ul className="profile__friends__list">
-              {friends.map((friend, i) => (
-                <li key={i}>
-                  <Link to={`/user/${friend}`}>{friend}</Link>
-                </li>
-              ))}
+                      </span>
+                    </Link>
+                  </li>
+                ))
+              : <div className="no-games">Past games will appear here</div>}
             </ul>
           </div>
+
+          {isSelf && (
+            <div className="profile__friends">
+              <h3>Friends</h3>
+              <ul className="profile__friends__list">
+                {friends.map((friend, i) => (
+                  <li key={i}>
+                    <Link to={`/user/${friend}`}>{friend}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+        {showModal && username && (
+          <ProfileGameModal
+            close={() => setShowModal(false)}
+            username={username}
+          />
         )}
-      </div>
-      {showModal && username && (
-        <ProfileGameModal
-          close={() => setShowModal(false)}
-          username={username}
-        />
-      )}
-    </div>
-  );
+      </div>;
 }
