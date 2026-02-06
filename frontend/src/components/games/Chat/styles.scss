@@ -39,6 +39,27 @@
     }
   }
 
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;  
+
+    @include game-screen {
+      flex-direction: row;
+    }
+  }
+
+  &__input-button {
+    @include button(var(--fs-500));
+    width: 100%;
+    border: none;
+    color: var(--clr-text-primary);
+
+    @include game-screen {
+      width: min-content;
+    }
+  }
+
   &__input-wrapper {
     @include input-wrapper();
     margin-top: 0.5rem;
