@@ -63,5 +63,7 @@
   &__input-wrapper {
     @include input-wrapper();
     margin-top: 0.5rem;
+    flex-grow: 1;
+    width: auto;
   }
 }
