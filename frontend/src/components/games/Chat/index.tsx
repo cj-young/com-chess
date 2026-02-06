@@ -23,7 +23,7 @@ export default function Chat() {
       socket.emit("liveChat", inputMessage);
       setMessages((prevMessages) => [
         { from: username, message: inputMessage },
-        ...prevMessages
+        ...prevMessages,
       ]);
       setInputMessage("");
     }
@@ -57,6 +57,7 @@ export default function Chat() {
             type="text"
             className="chat__input"
             placeholder="Send a message"
+            aria-label="Chat message"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
           />
