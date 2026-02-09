@@ -62,6 +62,7 @@ export default function Chat() {
             onChange={(e) => setInputMessage(e.target.value)}
           />
         </div>
+        <button className="chat__input-button">Send</button>
       </form>
     </div>
   );
